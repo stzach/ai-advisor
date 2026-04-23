@@ -1,11 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <RootNamespace>ai_advisor.Web</RootNamespace>
-    <AssemblyName>ai_advisor.Web</AssemblyName>
+    <RootNamespace>AiAdvisor.Web</RootNamespace>
+    <AssemblyName>AiAdvisor.Web</AssemblyName>
     <SpaRoot>ClientApp\</SpaRoot>
     <OpenApiDocumentsDirectory>./wwwroot/openapi/</OpenApiDocumentsDirectory>
     <OpenApiGenerateDocumentsOptions>--file-name v1</OpenApiGenerateDocumentsOptions>
+    <!-- Disable OpenAPI document generation when RuntimeIdentifier is set to avoid cross-platform assembly loading issues during containerization -->
+    <OpenApiGenerateDocuments Condition="'$(RuntimeIdentifier)' != ''">false</OpenApiGenerateDocuments>
   </PropertyGroup>
 
   <ItemGroup>
