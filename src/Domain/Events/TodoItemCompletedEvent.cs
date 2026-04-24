@@ -1,4 +1,4 @@
-﻿namespace ai_advisor.Domain.Events;
+﻿namespace AiAdvisor.Domain.Events;
 
 public class TodoItemCompletedEvent : BaseEvent
 {

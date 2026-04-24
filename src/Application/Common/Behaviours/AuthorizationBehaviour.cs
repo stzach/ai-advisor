@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
-using ai_advisor.Application.Common.Exceptions;
-using ai_advisor.Application.Common.Interfaces;
-using ai_advisor.Application.Common.Security;
+using AiAdvisor.Application.Common.Exceptions;
+using AiAdvisor.Application.Common.Interfaces;
+using AiAdvisor.Application.Common.Security;
 
-namespace ai_advisor.Application.Common.Behaviours;
+namespace AiAdvisor.Application.Common.Behaviours;
 
 public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> 
     where TRequest : notnull

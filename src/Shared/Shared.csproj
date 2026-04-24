@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>ai_advisor.Shared</RootNamespace>
-    <AssemblyName>ai_advisor.Shared</AssemblyName>
+    <RootNamespace>AiAdvisor.Shared</RootNamespace>
+    <AssemblyName>AiAdvisor.Shared</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup>

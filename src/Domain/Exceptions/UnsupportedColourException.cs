@@ -1,4 +1,4 @@
-﻿namespace ai_advisor.Domain.Exceptions;
+﻿namespace AiAdvisor.Domain.Exceptions;
 
 public class UnsupportedColourException : Exception
 {

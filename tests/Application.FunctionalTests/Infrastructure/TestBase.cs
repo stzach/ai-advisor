@@ -1,4 +1,4 @@
-namespace ai_advisor.Application.FunctionalTests.Infrastructure;
+namespace AiAdvisor.Application.FunctionalTests.Infrastructure;
 
 public abstract class TestBase
 {

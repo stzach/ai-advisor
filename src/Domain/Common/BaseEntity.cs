@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ai_advisor.Domain.Common;
+namespace AiAdvisor.Domain.Common;
 
 public abstract class BaseEntity
 {

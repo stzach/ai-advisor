@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <RootNamespace>ai_advisor.TestAppHost</RootNamespace>
-    <AssemblyName>ai_advisor.TestAppHost</AssemblyName>
+    <RootNamespace>AiAdvisor.TestAppHost</RootNamespace>
+    <AssemblyName>AiAdvisor.TestAppHost</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

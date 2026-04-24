@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ai_advisor.Application.FunctionalTests;
+namespace AiAdvisor.Application.FunctionalTests;
 
 [SetUpFixture]
 public class FunctionalTestSetup

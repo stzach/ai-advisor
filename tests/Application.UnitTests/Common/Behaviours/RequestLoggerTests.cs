@@ -1,11 +1,11 @@
-﻿using ai_advisor.Application.Common.Behaviours;
-using ai_advisor.Application.Common.Interfaces;
-using ai_advisor.Application.TodoItems.Commands.CreateTodoItem;
+﻿using AiAdvisor.Application.Common.Behaviours;
+using AiAdvisor.Application.Common.Interfaces;
+using AiAdvisor.Application.TodoItems.Commands.CreateTodoItem;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 
-namespace ai_advisor.Application.UnitTests.Common.Behaviours;
+namespace AiAdvisor.Application.UnitTests.Common.Behaviours;
 
 public class RequestLoggerTests
 {

@@ -1,8 +1,8 @@
-﻿using ai_advisor.Domain.Entities;
+﻿using AiAdvisor.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ai_advisor.Infrastructure.Data.Configurations;
+namespace AiAdvisor.Infrastructure.Data.Configurations;
 
 public class TodoItemConfiguration : IEntityTypeConfiguration<TodoItem>
 {

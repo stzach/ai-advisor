@@ -1,10 +1,10 @@
-using ai_advisor.Application.TodoLists.Commands.CreateTodoList;
-using ai_advisor.Application.TodoLists.Commands.DeleteTodoList;
-using ai_advisor.Application.TodoLists.Commands.UpdateTodoList;
-using ai_advisor.Application.TodoLists.Queries.GetTodos;
+using AiAdvisor.Application.TodoLists.Commands.CreateTodoList;
+using AiAdvisor.Application.TodoLists.Commands.DeleteTodoList;
+using AiAdvisor.Application.TodoLists.Commands.UpdateTodoList;
+using AiAdvisor.Application.TodoLists.Queries.GetTodos;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace ai_advisor.Web.Endpoints;
+namespace AiAdvisor.Web.Endpoints;
 
 public class TodoLists : IEndpointGroup
 {

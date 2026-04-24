@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <RootNamespace>ai_advisor.Web.AcceptanceTests</RootNamespace>
-        <AssemblyName>ai_advisor.Web.AcceptanceTests</AssemblyName>
+        <RootNamespace>AiAdvisor.Web.AcceptanceTests</RootNamespace>
+        <AssemblyName>AiAdvisor.Web.AcceptanceTests</AssemblyName>
         <ReqnrollUseIntermediateOutputPathForCodeBehind>true</ReqnrollUseIntermediateOutputPathForCodeBehind>
     </PropertyGroup>
 

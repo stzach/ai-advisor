@@ -1,4 +1,4 @@
-namespace ai_advisor.Web.AcceptanceTests.Pages;
+namespace AiAdvisor.Web.AcceptanceTests.Pages;
 
 public class LoginPage(IPage page) : BasePage(page)
 {

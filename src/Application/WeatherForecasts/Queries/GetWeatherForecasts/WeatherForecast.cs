@@ -1,4 +1,4 @@
-﻿namespace ai_advisor.Application.WeatherForecasts.Queries.GetWeatherForecasts;
+﻿namespace AiAdvisor.Application.WeatherForecasts.Queries.GetWeatherForecasts;
 
 public class WeatherForecast
 {

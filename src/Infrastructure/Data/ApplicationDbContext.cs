@@ -1,11 +1,11 @@
 ﻿using System.Reflection;
-using ai_advisor.Application.Common.Interfaces;
-using ai_advisor.Domain.Entities;
-using ai_advisor.Infrastructure.Identity;
+using AiAdvisor.Application.Common.Interfaces;
+using AiAdvisor.Domain.Entities;
+using AiAdvisor.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace ai_advisor.Infrastructure.Data;
+namespace AiAdvisor.Infrastructure.Data;
 
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
 {

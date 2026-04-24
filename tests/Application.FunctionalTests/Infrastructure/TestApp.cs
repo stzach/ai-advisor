@@ -1,12 +1,12 @@
-using ai_advisor.Domain.Constants;
-using ai_advisor.Infrastructure.Data;
-using ai_advisor.Infrastructure.Identity;
+using AiAdvisor.Domain.Constants;
+using AiAdvisor.Infrastructure.Data;
+using AiAdvisor.Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ai_advisor.Application.FunctionalTests.Infrastructure;
+namespace AiAdvisor.Application.FunctionalTests.Infrastructure;
 
 public static class TestApp
 {

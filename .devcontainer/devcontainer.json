@@ -1,5 +1,5 @@
 {
-    "name": "ai_advisor",
+    "name": "AiAdvisor",
     "image": "mcr.microsoft.com/devcontainers/python:3.13-bullseye",
     "features": {
         // See https://containers.dev/features for list of features

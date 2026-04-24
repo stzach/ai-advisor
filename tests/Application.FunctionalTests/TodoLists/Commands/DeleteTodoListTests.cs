@@ -1,8 +1,8 @@
-﻿using ai_advisor.Application.TodoLists.Commands.CreateTodoList;
-using ai_advisor.Application.TodoLists.Commands.DeleteTodoList;
-using ai_advisor.Domain.Entities;
+﻿using AiAdvisor.Application.TodoLists.Commands.CreateTodoList;
+using AiAdvisor.Application.TodoLists.Commands.DeleteTodoList;
+using AiAdvisor.Domain.Entities;
 
-namespace ai_advisor.Application.FunctionalTests.TodoLists.Commands;
+namespace AiAdvisor.Application.FunctionalTests.TodoLists.Commands;
 
 public class DeleteTodoListTests : TestBase
 {

@@ -1,4 +1,4 @@
-namespace ai_advisor.Web.AcceptanceTests.Pages;
+namespace AiAdvisor.Web.AcceptanceTests.Pages;
 
 public abstract class BasePage(IPage page)
 {

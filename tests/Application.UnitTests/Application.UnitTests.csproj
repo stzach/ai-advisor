@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <RootNamespace>ai_advisor.Application.UnitTests</RootNamespace>
-        <AssemblyName>ai_advisor.Application.UnitTests</AssemblyName>
+        <RootNamespace>AiAdvisor.Application.UnitTests</RootNamespace>
+        <AssemblyName>AiAdvisor.Application.UnitTests</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>

@@ -1,10 +1,10 @@
-﻿using ai_advisor.Application.Common.Interfaces;
-using ai_advisor.Application.Common.Models;
-using ai_advisor.Application.Common.Security;
-using ai_advisor.Domain.Enums;
-using ai_advisor.Domain.ValueObjects;
+﻿using AiAdvisor.Application.Common.Interfaces;
+using AiAdvisor.Application.Common.Models;
+using AiAdvisor.Application.Common.Security;
+using AiAdvisor.Domain.Enums;
+using AiAdvisor.Domain.ValueObjects;
 
-namespace ai_advisor.Application.TodoLists.Queries.GetTodos;
+namespace AiAdvisor.Application.TodoLists.Queries.GetTodos;
 
 [Authorize]
 public record GetTodosQuery : IRequest<TodosVm>;

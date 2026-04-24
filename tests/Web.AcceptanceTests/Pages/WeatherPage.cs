@@ -1,4 +1,4 @@
-namespace ai_advisor.Web.AcceptanceTests.Pages;
+namespace AiAdvisor.Web.AcceptanceTests.Pages;
 
 public class WeatherPage(IPage page) : BasePage(page)
 {

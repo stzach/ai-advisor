@@ -1,10 +1,10 @@
-using ai_advisor.Application.Common.Interfaces;
-using ai_advisor.Application.Common.Models;
+using AiAdvisor.Application.Common.Interfaces;
+using AiAdvisor.Application.Common.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace ai_advisor.Infrastructure.Identity;
+namespace AiAdvisor.Infrastructure.Identity;
 
 public class IdentityService : IIdentityService
 {

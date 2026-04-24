@@ -1,6 +1,14 @@
-﻿# ai_advisor
+﻿# AiAdvisor
 
 The project was generated using the [Clean.Architecture.Solution.Template](https://github.com/jasontaylordev/CleanArchitecture) version 10.8.0.
+
+
+## Prerequisites
+
+.NET [10.0 SDK or later](https://dotnet.microsoft.com/download/dotnet/10.0)
+[Node.js](https://nodejs.org/) (LTS) — only required if you plan to use the Angular or React frontend
+[Podman](https://podman.io/) (or any OCI-compliant container runtime) — only required when using SQL Server or PostgreSQL. Not required when using SQLite (the default).
+
 
 ## Build
 

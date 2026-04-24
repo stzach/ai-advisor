@@ -1,4 +1,4 @@
-namespace ai_advisor.Domain.ValueObjects;
+namespace AiAdvisor.Domain.ValueObjects;
 
 public class Colour(string code) : ValueObject
 {

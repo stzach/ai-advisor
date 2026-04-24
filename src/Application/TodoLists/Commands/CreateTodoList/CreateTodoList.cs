@@ -1,8 +1,8 @@
-﻿using ai_advisor.Application.Common.Interfaces;
-using ai_advisor.Domain.Entities;
-using ai_advisor.Domain.ValueObjects;
+﻿using AiAdvisor.Application.Common.Interfaces;
+using AiAdvisor.Domain.Entities;
+using AiAdvisor.Domain.ValueObjects;
 
-namespace ai_advisor.Application.TodoLists.Commands.CreateTodoList;
+namespace AiAdvisor.Application.TodoLists.Commands.CreateTodoList;
 
 public record CreateTodoListCommand : IRequest<int>
 {

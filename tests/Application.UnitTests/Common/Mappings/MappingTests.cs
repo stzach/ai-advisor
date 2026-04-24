@@ -1,12 +1,12 @@
 using System.Runtime.CompilerServices;
 using AutoMapper;
-using ai_advisor.Application.Common.Interfaces;
-using ai_advisor.Application.TodoLists.Queries.GetTodos;
-using ai_advisor.Domain.Entities;
+using AiAdvisor.Application.Common.Interfaces;
+using AiAdvisor.Application.TodoLists.Queries.GetTodos;
+using AiAdvisor.Domain.Entities;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 
-namespace ai_advisor.Application.UnitTests.Common.Mappings;
+namespace AiAdvisor.Application.UnitTests.Common.Mappings;
 
 public class MappingTests
 {

@@ -1,4 +1,4 @@
-using ai_advisor.Shared;
+using AiAdvisor.Shared;
 
 var builder = DistributedApplication.CreateBuilder(args);
 

@@ -1,4 +1,4 @@
-﻿namespace ai_advisor.Application.TodoItems.Commands.UpdateTodoItem;
+﻿namespace AiAdvisor.Application.TodoItems.Commands.UpdateTodoItem;
 
 public class UpdateTodoItemCommandValidator : AbstractValidator<UpdateTodoItemCommand>
 {

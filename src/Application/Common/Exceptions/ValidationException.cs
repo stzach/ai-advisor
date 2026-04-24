@@ -1,6 +1,6 @@
 ﻿using FluentValidation.Results;
 
-namespace ai_advisor.Application.Common.Exceptions;
+namespace AiAdvisor.Application.Common.Exceptions;
 
 public class ValidationException : Exception
 {

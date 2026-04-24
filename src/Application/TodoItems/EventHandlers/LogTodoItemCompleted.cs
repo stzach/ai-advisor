@@ -1,7 +1,7 @@
-﻿using ai_advisor.Domain.Events;
+﻿using AiAdvisor.Domain.Events;
 using Microsoft.Extensions.Logging;
 
-namespace ai_advisor.Application.TodoItems.EventHandlers;
+namespace AiAdvisor.Application.TodoItems.EventHandlers;
 
 public class LogTodoItemCompleted : INotificationHandler<TodoItemCompletedEvent>
 {
@@ -14,7 +14,7 @@ public class LogTodoItemCompleted : INotificationHandler<TodoItemCompletedEvent>
 
     public Task Handle(TodoItemCompletedEvent notification, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("ai_advisor Domain Event: {DomainEvent}", notification.GetType().Name);
+        _logger.LogInformation("AiAdvisor Domain Event: {DomainEvent}", notification.GetType().Name);
 
         return Task.CompletedTask;
     }

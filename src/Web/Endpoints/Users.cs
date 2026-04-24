@@ -1,9 +1,9 @@
-﻿using ai_advisor.Infrastructure.Identity;
+﻿using AiAdvisor.Infrastructure.Identity;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ai_advisor.Web.Endpoints;
+namespace AiAdvisor.Web.Endpoints;
 
 public class Users : IEndpointGroup
 {

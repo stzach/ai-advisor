@@ -1,6 +1,6 @@
-﻿using ai_advisor.Application.Common.Models;
+﻿using AiAdvisor.Application.Common.Models;
 
-namespace ai_advisor.Application.Common.Interfaces;
+namespace AiAdvisor.Application.Common.Interfaces;
 
 public interface IIdentityService
 {

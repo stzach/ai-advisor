@@ -1,4 +1,4 @@
-﻿namespace ai_advisor.Domain.Enums;
+﻿namespace AiAdvisor.Domain.Enums;
 
 public enum PriorityLevel
 {

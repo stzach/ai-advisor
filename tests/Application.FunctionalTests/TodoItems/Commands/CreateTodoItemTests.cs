@@ -1,9 +1,9 @@
-﻿using ai_advisor.Application.Common.Exceptions;
-using ai_advisor.Application.TodoItems.Commands.CreateTodoItem;
-using ai_advisor.Application.TodoLists.Commands.CreateTodoList;
-using ai_advisor.Domain.Entities;
+﻿using AiAdvisor.Application.Common.Exceptions;
+using AiAdvisor.Application.TodoItems.Commands.CreateTodoItem;
+using AiAdvisor.Application.TodoLists.Commands.CreateTodoList;
+using AiAdvisor.Domain.Entities;
 
-namespace ai_advisor.Application.FunctionalTests.TodoItems.Commands;
+namespace AiAdvisor.Application.FunctionalTests.TodoItems.Commands;
 
 public class CreateTodoItemTests : TestBase
 {

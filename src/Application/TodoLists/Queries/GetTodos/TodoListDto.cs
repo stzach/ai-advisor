@@ -1,6 +1,6 @@
-﻿using ai_advisor.Domain.Entities;
+﻿using AiAdvisor.Domain.Entities;
 
-namespace ai_advisor.Application.TodoLists.Queries.GetTodos;
+namespace AiAdvisor.Application.TodoLists.Queries.GetTodos;
 
 public class TodoListDto
 {

@@ -1,4 +1,4 @@
-using ai_advisor.Infrastructure.Data;
+using AiAdvisor.Infrastructure.Data;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);

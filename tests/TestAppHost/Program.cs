@@ -1,6 +1,6 @@
-using ai_advisor.Shared;
+using AiAdvisor.Shared;
 
-namespace ai_advisor.TestAppHost;
+namespace AiAdvisor.TestAppHost;
 
 public class Program
 {

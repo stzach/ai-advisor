@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace ai_advisor.Web.AcceptanceTests;
+namespace AiAdvisor.Web.AcceptanceTests;
 
 [SetUpFixture]
 public class PlaywrightSetup

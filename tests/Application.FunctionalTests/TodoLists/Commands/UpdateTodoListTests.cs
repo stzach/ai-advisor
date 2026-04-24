@@ -1,9 +1,9 @@
-﻿using ai_advisor.Application.Common.Exceptions;
-using ai_advisor.Application.TodoLists.Commands.CreateTodoList;
-using ai_advisor.Application.TodoLists.Commands.UpdateTodoList;
-using ai_advisor.Domain.Entities;
+﻿using AiAdvisor.Application.Common.Exceptions;
+using AiAdvisor.Application.TodoLists.Commands.CreateTodoList;
+using AiAdvisor.Application.TodoLists.Commands.UpdateTodoList;
+using AiAdvisor.Domain.Entities;
 
-namespace ai_advisor.Application.FunctionalTests.TodoLists.Commands;
+namespace AiAdvisor.Application.FunctionalTests.TodoLists.Commands;
 
 public class UpdateTodoListTests : TestBase
 {

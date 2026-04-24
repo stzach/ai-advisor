@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace ai_advisor.Domain.Common;
+namespace AiAdvisor.Domain.Common;
 
 public abstract class BaseEvent : INotification
 {

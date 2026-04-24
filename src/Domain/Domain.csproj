@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>ai_advisor.Domain</RootNamespace>
-    <AssemblyName>ai_advisor.Domain</AssemblyName>
+    <RootNamespace>AiAdvisor.Domain</RootNamespace>
+    <AssemblyName>AiAdvisor.Domain</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

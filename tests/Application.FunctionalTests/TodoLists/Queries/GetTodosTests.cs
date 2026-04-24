@@ -1,8 +1,8 @@
-﻿using ai_advisor.Application.TodoLists.Queries.GetTodos;
-using ai_advisor.Domain.Entities;
-using ai_advisor.Domain.ValueObjects;
+﻿using AiAdvisor.Application.TodoLists.Queries.GetTodos;
+using AiAdvisor.Domain.Entities;
+using AiAdvisor.Domain.ValueObjects;
 
-namespace ai_advisor.Application.FunctionalTests.TodoLists.Queries;
+namespace AiAdvisor.Application.FunctionalTests.TodoLists.Queries;
 
 public class GetTodosTests : TestBase
 {

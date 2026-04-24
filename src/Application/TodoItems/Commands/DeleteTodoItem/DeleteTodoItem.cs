@@ -1,6 +1,6 @@
-﻿using ai_advisor.Application.Common.Interfaces;
+﻿using AiAdvisor.Application.Common.Interfaces;
 
-namespace ai_advisor.Application.TodoItems.Commands.DeleteTodoItem;
+namespace AiAdvisor.Application.TodoItems.Commands.DeleteTodoItem;
 
 public record DeleteTodoItemCommand(int Id) : IRequest;
 

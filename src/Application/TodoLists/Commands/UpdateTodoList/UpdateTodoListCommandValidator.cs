@@ -1,6 +1,6 @@
-﻿using ai_advisor.Application.Common.Interfaces;
+﻿using AiAdvisor.Application.Common.Interfaces;
 
-namespace ai_advisor.Application.TodoLists.Commands.UpdateTodoList;
+namespace AiAdvisor.Application.TodoLists.Commands.UpdateTodoList;
 
 public class UpdateTodoListCommandValidator : AbstractValidator<UpdateTodoListCommand>
 {

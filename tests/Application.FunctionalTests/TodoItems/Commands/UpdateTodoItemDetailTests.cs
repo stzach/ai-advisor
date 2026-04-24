@@ -1,11 +1,11 @@
-﻿using ai_advisor.Application.TodoItems.Commands.CreateTodoItem;
-using ai_advisor.Application.TodoItems.Commands.UpdateTodoItem;
-using ai_advisor.Application.TodoItems.Commands.UpdateTodoItemDetail;
-using ai_advisor.Application.TodoLists.Commands.CreateTodoList;
-using ai_advisor.Domain.Entities;
-using ai_advisor.Domain.Enums;
+﻿using AiAdvisor.Application.TodoItems.Commands.CreateTodoItem;
+using AiAdvisor.Application.TodoItems.Commands.UpdateTodoItem;
+using AiAdvisor.Application.TodoItems.Commands.UpdateTodoItemDetail;
+using AiAdvisor.Application.TodoLists.Commands.CreateTodoList;
+using AiAdvisor.Domain.Entities;
+using AiAdvisor.Domain.Enums;
 
-namespace ai_advisor.Application.FunctionalTests.TodoItems.Commands;
+namespace AiAdvisor.Application.FunctionalTests.TodoItems.Commands;
 
 public class UpdateTodoItemDetailTests : TestBase
 {
