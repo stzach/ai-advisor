@@ -1,10 +1,10 @@
-using ai_advisor.Application.TodoItems.Commands.CreateTodoItem;
-using ai_advisor.Application.TodoItems.Commands.DeleteTodoItem;
-using ai_advisor.Application.TodoItems.Commands.UpdateTodoItem;
-using ai_advisor.Application.TodoItems.Commands.UpdateTodoItemDetail;
+using AiAdvisor.Application.TodoItems.Commands.CreateTodoItem;
+using AiAdvisor.Application.TodoItems.Commands.DeleteTodoItem;
+using AiAdvisor.Application.TodoItems.Commands.UpdateTodoItem;
+using AiAdvisor.Application.TodoItems.Commands.UpdateTodoItemDetail;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace ai_advisor.Web.Endpoints;
+namespace AiAdvisor.Web.Endpoints;
 
 public class TodoItems : IEndpointGroup
 {

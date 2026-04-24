@@ -1,6 +1,6 @@
-﻿using ai_advisor.Application.Common.Interfaces;
+﻿using AiAdvisor.Application.Common.Interfaces;
 
-namespace ai_advisor.Application.TodoItems.Commands.UpdateTodoItem;
+namespace AiAdvisor.Application.TodoItems.Commands.UpdateTodoItem;
 
 public record UpdateTodoItemCommand : IRequest
 {

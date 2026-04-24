@@ -1,7 +1,7 @@
 using Azure.Identity;
-using ai_advisor.Application.Common.Interfaces;
-using ai_advisor.Infrastructure.Data;
-using ai_advisor.Web.Services;
+using AiAdvisor.Application.Common.Interfaces;
+using AiAdvisor.Infrastructure.Data;
+using AiAdvisor.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Microsoft.Extensions.DependencyInjection;

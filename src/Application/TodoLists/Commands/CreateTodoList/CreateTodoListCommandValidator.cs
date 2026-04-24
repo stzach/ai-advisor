@@ -1,6 +1,6 @@
-﻿using ai_advisor.Application.Common.Interfaces;
+﻿using AiAdvisor.Application.Common.Interfaces;
 
-namespace ai_advisor.Application.TodoLists.Commands.CreateTodoList;
+namespace AiAdvisor.Application.TodoLists.Commands.CreateTodoList;
 
 public class CreateTodoListCommandValidator : AbstractValidator<CreateTodoListCommand>
 {

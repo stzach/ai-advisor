@@ -1,4 +1,4 @@
-﻿namespace ai_advisor.Application.Common.Models;
+﻿namespace AiAdvisor.Application.Common.Models;
 
 public class Result
 {

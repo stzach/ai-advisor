@@ -1,7 +1,7 @@
-using ai_advisor.Application.Common.Interfaces;
-using ai_advisor.Domain.ValueObjects;
+using AiAdvisor.Application.Common.Interfaces;
+using AiAdvisor.Domain.ValueObjects;
 
-namespace ai_advisor.Application.TodoLists.Commands.UpdateTodoList;
+namespace AiAdvisor.Application.TodoLists.Commands.UpdateTodoList;
 
 public record UpdateTodoListCommand : IRequest
 {

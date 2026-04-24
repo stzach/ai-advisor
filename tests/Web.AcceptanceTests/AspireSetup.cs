@@ -1,6 +1,6 @@
 using Aspire.Hosting;
 
-namespace ai_advisor.Web.AcceptanceTests;
+namespace AiAdvisor.Web.AcceptanceTests;
 
 [SetUpFixture]
 public class AspireSetup

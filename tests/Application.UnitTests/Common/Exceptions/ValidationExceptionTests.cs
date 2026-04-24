@@ -1,9 +1,9 @@
-﻿using ai_advisor.Application.Common.Exceptions;
+﻿using AiAdvisor.Application.Common.Exceptions;
 using FluentValidation.Results;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ai_advisor.Application.UnitTests.Common.Exceptions;
+namespace AiAdvisor.Application.UnitTests.Common.Exceptions;
 
 public class ValidationExceptionTests
 {

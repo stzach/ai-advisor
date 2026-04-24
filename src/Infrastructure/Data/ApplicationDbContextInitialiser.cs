@@ -1,13 +1,13 @@
-﻿using ai_advisor.Domain.Constants;
-using ai_advisor.Domain.Entities;
-using ai_advisor.Domain.ValueObjects;
-using ai_advisor.Infrastructure.Identity;
+﻿using AiAdvisor.Domain.Constants;
+using AiAdvisor.Domain.Entities;
+using AiAdvisor.Domain.ValueObjects;
+using AiAdvisor.Infrastructure.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace ai_advisor.Infrastructure.Data;
+namespace AiAdvisor.Infrastructure.Data;
 
 public static class InitialiserExtensions
 {

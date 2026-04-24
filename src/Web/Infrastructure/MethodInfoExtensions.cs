@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace ai_advisor.Web.Infrastructure;
+namespace AiAdvisor.Web.Infrastructure;
 
 public static class MethodInfoExtensions
 {

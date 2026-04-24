@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
-using ai_advisor.Application.Common.Interfaces;
+using AiAdvisor.Application.Common.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace ai_advisor.Application.Common.Behaviours;
+namespace AiAdvisor.Application.Common.Behaviours;
 
 public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
@@ -45,7 +45,7 @@ public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequ
                 userName = await _identityService.GetUserNameAsync(userId);
             }
 
-            _logger.LogWarning("ai_advisor Long Running Request: {Name} ({ElapsedMilliseconds} milliseconds) {@UserId} {@UserName} {@Request}",
+            _logger.LogWarning("AiAdvisor Long Running Request: {Name} ({ElapsedMilliseconds} milliseconds) {@UserId} {@UserName} {@Request}",
                 requestName, elapsedMilliseconds, userId, userName, request);
         }
 

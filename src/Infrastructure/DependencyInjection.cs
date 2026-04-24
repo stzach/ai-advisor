@@ -1,7 +1,7 @@
-﻿using ai_advisor.Application.Common.Interfaces;
-using ai_advisor.Infrastructure.Data;
-using ai_advisor.Infrastructure.Data.Interceptors;
-using ai_advisor.Infrastructure.Identity;
+﻿using AiAdvisor.Application.Common.Interfaces;
+using AiAdvisor.Infrastructure.Data;
+using AiAdvisor.Infrastructure.Data.Interceptors;
+using AiAdvisor.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;

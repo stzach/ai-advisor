@@ -1,8 +1,8 @@
-using ai_advisor.Application.Common.Exceptions;
+using AiAdvisor.Application.Common.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ai_advisor.Web.Infrastructure;
+namespace AiAdvisor.Web.Infrastructure;
 
 /// <summary>
 /// Converts well-known application exceptions into RFC 9110-compliant <see cref="ProblemDetails"/> responses,

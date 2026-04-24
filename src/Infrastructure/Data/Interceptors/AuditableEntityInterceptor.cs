@@ -1,10 +1,10 @@
-﻿using ai_advisor.Application.Common.Interfaces;
-using ai_advisor.Domain.Common;
+﻿using AiAdvisor.Application.Common.Interfaces;
+using AiAdvisor.Domain.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace ai_advisor.Infrastructure.Data.Interceptors;
+namespace AiAdvisor.Infrastructure.Data.Interceptors;
 
 public class AuditableEntityInterceptor : SaveChangesInterceptor
 {

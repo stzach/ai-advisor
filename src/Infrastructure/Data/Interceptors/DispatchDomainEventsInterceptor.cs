@@ -1,9 +1,9 @@
-﻿using ai_advisor.Domain.Common;
+﻿using AiAdvisor.Domain.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace ai_advisor.Infrastructure.Data.Interceptors;
+namespace AiAdvisor.Infrastructure.Data.Interceptors;
 
 public class DispatchDomainEventsInterceptor : SaveChangesInterceptor
 {

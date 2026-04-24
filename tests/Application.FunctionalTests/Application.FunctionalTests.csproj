@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <RootNamespace>ai_advisor.Application.FunctionalTests</RootNamespace>
-        <AssemblyName>ai_advisor.Application.FunctionalTests</AssemblyName>
+        <RootNamespace>AiAdvisor.Application.FunctionalTests</RootNamespace>
+        <AssemblyName>AiAdvisor.Application.FunctionalTests</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>

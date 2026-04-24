@@ -1,7 +1,7 @@
-﻿using ai_advisor.Application.Common.Models;
+﻿using AiAdvisor.Application.Common.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace ai_advisor.Infrastructure.Identity;
+namespace AiAdvisor.Infrastructure.Identity;
 
 public static class IdentityResultExtensions
 {

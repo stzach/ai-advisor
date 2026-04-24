@@ -1,4 +1,4 @@
-﻿# ai_advisor
+﻿# AiAdvisor
 
 The project was generated using the [Clean.Architecture.Solution.Template](https://github.com/jasontaylordev/CleanArchitecture) version 10.8.0.
 

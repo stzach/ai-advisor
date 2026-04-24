@@ -1,4 +1,4 @@
-﻿namespace ai_advisor.Application.Common.Interfaces;
+﻿namespace AiAdvisor.Application.Common.Interfaces;
 
 public interface IUser
 {

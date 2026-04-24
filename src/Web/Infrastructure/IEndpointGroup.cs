@@ -1,4 +1,4 @@
-namespace ai_advisor.Web.Infrastructure;
+namespace AiAdvisor.Web.Infrastructure;
 
 /// <summary>
 /// Defines a group of related Minimal API endpoints.

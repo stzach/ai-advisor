@@ -1,9 +1,9 @@
-using ai_advisor.Domain.Exceptions;
-using ai_advisor.Domain.ValueObjects;
+using AiAdvisor.Domain.Exceptions;
+using AiAdvisor.Domain.ValueObjects;
 using NUnit.Framework;
 using Shouldly;
 
-namespace ai_advisor.Domain.UnitTests.ValueObjects;
+namespace AiAdvisor.Domain.UnitTests.ValueObjects;
 
 public class ColourTests
 {

@@ -1,4 +1,4 @@
-namespace ai_advisor.Web.AcceptanceTests.StepDefinitions;
+namespace AiAdvisor.Web.AcceptanceTests.StepDefinitions;
 
 [Binding]
 public sealed class LoginStepDefinitions(LoginPage loginPage)

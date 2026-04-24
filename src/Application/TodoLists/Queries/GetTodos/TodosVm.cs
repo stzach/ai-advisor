@@ -1,6 +1,6 @@
-﻿using ai_advisor.Application.Common.Models;
+﻿using AiAdvisor.Application.Common.Models;
 
-namespace ai_advisor.Application.TodoLists.Queries.GetTodos;
+namespace AiAdvisor.Application.TodoLists.Queries.GetTodos;
 
 public class TodosVm
 {

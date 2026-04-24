@@ -5,25 +5,25 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "https://ai_advisor.dev.localhost:17097;http://ai_advisor.dev.localhost:15057",
+      "applicationUrl": "https://aiadvisor.dev.localhost:17201;http://aiadvisor.dev.localhost:15173",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DOTNET_ENVIRONMENT": "Development",
-        "DOTNET_DASHBOARD_OTLP_ENDPOINT_URL": "https://localhost:21283",
-        "DOTNET_RESOURCE_SERVICE_ENDPOINT_URL": "https://localhost:22231"
+        "DOTNET_DASHBOARD_OTLP_ENDPOINT_URL": "https://localhost:21044",
+        "DOTNET_RESOURCE_SERVICE_ENDPOINT_URL": "https://localhost:22219"
       }
     },
     "http": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "http://ai_advisor.dev.localhost:15057",
+      "applicationUrl": "http://aiadvisor.dev.localhost:15173",
       "environmentVariables": {
         "ASPIRE_ALLOW_UNSECURED_TRANSPORT": "true",
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DOTNET_ENVIRONMENT": "Development",
-        "DOTNET_DASHBOARD_OTLP_ENDPOINT_URL": "http://localhost:19203",
-        "DOTNET_RESOURCE_SERVICE_ENDPOINT_URL": "http://localhost:20212"
+        "DOTNET_DASHBOARD_OTLP_ENDPOINT_URL": "http://localhost:19084",
+        "DOTNET_RESOURCE_SERVICE_ENDPOINT_URL": "http://localhost:20169"
       }
     },
     "manifest": {

@@ -1,4 +1,4 @@
-﻿namespace ai_advisor.Domain.Constants;
+﻿namespace AiAdvisor.Domain.Constants;
 
 public abstract class Roles
 {

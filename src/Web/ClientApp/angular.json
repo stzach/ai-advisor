@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ai_advisor.Web": {
+    "AiAdvisor.Web": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:application": {
@@ -75,11 +75,11 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "ai_advisor.Web:build:production"
+              "buildTarget": "AiAdvisor.Web:build:production"
             },
             "development": {
               "proxyConfig": "proxy.conf.js",
-              "buildTarget": "ai_advisor.Web:build:development"
+              "buildTarget": "AiAdvisor.Web:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -87,7 +87,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "ai_advisor.Web:build"
+            "buildTarget": "AiAdvisor.Web:build"
           }
         },
         "test": {

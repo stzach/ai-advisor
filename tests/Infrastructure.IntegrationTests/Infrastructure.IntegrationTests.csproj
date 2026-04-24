@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <RootNamespace>ai_advisor.Infrastructure.IntegrationTests</RootNamespace>
-        <AssemblyName>ai_advisor.Infrastructure.IntegrationTests</AssemblyName>
+        <RootNamespace>AiAdvisor.Infrastructure.IntegrationTests</RootNamespace>
+        <AssemblyName>AiAdvisor.Infrastructure.IntegrationTests</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>

@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <IsAspireSharedProject>true</IsAspireSharedProject>
-    <RootNamespace>ai_advisor.ServiceDefaults</RootNamespace>
-    <AssemblyName>ai_advisor.ServiceDefaults</AssemblyName>
+    <RootNamespace>AiAdvisor.ServiceDefaults</RootNamespace>
+    <AssemblyName>AiAdvisor.ServiceDefaults</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

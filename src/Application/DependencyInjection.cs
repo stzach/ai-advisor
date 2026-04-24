@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using ai_advisor.Application.Common.Behaviours;
+using AiAdvisor.Application.Common.Behaviours;
 using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.Extensions.DependencyInjection;

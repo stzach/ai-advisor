@@ -1,4 +1,4 @@
-﻿namespace ai_advisor.Domain.Entities;
+﻿namespace AiAdvisor.Domain.Entities;
 
 public class TodoList : BaseAuditableEntity
 {

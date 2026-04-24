@@ -1,6 +1,6 @@
-﻿using ai_advisor.Domain.Entities;
+﻿using AiAdvisor.Domain.Entities;
 
-namespace ai_advisor.Application.Common.Interfaces;
+namespace AiAdvisor.Application.Common.Interfaces;
 
 public interface IApplicationDbContext
 {

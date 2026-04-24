@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>ai_advisor.Infrastructure</RootNamespace>
-    <AssemblyName>ai_advisor.Infrastructure</AssemblyName>
+    <RootNamespace>AiAdvisor.Infrastructure</RootNamespace>
+    <AssemblyName>AiAdvisor.Infrastructure</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,12 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Application\Application.csproj">
-      <ReferenceSourceTarget></ReferenceSourceTarget>
-    </ProjectReference>
-    <ProjectReference Include="..\Shared\Shared.csproj">
-      <ReferenceSourceTarget></ReferenceSourceTarget>
-    </ProjectReference>
+    <ProjectReference Include="..\Application\Application.csproj" />
+    <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 
 </Project>

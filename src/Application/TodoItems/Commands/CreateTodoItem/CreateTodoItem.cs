@@ -1,7 +1,7 @@
-﻿using ai_advisor.Application.Common.Interfaces;
-using ai_advisor.Domain.Entities;
+﻿using AiAdvisor.Application.Common.Interfaces;
+using AiAdvisor.Domain.Entities;
 
-namespace ai_advisor.Application.TodoItems.Commands.CreateTodoItem;
+namespace AiAdvisor.Application.TodoItems.Commands.CreateTodoItem;
 
 public record CreateTodoItemCommand : IRequest<int>
 {

@@ -1,7 +1,7 @@
-using ai_advisor.Application.WeatherForecasts.Queries.GetWeatherForecasts;
+using AiAdvisor.Application.WeatherForecasts.Queries.GetWeatherForecasts;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace ai_advisor.Web.Endpoints;
+namespace AiAdvisor.Web.Endpoints;
 
 public class WeatherForecasts : IEndpointGroup
 {

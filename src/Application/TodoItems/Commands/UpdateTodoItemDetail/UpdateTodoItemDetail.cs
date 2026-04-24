@@ -1,7 +1,7 @@
-﻿using ai_advisor.Application.Common.Interfaces;
-using ai_advisor.Domain.Enums;
+﻿using AiAdvisor.Application.Common.Interfaces;
+using AiAdvisor.Domain.Enums;
 
-namespace ai_advisor.Application.TodoItems.Commands.UpdateTodoItemDetail;
+namespace AiAdvisor.Application.TodoItems.Commands.UpdateTodoItemDetail;
 
 public record UpdateTodoItemDetailCommand : IRequest
 {

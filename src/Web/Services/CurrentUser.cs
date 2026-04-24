@@ -1,8 +1,8 @@
 ﻿using System.Security.Claims;
 
-using ai_advisor.Application.Common.Interfaces;
+using AiAdvisor.Application.Common.Interfaces;
 
-namespace ai_advisor.Web.Services;
+namespace AiAdvisor.Web.Services;
 
 public class CurrentUser : IUser
 {

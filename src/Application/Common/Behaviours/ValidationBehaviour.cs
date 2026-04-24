@@ -1,6 +1,6 @@
-﻿using ValidationException = ai_advisor.Application.Common.Exceptions.ValidationException;
+﻿using ValidationException = AiAdvisor.Application.Common.Exceptions.ValidationException;
 
-namespace ai_advisor.Application.Common.Behaviours;
+namespace AiAdvisor.Application.Common.Behaviours;
 
 public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
