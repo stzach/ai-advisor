@@ -4,7 +4,9 @@ using AiAdvisor.Domain.ValueObjects;
 using AiAdvisor.Infrastructure.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace AiAdvisor.Infrastructure.Data;
@@ -21,6 +23,10 @@ public static class InitialiserExtensions
         await initialiser.SeedAsync();
     }
 }
+
+// You must first install `dotnet tool install --global dotnet-ef`
+// To create a new migration script you must run the following command from the solution root directory.
+// dotnet ef migrations add MIGRATION_NAME `--project src/Infrastructure/Infrastructure.csproj ` --startup-project src/Web/Web.csproj
 
 public class ApplicationDbContextInitialiser
 {
@@ -41,9 +47,7 @@ public class ApplicationDbContextInitialiser
     {
         try
         {
-            // See https://jasontaylor.dev/ef-core-database-initialisation-strategies
-            await _context.Database.EnsureDeletedAsync();
-            await _context.Database.EnsureCreatedAsync();
+            await _context.Database.MigrateAsync();
         }
         catch (Exception ex)
         {
@@ -83,7 +87,7 @@ public class ApplicationDbContextInitialiser
             await _userManager.CreateAsync(administrator, "Administrator1!");
             if (!string.IsNullOrWhiteSpace(administratorRole.Name))
             {
-                await _userManager.AddToRolesAsync(administrator, new [] { administratorRole.Name });
+                await _userManager.AddToRolesAsync(administrator, new[] { administratorRole.Name });
             }
         }
 
