@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace AiAdvisor.Infrastructure.Data;
@@ -28,20 +27,12 @@ public static class InitialiserExtensions
 // To create a new migration script you must run the following command from the solution root directory.
 // dotnet ef migrations add MIGRATION_NAME `--project src/Infrastructure/Infrastructure.csproj ` --startup-project src/Web/Web.csproj
 
-public class ApplicationDbContextInitialiser
+public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
 {
-    private readonly ILogger<ApplicationDbContextInitialiser> _logger;
-    private readonly ApplicationDbContext _context;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RoleManager<IdentityRole> _roleManager;
-
-    public ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
-    {
-        _logger = logger;
-        _context = context;
-        _userManager = userManager;
-        _roleManager = roleManager;
-    }
+    private readonly ILogger<ApplicationDbContextInitialiser> _logger = logger;
+    private readonly ApplicationDbContext _context = context;
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
+    private readonly RoleManager<IdentityRole> _roleManager = roleManager;
 
     public async Task InitialiseAsync()
     {
@@ -90,6 +81,13 @@ public class ApplicationDbContextInitialiser
                 await _userManager.AddToRolesAsync(administrator, new[] { administratorRole.Name });
             }
         }
+
+        var tzachristas = new ApplicationUser { UserName = "tzachristas", Email = "tzachristas@gmail.com" };
+        if (_userManager.Users.All(u => u.UserName != tzachristas.UserName))
+        {
+            await _userManager.CreateAsync(tzachristas, "Asdf135!");
+        }
+
 
         // Default data
         // Seed, if necessary
