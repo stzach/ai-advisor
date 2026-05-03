@@ -15,6 +15,12 @@ const PROXY_CONFIG = [
     ],
     target: target,
     secure: env["NODE_ENV"] !== "development",
+  },
+  {
+    context: ["/chat"],
+    target: target,
+    secure: env["NODE_ENV"] !== "development",
+    ws: true,
   }
 ];
 
