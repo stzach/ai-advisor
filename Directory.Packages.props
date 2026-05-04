@@ -5,7 +5,10 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Ardalis.GuardClauses" Version="5.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.AI.OpenAI" Version="9.5.0-preview.1.25265.7" />
+    <PackageVersion Include="Aspire.Azure.AI.Inference" Version="13.2.4-preview.1.26224.4" />
     <PackageVersion Include="Aspire.Hosting.Azure.SignalR" Version="13.2.4" />
+    <PackageVersion Include="Aspire.Hosting.Foundry" Version="13.2.4-preview.1.26224.4" />
     <PackageVersion Include="AutoMapper" Version="16.1.1" />
     <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.0" />
     <PackageVersion Include="Azure.Identity" Version="1.21.0" />

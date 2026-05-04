@@ -1,4 +1,5 @@
 using AiAdvisor.Shared;
+using Aspire.Hosting.Foundry;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -12,11 +13,16 @@ var databaseServer = builder
 
 var signalR = builder.AddAzureSignalR("signalr");
 
+var foundry = builder.AddFoundry("foundry");
+var chat = foundry.AddDeployment("chat", FoundryModel.OpenAI.Gpt5Mini);
+
 var web = builder.AddProject<Projects.Web>(Services.WebApi)
     .WithReference(databaseServer)
     .WaitFor(databaseServer)
     .WithReference(signalR)
     .WaitFor(signalR)
+    .WithReference(chat)
+    .WaitFor(chat)
     .WithExternalHttpEndpoints()
     .WithAspNetCoreEnvironment()
     .WithUrlForEndpoint("http", url =>
