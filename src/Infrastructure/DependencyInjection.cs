@@ -1,4 +1,5 @@
 ﻿using AiAdvisor.Application.Common.Interfaces;
+using AiAdvisor.Infrastructure.AI;
 using AiAdvisor.Infrastructure.Data;
 using AiAdvisor.Infrastructure.Data.Interceptors;
 using AiAdvisor.Infrastructure.Identity;
@@ -52,5 +53,6 @@ public static class DependencyInjection
 
         builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddTransient<IIdentityService, IdentityService>();
+        builder.Services.AddScoped<IChatService, ChatService>();
     }
 }

@@ -12,8 +12,8 @@ builder.AddApplicationServices();
 builder.AddInfrastructureServices();
 builder.AddWebServices();
 
-builder.AddAzureChatCompletionsClient(connectionName: "ai-foundry")
-    .AddChatClient("deploymentName");
+builder.AddAzureChatCompletionsClient(connectionName: "chat")
+    .AddChatClient("chat");
 
 var signalRBuilder = builder.Services.AddSignalR();
 if (!string.IsNullOrEmpty(builder.Configuration.GetConnectionString("signalr")))

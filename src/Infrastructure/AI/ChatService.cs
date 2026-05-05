@@ -1,15 +1,26 @@
-// using Microsoft.Extensions.AI;
-// namespace Infrastructure.AI;
+using Microsoft.Extensions.AI;
 
-// public interface IChatService
-// {
-//     Task SendAsync(IChatClient chatClient, CancellationToken ct);
-// }
+namespace AiAdvisor.Infrastructure.AI;
 
-// public class ChatService: IChatService
-// {
-//         public async Task SendAsync(IChatClient chatClient, CancellationToken ct)
-//     {
-//         // SMTP, SendGrid, Azure Communication Services, etc.
-//     }
-// }
+public interface IChatService
+{
+    Task<string> SendAsync(string message, CancellationToken ct);
+}
+
+public class ChatService : IChatService
+{
+    private readonly IChatClient _chatClient;
+
+    public ChatService(IChatClient chatClient)
+    {
+        _chatClient = chatClient;
+    }
+
+    public async Task<string> SendAsync(string message, CancellationToken ct)
+    {
+        var response = await _chatClient.GetResponseAsync(
+            new ChatMessage(ChatRole.User, message),
+            cancellationToken: ct);
+        return response.Text ?? string.Empty;
+    }
+}
