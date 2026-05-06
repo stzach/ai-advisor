@@ -8,7 +8,7 @@ public class NotificationBackgroundService(IHubContext<NotificationHub> hubConte
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(30));
+        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(60));
 
         while (await timer.WaitForNextTickAsync(stoppingToken))
         {
