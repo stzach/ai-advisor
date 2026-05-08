@@ -11,16 +11,20 @@ var databaseServer = builder
         container.WithLifetime(ContainerLifetime.Persistent))
     .AddDatabase(Services.Database);
 
-var signalR = builder.AddAzureSignalR("signalr");
+var signalR = builder.AddAzureSignalR(Services.SignalR);
 
-var foundry = builder.AddFoundry("foundry");
-var chat = foundry.AddDeployment("chat", FoundryModel.OpenAI.Gpt5Mini);
+var search = builder.AddAzureSearch(Services.Search);
+
+var foundry = builder.AddFoundry(Services.Foundry);
+
+var chat = foundry.AddDeployment(Services.Chat, FoundryModel.OpenAI.Gpt5Mini);
 
 var web = builder.AddProject<Projects.Web>(Services.WebApi)
     .WithReference(databaseServer)
     .WaitFor(databaseServer)
     .WithReference(signalR)
     .WaitFor(signalR)
+    .WithReference(search)
     .WithReference(chat)
     .WaitFor(chat)
     .WithExternalHttpEndpoints()

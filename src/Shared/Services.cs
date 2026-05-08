@@ -25,4 +25,24 @@ public static class Services
     /// This is the name of the database that will be created and used by the application.
     /// </summary>
     public const string Database = "AiAdvisorDb";
+
+    /// <summary>
+    /// The name of the SignalR service.
+    /// </summary>
+    public const string SignalR = "signalr";
+
+    /// <summary>
+    /// The name of the Chat service.
+    /// </summary>
+    public const string Chat = "chat";
+
+    /// <summary>
+    /// The name of the Foundry service.
+    /// </summary>
+    public const string Foundry = "foundry";
+
+    /// <summary>
+    /// The name of the Azure AI Search service.
+    /// </summary>
+    public const string Search = "search";
 }

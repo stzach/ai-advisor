@@ -1,4 +1,5 @@
 using AiAdvisor.Infrastructure.Data;
+using AiAdvisor.Shared;
 using Scalar.AspNetCore;
 using AiAdvisor.Web.Hubs;
 
@@ -12,12 +13,14 @@ builder.AddApplicationServices();
 builder.AddInfrastructureServices();
 builder.AddWebServices();
 
-builder.AddAzureChatCompletionsClient(connectionName: "chat")
-    .AddChatClient("chat");
+builder.AddAzureChatCompletionsClient(connectionName: Services.Chat)
+    .AddChatClient(Services.Chat);
+
+builder.AddAzureSearchClient(connectionName: Services.Search);
 
 var signalRBuilder = builder.Services.AddSignalR();
-if (!string.IsNullOrEmpty(builder.Configuration.GetConnectionString("signalr")))
-    signalRBuilder.AddNamedAzureSignalR("signalr");
+if (!string.IsNullOrEmpty(builder.Configuration.GetConnectionString(Services.SignalR)))
+    signalRBuilder.AddNamedAzureSignalR(Services.SignalR);
 
 
 var app = builder.Build();
