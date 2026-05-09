@@ -17,7 +17,7 @@ var search = builder.AddAzureSearch(Services.Search);
 
 var foundry = builder.AddFoundry(Services.Foundry);
 
-var chat = foundry.AddDeployment(Services.Chat, FoundryModel.OpenAI.Gpt5Mini);
+var chat = foundry.AddDeployment(Services.Chat, FoundryModel.Microsoft.Phi4MiniReasoning);
 
 var web = builder.AddProject<Projects.Web>(Services.WebApi)
     .WithReference(databaseServer)

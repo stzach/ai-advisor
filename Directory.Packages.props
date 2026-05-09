@@ -7,12 +7,12 @@
     <PackageVersion Include="Ardalis.GuardClauses" Version="5.0.0" />
     <PackageVersion Include="Microsoft.Extensions.AI.OpenAI" Version="9.5.0-preview.1.25265.7" />
     <PackageVersion Include="Aspire.Azure.AI.Inference" Version="13.2.4-preview.1.26224.4" />
-    <PackageVersion Include="Aspire.Azure.Search.Documents" Version="13.2.4" />
-    <PackageVersion Include="Aspire.Hosting.Azure.Search" Version="13.2.4" />
-    <PackageVersion Include="Aspire.Hosting.Azure.SignalR" Version="13.2.4" />
+    <PackageVersion Include="Aspire.Azure.Search.Documents" Version="13.3.0" />
+    <PackageVersion Include="Aspire.Hosting.Azure.Search" Version="13.3.0" />
+    <PackageVersion Include="Aspire.Hosting.Azure.SignalR" Version="13.3.0" />
     <PackageVersion Include="Aspire.Hosting.Foundry" Version="13.2.4-preview.1.26224.4" />
     <PackageVersion Include="AutoMapper" Version="16.1.1" />
-    <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.0" />
+    <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.1" />
     <PackageVersion Include="Azure.Identity" Version="1.21.0" />
     <PackageVersion Include="coverlet.collector" Version="10.0.0" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
@@ -29,7 +29,7 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.7" />
     <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="10.0.7" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.7" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.5.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />
     <PackageVersion Include="Microsoft.Extensions.ApiDescription.Server" Version="10.0.7" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="nunit" Version="4.5.1" />
@@ -49,17 +49,17 @@
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
     <!--#endif-->
     <!--#if (UseSqlServer)-->
-    <PackageVersion Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="13.2.4" />
-    <PackageVersion Include="Aspire.Hosting.Azure.Sql" Version="13.2.4" />
+    <PackageVersion Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="13.3.0" />
+    <PackageVersion Include="Aspire.Hosting.Azure.Sql" Version="13.3.0" />
     <!--#endif-->
     <!--#if (UseSqlite)-->
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.7" />
     <PackageVersion Include="CommunityToolkit.Aspire.Hosting.SQLite" Version="13.1.1" />
     <!--#endif-->
-    <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.2.4" />
-    <PackageVersion Include="Aspire.Hosting.Azure.AppContainers" Version="13.2.4" />
-    <PackageVersion Include="Aspire.Hosting.Testing" Version="13.2.4" />
-    <PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.2.4" />
+    <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.3.0" />
+    <PackageVersion Include="Aspire.Hosting.Azure.AppContainers" Version="13.3.0" />
+    <PackageVersion Include="Aspire.Hosting.Testing" Version="13.3.0" />
+    <PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.3.0" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.5.0" />
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.5.0" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.15.3" />
