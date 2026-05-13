@@ -355,3 +355,318 @@ button.danger,
 .error {
   color: var(--pico-del-color);
 }
+
+// ── Dashboard ─────────────────────────────────────────────────────────────────
+$bank-navy:   #0d1b3e;
+$bank-card:   #1a2e5a;
+$bank-red:    #c8102e;
+$bank-border: rgba(255,255,255,0.08);
+
+app-root > main:has(> app-home) {
+  background: $bank-navy;
+  min-height: 100vh;
+  padding-top: calc(var(--header-height) + 2rem);
+}
+
+.dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem 3rem;
+  color: #fff;
+}
+
+.dash-welcome { margin-bottom: 2rem; }
+
+.dash-greeting {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+  color: #fff;
+}
+
+.dash-name { color: $bank-red; }
+
+.dash-subtitle {
+  color: rgba(255,255,255,0.55);
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.dash-main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+
+  @media (max-width: 768px) { grid-template-columns: 1fr; }
+}
+
+.dash-side-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.dash-card {
+  background: $bank-card;
+  border: 1px solid $bank-border;
+  border-radius: 0.75rem;
+  padding: 1.25rem 1.5rem;
+}
+
+.dash-card-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.5);
+  margin: 0 0 1rem;
+}
+
+.dash-total {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.8);
+  margin: -0.5rem 0 0.75rem;
+}
+
+.dash-account-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid $bank-border;
+  &:last-child { border-bottom: none; }
+}
+
+.dash-account-name { font-weight: 600; font-size: 0.95rem; color: #fff; }
+.dash-account-iban { font-size: 0.75rem; color: rgba(255,255,255,0.45); margin-top: 0.15rem; font-family: monospace; }
+.dash-account-balance { font-size: 1.1rem; font-weight: 700; color: #fff; }
+
+.dash-card-row {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid $bank-border;
+  &:last-child { border-bottom: none; }
+}
+
+.dash-card-info {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.dash-card-name { font-weight: 600; font-size: 0.9rem; }
+.dash-card-number { font-size: 0.8rem; color: rgba(255,255,255,0.45); font-family: monospace; }
+
+.dash-card-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  background: rgba($bank-red, 0.2);
+  color: lighten($bank-red, 20%);
+  border: 1px solid rgba($bank-red, 0.4);
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
+}
+
+.dash-card-usage-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 0.35rem;
+}
+
+.dash-progress-bar {
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.dash-progress-fill {
+  height: 100%;
+  background: $bank-red;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.dash-insights { padding: 1.25rem 1.5rem; }
+.dash-insights-icon { margin-right: 0.4rem; }
+
+.dash-insight-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid $bank-border;
+  &:last-child { border-bottom: none; }
+}
+
+.dash-insight-icon { font-size: 1.2rem; flex-shrink: 0; }
+
+.dash-insight-message {
+  flex: 1;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.4;
+}
+
+.dash-insight-cta {
+  flex-shrink: 0;
+  background: $bank-red;
+  color: #fff;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.45rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+
+  &:hover { background: darken($bank-red, 8%); }
+}
+
+// ── Latest Transactions ────────────────────────────────────────────────────────
+.dash-transactions { padding: 1.25rem 1.5rem; }
+
+.dash-tx-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+
+  &:last-child { border-bottom: none; }
+}
+
+.dash-tx-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+
+  &--payment  { background: rgba($bank-red, 0.15);  color: $bank-red;    }
+  &--transfer { background: rgba(74,144,217,0.15);  color: #4a90d9;      }
+  &--credit   { background: rgba(46,204,113,0.15);  color: #2ecc71;      }
+}
+
+.dash-tx-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.dash-tx-desc {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e8ecf0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dash-tx-meta {
+  font-size: 0.78rem;
+  color: #8a9bb5;
+}
+
+.dash-tx-cat {
+  background: rgba(255,255,255,0.08);
+  border-radius: 0.25rem;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.72rem;
+}
+
+.dash-tx-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+  flex-shrink: 0;
+}
+
+.dash-tx-amount {
+  font-size: 0.95rem;
+  font-weight: 700;
+
+  &.positive { color: #2ecc71; }
+  &.negative { color: $bank-red; }
+}
+
+.dash-tx-date {
+  font-size: 0.75rem;
+  color: #8a9bb5;
+}
+
+// ── Floating chat widget ───────────────────────────────────────────────────────
+.chat-widget {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.chat-panel {
+  display: none;
+  width: 380px;
+  height: auto;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+
+  &.open {
+    display: flex;
+    flex-direction: column;
+
+    kendo-chat {
+      flex: 1;
+      min-height: 0;
+      max-height: 30em;
+
+      .k-chat {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .k-message-list {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+      }
+    }
+  }
+}
+
+.chat-toggle-btn {
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  border: none;
+  background: var(--pico-primary);
+  color: var(--pico-primary-inverse);
+  padding: 0;
+
+  &:hover {
+    background: var(--pico-primary-hover);
+  }
+}

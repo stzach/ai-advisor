@@ -8,6 +8,9 @@
       <li><a [routerLink]="['/counter']" [routerLinkActive]="['pico-active']">Counter</a></li>
       <li><a [routerLink]="['/weather']" [routerLinkActive]="['pico-active']">Weather</a></li>
       <li><a [routerLink]="['/todo']" [routerLinkActive]="['pico-active']">Tasks</a></li>
+      @if (isAuthenticated$ | async) {
+        <li><a [routerLink]="['/chat']" [routerLinkActive]="['pico-active']">Chat</a></li>
+      }
     </ul>
     <ul>
       @if (isAuthenticated$ | async) {

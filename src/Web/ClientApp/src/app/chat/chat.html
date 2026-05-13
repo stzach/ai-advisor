@@ -1,0 +1,8 @@
+<section>
+  <h2>AI Chat</h2>
+  <kendo-chat
+    [messages]="messages"
+    [authorId]="user.id"
+    (sendMessage)="onSendMessage($event)"
+  ></kendo-chat>
+</section>

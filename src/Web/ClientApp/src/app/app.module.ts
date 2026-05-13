@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { LucideAngularModule, Sun, Moon, Laptop, Plus, Settings, MoreHorizontal } from 'lucide-angular';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { ChatModule } from '@progress/kendo-angular-conversational-ui';
+import { ChartsModule } from '@progress/kendo-angular-charts';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
@@ -12,6 +14,7 @@ import { CounterComponent } from './counter/counter.component';
 import { WeatherComponent } from './weather/weather.component';
 import { TasksComponent } from './todo/todo.component';
 import { ThemeToggleComponent } from './theme-toggle/theme-toggle.component';
+import { ChatComponent } from './chat/chat';
 import { API_BASE_URL } from './web-api-client';
 import { AuthorizeInterceptor } from 'src/api-authorization/authorize.interceptor';
 import { LoginComponent } from 'src/api-authorization/login/login.component';
@@ -34,18 +37,22 @@ export function getApiBaseUrl(): string {
         TasksComponent,
         ThemeToggleComponent,
         LoginComponent,
-        RegisterComponent
+        RegisterComponent,
+        ChatComponent
     ],
     bootstrap: [AppComponent],
     imports: [
         BrowserModule,
         FormsModule,
+        ChatModule,
+        ChartsModule,
         LucideAngularModule.pick({ Sun, Moon, Laptop, Plus, Settings, MoreHorizontal }),
         RouterModule.forRoot([
-            { path: '', component: HomeComponent, pathMatch: 'full' },
+            { path: '', component: HomeComponent, pathMatch: 'full', canActivate: [AuthGuard] },
             { path: 'counter', component: CounterComponent },
             { path: 'weather', component: WeatherComponent, canActivate: [AuthGuard] },
             { path: 'todo', component: TasksComponent, canActivate: [AuthGuard] },
+            { path: 'chat', component: ChatComponent, canActivate: [AuthGuard] },
             { path: 'login', component: LoginComponent },
             { path: 'register', component: RegisterComponent }
         ])

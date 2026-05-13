@@ -1,15 +1,110 @@
-<h1>Welcome</h1>
-<p>A full-stack application with an <a href='https://angular.dev/'>Angular</a> frontend and an <a href='https://get.asp.net/'>ASP.NET Core</a> backend, built with:</p>
-<ul>
-  <li><a href='https://get.asp.net/'>ASP.NET Core</a> and <a href='https://learn.microsoft.com/en-us/dotnet/csharp/'>C#</a> for cross-platform server-side code</li>
-  <li><a href='https://angular.dev/'>Angular</a> and <a href='http://www.typescriptlang.org/'>TypeScript</a> for client-side code</li>
-  <li><a href='https://picocss.com/'>Pico CSS</a> for layout and styling</li>
-  <li><a href='https://lucide.dev/'>Lucide</a> for icons</li>
-</ul>
-<p>To help you get started:</p>
-<ul>
-  <li><strong>Client-side navigation</strong>. Click <em>Counter</em> then <em>Back</em> to return here.</li>
-  <li><strong>Angular CLI integration</strong>. In development mode, there's no need to run <code>ng serve</code>. It runs in the background automatically, so your client-side resources are dynamically built on demand and the page refreshes when you modify any file.</li>
-  <li><strong>Efficient production builds</strong>. In production mode, development-time features are disabled, and your <code>dotnet publish</code> configuration automatically invokes <code>ng build</code> to produce minified, ahead-of-time compiled JavaScript files.</li>
-</ul>
-<p>The <code>ClientApp</code> subdirectory is a standard Angular CLI application. Open a command prompt there to run any <code>ng</code> command (e.g., <code>ng test</code>), or use <code>npm</code> to install extra packages.</p>
+<div class="dashboard">
+
+  <!-- Welcome -->
+  <div class="dash-welcome">
+    <div>
+      <h2 class="dash-greeting">Welcome back, <span class="dash-name">{{ username }}</span></h2>
+      <p class="dash-subtitle">Here's your financial overview</p>
+    </div>
+  </div>
+
+  <div class="dash-main-grid">
+
+    <div class="dash-card">
+      <h3 class="dash-card-title">Expenses by Category</h3>
+      <p class="dash-total">Total: €{{ totalExpenses | number:'1.2-2' }}</p>
+      <kendo-chart style="height: 280px;">
+        <kendo-chart-series>
+          <kendo-chart-series-item
+            type="donut"
+            [data]="expenses"
+            field="amount"
+            categoryField="category"
+            colorField="color"
+            [holeSize]="60">
+          </kendo-chart-series-item>
+        </kendo-chart-series>
+        <kendo-chart-legend position="bottom" [visible]="true"></kendo-chart-legend>
+        <kendo-chart-tooltip [visible]="true" format="€{0}"></kendo-chart-tooltip>
+      </kendo-chart>
+    </div>
+
+    <div class="dash-side-stack">
+
+      <div class="dash-card">
+        <h3 class="dash-card-title">Accounts</h3>
+        @for (account of accounts; track account.iban) {
+          <div class="dash-account-row">
+            <div>
+              <div class="dash-account-name">{{ account.name }}</div>
+              <div class="dash-account-iban">{{ account.iban }}</div>
+            </div>
+            <div class="dash-account-balance">€{{ account.balance | number:'1.2-2' }}</div>
+          </div>
+        }
+      </div>
+
+      <div class="dash-card">
+        <h3 class="dash-card-title">Cards</h3>
+        @for (card of cards; track card.number) {
+          <div class="dash-card-row">
+            <div class="dash-card-info">
+              <span class="dash-card-name">{{ card.name }}</span>
+              <span class="dash-card-number">{{ card.number }}</span>
+              <span class="dash-card-badge">{{ card.type }}</span>
+            </div>
+            <div class="dash-card-usage">
+              <div class="dash-card-usage-label">
+                <span>€{{ card.spent | number:'1.0-0' }} spent</span>
+                <span>€{{ card.limit | number:'1.0-0' }} limit</span>
+              </div>
+              <div class="dash-progress-bar">
+                <div class="dash-progress-fill" [style.width.%]="spentPercent(card)"></div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+    </div>
+  </div>
+
+  <div class="dash-card dash-insights">
+    <h3 class="dash-card-title">
+      <span class="dash-insights-icon">🤖</span> AI Advisor Insights
+    </h3>
+    @for (insight of insights; track insight.message) {
+      <div class="dash-insight-row">
+        <span class="dash-insight-icon">{{ insight.icon }}</span>
+        <span class="dash-insight-message">{{ insight.message }}</span>
+        <button class="dash-insight-cta">{{ insight.cta }}</button>
+      </div>
+    }
+  </div>
+
+  <div class="dash-card dash-transactions">
+    <h3 class="dash-card-title">Latest Transactions</h3>
+    @for (tx of transactions; track tx.description) {
+      <div class="dash-tx-row">
+        <div class="dash-tx-icon" [class]="'dash-tx-icon--' + tx.type">
+          {{ tx.type === 'transfer' ? '↔' : tx.type === 'credit' ? '↓' : '↑' }}
+        </div>
+        <div class="dash-tx-info">
+          <span class="dash-tx-desc">{{ tx.description }}</span>
+          <span class="dash-tx-meta">
+            {{ tx.from }}
+            @if (tx.type !== 'credit') { <span>→ {{ tx.to }}</span> }
+            @if (tx.category) { · <span class="dash-tx-cat">{{ tx.category }}</span> }
+          </span>
+        </div>
+        <div class="dash-tx-right">
+          <span class="dash-tx-amount" [class.positive]="tx.amount > 0" [class.negative]="tx.amount < 0">
+            {{ tx.amount > 0 ? '+' : '' }}€{{ tx.amount | number:'1.2-2' }}
+          </span>
+          <span class="dash-tx-date">{{ tx.date | date:'dd MMM' }}</span>
+        </div>
+      </div>
+    }
+  </div>
+
+</div>

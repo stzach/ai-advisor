@@ -56,6 +56,8 @@ app.MapDefaultEndpoints();
 app.MapEndpoints(typeof(Program).Assembly);
 
 app.MapHub<NotificationHub>("/chat").ExcludeFromApiReference().ExcludeFromDescription();
+app.MapHub<ChatHub>("/ai-chat").ExcludeFromApiReference().ExcludeFromDescription();
+
 
 app.MapFallbackToFile("index.html");
 
