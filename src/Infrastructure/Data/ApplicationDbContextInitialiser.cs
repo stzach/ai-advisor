@@ -88,6 +88,31 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
             await _userManager.CreateAsync(tzachristas, "Asdf135!");
         }
 
+        var kafousis = new ApplicationUser { UserName = "kafousis", Email = "kafousis@gmail.com" };
+        if (_userManager.Users.All(u => u.UserName != kafousis.UserName))
+        {
+            await _userManager.CreateAsync(kafousis, "Asdf135!");
+        }
+
+        var geronymakis = new ApplicationUser { UserName = "geronymakis", Email = "geronymakis@gmail.com" };
+        if (_userManager.Users.All(u => u.UserName != geronymakis.UserName))
+        {
+            await _userManager.CreateAsync(geronymakis, "Asdf135!");
+        }
+
+        var kotrotsos = new ApplicationUser { UserName = "kotrotsos", Email = "kotrotsos@gmail.com" };
+        if (_userManager.Users.All(u => u.UserName != kotrotsos.UserName))
+        {
+            await _userManager.CreateAsync(kotrotsos, "Asdf135!");
+        }
+
+        var komliki = new ApplicationUser { UserName = "komliki", Email = "christinakomliki@gmail.com" };
+        if (_userManager.Users.All(u => u.UserName != komliki.UserName))
+        {
+            await _userManager.CreateAsync(komliki, "Asdf135!");
+        }
+
+
 
         // Default data
         // Seed, if necessary
