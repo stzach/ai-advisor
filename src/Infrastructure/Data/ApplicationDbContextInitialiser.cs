@@ -91,31 +91,31 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
             }
         }
 
-        var tzachristas = new ApplicationUser { UserName = "tzachristas", Email = "tzachristas@gmail.com" };
+        var tzachristas = new ApplicationUser { UserName = "tzachristas", Email = "tzachristas@gmail.com", FirstName = "Stefanos",     LastName = "Tzachristas" };
         if (_userManager.Users.All(u => u.UserName != tzachristas.UserName))
         {
             await _userManager.CreateAsync(tzachristas, "Asdf135!");
         }
 
-        var kafousis = new ApplicationUser { UserName = "kafousis", Email = "kafousis@gmail.com" };
+        var kafousis = new ApplicationUser { UserName = "kafousis", Email = "kafousis@gmail.com", FirstName = "Lampros",      LastName = "Kafousis" };
         if (_userManager.Users.All(u => u.UserName != kafousis.UserName))
         {
             await _userManager.CreateAsync(kafousis, "Asdf135!");
         }
 
-        var geronymakis = new ApplicationUser { UserName = "geronymakis", Email = "geronymakis@gmail.com" };
+        var geronymakis = new ApplicationUser { UserName = "geronymakis", Email = "geronymakis@gmail.com", FirstName = "Theodoros",    LastName = "Geronymakis" };
         if (_userManager.Users.All(u => u.UserName != geronymakis.UserName))
         {
             await _userManager.CreateAsync(geronymakis, "Asdf135!");
         }
 
-        var kotrotsos = new ApplicationUser { UserName = "kotrotsos", Email = "kotrotsos@gmail.com" };
+        var kotrotsos = new ApplicationUser { UserName = "kotrotsos", Email = "kotrotsos@gmail.com", FirstName = "Konstantinos", LastName = "Kotrotsos" };
         if (_userManager.Users.All(u => u.UserName != kotrotsos.UserName))
         {
             await _userManager.CreateAsync(kotrotsos, "Asdf135!");
         }
 
-        var komliki = new ApplicationUser { UserName = "komliki", Email = "christinakomliki@gmail.com" };
+        var komliki = new ApplicationUser { UserName = "komliki", Email = "christinakomliki@gmail.com", FirstName = "Christina",    LastName = "Komliki" };
         if (_userManager.Users.All(u => u.UserName != komliki.UserName))
         {
             await _userManager.CreateAsync(komliki, "Asdf135!");

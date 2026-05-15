@@ -1,14 +1,32 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ChatHubService } from '../services/chat-hub.service';
+import { UserProductsClient, UserProductDto, UserTransactionsClient, UserTransactionDto, UsersClient } from '../web-api-client';
 
 @Component({
   standalone: false,
   selector: 'app-home',
   templateUrl: './home.component.html',
 })
-export class HomeComponent {
-  constructor(public chatHub: ChatHubService) {}
-  username = 'Theodoros';
+export class HomeComponent implements OnInit {
+  constructor(
+    public chatHub: ChatHubService,
+    private productsClient: UserProductsClient,
+    private transactionsClient: UserTransactionsClient,
+    private usersClient: UsersClient
+  ) {}
+
+  username = '';
+  userProducts: UserProductDto[] = [];
+  transactions: UserTransactionDto[] = [];
+
+  showModal = false;
+  modalTab: 'payment' | 'transfer' = 'payment';
+  modalAmount: number | null = null;
+  modalFromProductId: string = '';
+  modalTo: string = '';
+  modalDescription: string = '';
+  submitting = false;
+  submitError: string | null = null;
 
   expenses = [
     { category: 'Housing',       amount: 1200, color: '#c8102e' },
@@ -19,27 +37,6 @@ export class HomeComponent {
     { category: 'Other',         amount: 120,  color: '#7f8c8d' },
   ];
 
-  accounts = [
-    { name: 'Current Account', iban: 'GR16 0140 1250 **** **** 0000', balance: 3420.50 },
-    { name: 'Savings Account', iban: 'GR16 0140 1250 **** **** 0012', balance: 12750.00 },
-  ];
-
-  cards = [
-    { name: 'Visa Debit',        number: '**** **** **** 4521', type: 'DEBIT',  limit: 5000,  spent: 1850 },
-    { name: 'Mastercard Credit', number: '**** **** **** 9032', type: 'CREDIT', limit: 3000,  spent: 620  },
-  ];
-
-  transactions = [
-    { type: 'transfer',  date: new Date('2025-05-10'), from: 'Current Account', to: 'Savings Account',     amount: -500.00,  category: null,          description: 'Transfer to Savings'       },
-    { type: 'payment',   date: new Date('2025-05-09'), from: 'Visa Debit',      to: 'Sklavenitis S.A.',   amount: -86.40,   category: 'Food',        description: 'Supermarket'               },
-    { type: 'payment',   date: new Date('2025-05-08'), from: 'Current Account', to: 'DEI',                amount: -94.00,   category: 'Utilities',   description: 'Electricity bill'          },
-    { type: 'credit',    date: new Date('2025-05-07'), from: 'Employer Ltd.',   to: 'Current Account',    amount: +2800.00, category: null,          description: 'Salary – May 2025'         },
-    { type: 'payment',   date: new Date('2025-05-06'), from: 'Mastercard',      to: 'Netflix',            amount: -14.99,   category: 'Entertainment', description: 'Streaming subscription'  },
-    { type: 'payment',   date: new Date('2025-05-05'), from: 'Visa Debit',      to: 'Shell Station',      amount: -65.20,   category: 'Transport',   description: 'Fuel'                      },
-    { type: 'payment',   date: new Date('2025-05-04'), from: 'Current Account', to: 'Landlord GR',        amount: -1200.00, category: 'Housing',     description: 'Rent – May 2025'           },
-    { type: 'payment',   date: new Date('2025-05-03'), from: 'Visa Debit',      to: 'Mikel Coffee',       amount: -8.60,    category: 'Food',        description: 'Coffee & snack'            },
-  ];
-
   insights = [
     { icon: '💡', message: 'You could save €180/month by switching your utilities provider.',  cta: 'Explore options',      prompt: 'How can I reduce my utilities spending?' },
     { icon: '📊', message: 'You\'re spending 18% more on food compared to last month.',        cta: 'See breakdown',        prompt: 'Break down my food spending this month.' },
@@ -47,12 +44,80 @@ export class HomeComponent {
     { icon: '💳', message: 'You have €1,380 available credit across your cards.',              cta: 'View card offers',     prompt: 'What is my available credit and how should I use it?' },
   ];
 
+  ngOnInit() {
+    this.loadData();
+  }
+
+  loadData() {
+    this.usersClient.me().subscribe(profile => {
+      this.username = profile.firstName ?? '';
+    });
+    this.productsClient.getUserProducts().subscribe(products => {
+      this.userProducts = products;
+    });
+    this.transactionsClient.getUserTransactions().subscribe(txs => {
+      this.transactions = txs;
+    });
+  }
+
+  get accounts() {
+    return this.userProducts.filter(p => p.productType === 'Account');
+  }
+
+  get cards() {
+    return this.userProducts.filter(p => p.productType === 'Card');
+  }
 
   get totalExpenses(): number {
     return this.expenses.reduce((s, e) => s + e.amount, 0);
   }
 
-  spentPercent(card: { limit: number; spent: number }): number {
-    return Math.round((card.spent / card.limit) * 100);
+  productLabel(p: UserProductDto): string {
+    const last4 = p.cardNumber?.slice(-4) ?? p.accountNumber?.slice(-4) ?? '0000';
+    return `${p.productName} ···${last4}`;
+  }
+
+  openModal() {
+    this.modalTab = 'payment';
+    this.modalAmount = null;
+    this.modalFromProductId = this.userProducts.length ? (this.userProducts[0].productId ?? '') : '';
+    this.modalTo = '';
+    this.modalDescription = '';
+    this.submitError = null;
+    this.showModal = true;
+  }
+
+  closeModal() {
+    this.showModal = false;
+  }
+
+  submitTransaction() {
+    if (!this.modalAmount || this.modalAmount <= 0 || !this.modalFromProductId) return;
+
+    this.submitting = true;
+    this.submitError = null;
+
+    const product = this.userProducts.find(p => p.productId === this.modalFromProductId);
+    const command: any = {
+      productId: this.modalFromProductId,
+      transactionType: this.modalTab === 'payment' ? 2 : 1,
+      transactionCategory: 6,
+      transactionDirection: 2,
+      amount: this.modalAmount,
+      from: product ? this.productLabel(product) : '',
+      to: this.modalTo || undefined,
+    };
+
+    this.transactionsClient.createUserTransaction(command).subscribe({
+      next: () => {
+        this.submitting = false;
+        this.closeModal();
+        this.loadData();
+      },
+      error: () => {
+        this.submitting = false;
+        this.submitError = 'Transaction failed. Please try again.';
+      }
+    });
   }
 }
