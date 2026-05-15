@@ -17,6 +17,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
     public DbSet<Product> Products => Set<Product>();
 
+    public DbSet<UserProduct> UserProducts => Set<UserProduct>();
+
+    public DbSet<UserTransaction> UserTransactions => Set<UserTransaction>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

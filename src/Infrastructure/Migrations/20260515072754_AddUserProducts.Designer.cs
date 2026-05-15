@@ -4,6 +4,7 @@ using AiAdvisor.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AiAdvisor.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260515072754_AddUserProducts")]
+    partial class AddUserProducts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,7 +68,7 @@ namespace AiAdvisor.Infrastructure.Migrations
 
                     b.HasKey("ProductId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("AiAdvisor.Domain.Entities.TodoItem", b =>
@@ -109,7 +112,7 @@ namespace AiAdvisor.Infrastructure.Migrations
 
                     b.HasIndex("ListId");
 
-                    b.ToTable("TodoItems", (string)null);
+                    b.ToTable("TodoItems");
                 });
 
             modelBuilder.Entity("AiAdvisor.Domain.Entities.TodoList", b =>
@@ -139,7 +142,7 @@ namespace AiAdvisor.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TodoLists", (string)null);
+                    b.ToTable("TodoLists");
                 });
 
             modelBuilder.Entity("AiAdvisor.Domain.Entities.UserProduct", b =>
@@ -190,63 +193,7 @@ namespace AiAdvisor.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserProducts", (string)null);
-                });
-
-            modelBuilder.Entity("AiAdvisor.Domain.Entities.UserTransaction", b =>
-                {
-                    b.Property<Guid>("TransactionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("From")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTimeOffset>("LastModified")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("To")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("TransactionCategory")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("TransactionType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("TransactionId");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserTransactions", (string)null);
+                    b.ToTable("UserProducts");
                 });
 
             modelBuilder.Entity("AiAdvisor.Infrastructure.Identity.ApplicationUser", b =>
@@ -471,7 +418,7 @@ namespace AiAdvisor.Infrastructure.Migrations
 
                             b1.HasKey("TodoListId");
 
-                            b1.ToTable("TodoLists", (string)null);
+                            b1.ToTable("TodoLists");
 
                             b1.WithOwner()
                                 .HasForeignKey("TodoListId");
@@ -482,23 +429,6 @@ namespace AiAdvisor.Infrastructure.Migrations
                 });
 
             modelBuilder.Entity("AiAdvisor.Domain.Entities.UserProduct", b =>
-                {
-                    b.HasOne("AiAdvisor.Domain.Entities.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("AiAdvisor.Infrastructure.Identity.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("AiAdvisor.Domain.Entities.UserTransaction", b =>
                 {
                     b.HasOne("AiAdvisor.Domain.Entities.Product", "Product")
                         .WithMany()

@@ -10,5 +10,9 @@ public interface IApplicationDbContext
 
     DbSet<Product> Products { get; }
 
+    DbSet<UserProduct> UserProducts { get; }
+
+    DbSet<UserTransaction> UserTransactions { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

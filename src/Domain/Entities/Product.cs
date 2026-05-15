@@ -12,5 +12,5 @@ public class Product : BaseAuditableEntity
 
     public decimal? ProductPrice { get; set; }
 
-    public string ProductType { get; set; } = string.Empty;
+    public ProductType ProductType { get; set; }
 }

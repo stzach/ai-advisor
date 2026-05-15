@@ -4,6 +4,7 @@ using AiAdvisor.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AiAdvisor.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260515085414_AddUserTransactions")]
+    partial class AddUserTransactions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,7 +68,7 @@ namespace AiAdvisor.Infrastructure.Migrations
 
                     b.HasKey("ProductId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("AiAdvisor.Domain.Entities.TodoItem", b =>
@@ -109,7 +112,7 @@ namespace AiAdvisor.Infrastructure.Migrations
 
                     b.HasIndex("ListId");
 
-                    b.ToTable("TodoItems", (string)null);
+                    b.ToTable("TodoItems");
                 });
 
             modelBuilder.Entity("AiAdvisor.Domain.Entities.TodoList", b =>
@@ -139,7 +142,7 @@ namespace AiAdvisor.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TodoLists", (string)null);
+                    b.ToTable("TodoLists");
                 });
 
             modelBuilder.Entity("AiAdvisor.Domain.Entities.UserProduct", b =>
@@ -190,7 +193,7 @@ namespace AiAdvisor.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserProducts", (string)null);
+                    b.ToTable("UserProducts");
                 });
 
             modelBuilder.Entity("AiAdvisor.Domain.Entities.UserTransaction", b =>
@@ -246,7 +249,7 @@ namespace AiAdvisor.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserTransactions", (string)null);
+                    b.ToTable("UserTransactions");
                 });
 
             modelBuilder.Entity("AiAdvisor.Infrastructure.Identity.ApplicationUser", b =>
@@ -471,7 +474,7 @@ namespace AiAdvisor.Infrastructure.Migrations
 
                             b1.HasKey("TodoListId");
 
-                            b1.ToTable("TodoLists", (string)null);
+                            b1.ToTable("TodoLists");
 
                             b1.WithOwner()
                                 .HasForeignKey("TodoListId");
