@@ -20,6 +20,7 @@
         </PackageReference>
         <PackageReference Include="Moq" />
         <PackageReference Include="Shouldly" />
+        <PackageReference Include="System.Security.Cryptography.Xml" />
     </ItemGroup>
 
     <ItemGroup>

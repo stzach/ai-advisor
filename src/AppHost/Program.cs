@@ -7,8 +7,10 @@ builder.AddAzureContainerAppEnvironment("aca-env");
 
 var databaseServer = builder
     .AddAzureSqlServer(Services.DatabaseServer)
-    .RunAsContainer(container => 
-        container.WithLifetime(ContainerLifetime.Persistent))
+    .RunAsContainer(container =>
+        container
+            .WithLifetime(ContainerLifetime.Persistent)
+            .WithDataVolume())
     .AddDatabase(Services.Database);
 
 var signalR = builder.AddAzureSignalR(Services.SignalR);
