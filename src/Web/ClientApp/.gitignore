@@ -39,3 +39,7 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# Kendo UI license key (each developer provides their own)
+kendo-ui-license.txt
+telerik-license.txt

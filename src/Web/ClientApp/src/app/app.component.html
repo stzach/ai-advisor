@@ -2,3 +2,12 @@
 <main>
   <router-outlet></router-outlet>
 </main>
+
+@if (isAuthenticated && !isChatPage) {
+  <div class="chat-widget">
+    <div class="chat-panel" [class.open]="isChatOpen">
+      <app-chat></app-chat>
+    </div>
+    <button class="chat-toggle-btn" (click)="toggleChat()">💬</button>
+  </div>
+}
