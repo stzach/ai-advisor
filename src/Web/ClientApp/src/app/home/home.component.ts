@@ -1,41 +1,79 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, Signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Subject } from 'rxjs';
+import { map, startWith, switchMap } from 'rxjs/operators';
 import { ChatHubService } from '../services/chat-hub.service';
 import { UserProductsClient, UserProductDto, UserTransactionsClient, UserTransactionDto, UsersClient } from '../web-api-client';
+
+interface Expense { category: string; amount: number; color: string; }
+
+const CHART_COLORS = ['#4a90d9', '#2ecc71', '#f39c12', '#9b59b6', '#7f8c8d', '#1abc9c', '#e67e22'];
 
 @Component({
   standalone: false,
   selector: 'app-home',
   templateUrl: './home.component.html',
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent {
+  private transRefresh$ = new Subject<void>();
+
+  username:      Signal<string>;
+  userProducts:  Signal<UserProductDto[]>;
+  transactions:  Signal<UserTransactionDto[]>;
+  accounts:      Signal<UserProductDto[]>;
+  cards:         Signal<UserProductDto[]>;
+  expenses:      Signal<Expense[]>;
+  totalExpenses: Signal<number>;
+
   constructor(
     public chatHub: ChatHubService,
     private productsClient: UserProductsClient,
     private transactionsClient: UserTransactionsClient,
     private usersClient: UsersClient
-  ) {}
+  ) {
+    this.username = toSignal(
+      this.usersClient.me().pipe(map(p => p.firstName ?? '')),
+      { initialValue: '' }
+    );
 
-  username = '';
-  userProducts: UserProductDto[] = [];
-  transactions: UserTransactionDto[] = [];
+    this.userProducts = toSignal(
+      this.productsClient.getUserProducts(),
+      { initialValue: [] as UserProductDto[] }
+    );
 
-  showModal = false;
-  modalTab: 'payment' | 'transfer' = 'payment';
-  modalAmount: number | null = null;
-  modalFromProductId: string = '';
-  modalTo: string = '';
-  modalDescription: string = '';
-  submitting = false;
-  submitError: string | null = null;
+    this.transactions = toSignal(
+      this.transRefresh$.pipe(
+        startWith(null as null),
+        switchMap(() => this.transactionsClient.getUserTransactions())
+      ),
+      { initialValue: [] as UserTransactionDto[] }
+    );
 
-  expenses = [
-    { category: 'Housing',       amount: 1200, color: '#c8102e' },
-    { category: 'Food',          amount: 450,  color: '#4a90d9' },
-    { category: 'Transport',     amount: 280,  color: '#2ecc71' },
-    { category: 'Entertainment', amount: 150,  color: '#f39c12' },
-    { category: 'Utilities',     amount: 200,  color: '#9b59b6' },
-    { category: 'Other',         amount: 120,  color: '#7f8c8d' },
-  ];
+    this.accounts = computed(() => this.userProducts().filter(p => p.productType === 'Account'));
+    this.cards    = computed(() => this.userProducts().filter(p => p.productType === 'Card'));
+
+    this.expenses = computed<Expense[]>(() => {
+      const txs = this.transactions();
+      if (!txs.length) return [];
+
+      const summed = txs.reduce((acc, tx) => {
+        const cat = tx.transactionCategory ?? 'Other';
+        acc[cat] = (acc[cat] ?? 0) + tx.amount;
+        return acc;
+      }, {} as Record<string, number>);
+
+      const entries = Object.entries(summed);
+      const maxCat  = entries.reduce((a, b) => a[1] > b[1] ? a : b)[0];
+
+      return entries.map(([category, amount], i) => ({
+        category,
+        amount,
+        color: category === maxCat ? '#c8102e' : CHART_COLORS[i % CHART_COLORS.length],
+      }));
+    });
+
+    this.totalExpenses = computed(() => this.expenses().reduce((s, e) => s + e.amount, 0));
+  }
 
   insights = [
     { icon: '💡', message: 'You could save €180/month by switching your utilities provider.',  cta: 'Explore options',      prompt: 'How can I reduce my utilities spending?' },
@@ -44,33 +82,14 @@ export class HomeComponent implements OnInit {
     { icon: '💳', message: 'You have €1,380 available credit across your cards.',              cta: 'View card offers',     prompt: 'What is my available credit and how should I use it?' },
   ];
 
-  ngOnInit() {
-    this.loadData();
-  }
-
-  loadData() {
-    this.usersClient.me().subscribe(profile => {
-      this.username = profile.firstName ?? '';
-    });
-    this.productsClient.getUserProducts().subscribe(products => {
-      this.userProducts = products;
-    });
-    this.transactionsClient.getUserTransactions().subscribe(txs => {
-      this.transactions = txs;
-    });
-  }
-
-  get accounts() {
-    return this.userProducts.filter(p => p.productType === 'Account');
-  }
-
-  get cards() {
-    return this.userProducts.filter(p => p.productType === 'Card');
-  }
-
-  get totalExpenses(): number {
-    return this.expenses.reduce((s, e) => s + e.amount, 0);
-  }
+  showModal = false;
+  modalTab: 'payment' | 'transfer' = 'payment';
+  modalAmount: number | null = null;
+  modalFromProductId = '';
+  modalTo = '';
+  modalDescription = '';
+  submitting = false;
+  submitError: string | null = null;
 
   productLabel(p: UserProductDto): string {
     const last4 = p.cardNumber?.slice(-4) ?? p.accountNumber?.slice(-4) ?? '0000';
@@ -78,44 +97,43 @@ export class HomeComponent implements OnInit {
   }
 
   openModal() {
-    this.modalTab = 'payment';
-    this.modalAmount = null;
-    this.modalFromProductId = this.userProducts.length ? (this.userProducts[0].productId ?? '') : '';
-    this.modalTo = '';
-    this.modalDescription = '';
-    this.submitError = null;
-    this.showModal = true;
+    const products = this.userProducts();
+    this.modalTab           = 'payment';
+    this.modalAmount        = null;
+    this.modalFromProductId = products.length ? (products[0].productId ?? '') : '';
+    this.modalTo            = '';
+    this.modalDescription   = '';
+    this.submitError        = null;
+    this.showModal          = true;
   }
 
-  closeModal() {
-    this.showModal = false;
-  }
+  closeModal() { this.showModal = false; }
 
   submitTransaction() {
     if (!this.modalAmount || this.modalAmount <= 0 || !this.modalFromProductId) return;
 
-    this.submitting = true;
+    this.submitting  = true;
     this.submitError = null;
 
-    const product = this.userProducts.find(p => p.productId === this.modalFromProductId);
+    const product = this.userProducts().find(p => p.productId === this.modalFromProductId);
     const command: any = {
-      productId: this.modalFromProductId,
-      transactionType: this.modalTab === 'payment' ? 2 : 1,
-      transactionCategory: 6,
+      productId:            this.modalFromProductId,
+      transactionType:      this.modalTab === 'payment' ? 2 : 1,
+      transactionCategory:  6,
       transactionDirection: 2,
       amount: this.modalAmount,
-      from: product ? this.productLabel(product) : '',
-      to: this.modalTo || undefined,
+      from:   product ? this.productLabel(product) : '',
+      to:     this.modalTo || undefined,
     };
 
     this.transactionsClient.createUserTransaction(command).subscribe({
       next: () => {
         this.submitting = false;
         this.closeModal();
-        this.loadData();
+        this.transRefresh$.next();
       },
       error: () => {
-        this.submitting = false;
+        this.submitting  = false;
         this.submitError = 'Transaction failed. Please try again.';
       }
     });
