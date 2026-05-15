@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ChatHubService } from '../services/chat-hub.service';
 
 @Component({
   standalone: false,
@@ -6,6 +7,7 @@ import { Component } from '@angular/core';
   templateUrl: './home.component.html',
 })
 export class HomeComponent {
+  constructor(public chatHub: ChatHubService) {}
   username = 'Theodoros';
 
   expenses = [
@@ -39,10 +41,10 @@ export class HomeComponent {
   ];
 
   insights = [
-    { icon: '💡', message: 'You could save €180/month by switching your utilities provider.',  cta: 'Explore options'       },
-    { icon: '📊', message: 'You\'re spending 18% more on food compared to last month.',        cta: 'See breakdown'         },
-    { icon: '🏦', message: 'A savings account could earn you €312/year in interest.',          cta: 'Open savings account'  },
-    { icon: '💳', message: 'You have €1,380 available credit across your cards.',              cta: 'View card offers'      },
+    { icon: '💡', message: 'You could save €180/month by switching your utilities provider.',  cta: 'Explore options',      prompt: 'How can I reduce my utilities spending?' },
+    { icon: '📊', message: 'You\'re spending 18% more on food compared to last month.',        cta: 'See breakdown',        prompt: 'Break down my food spending this month.' },
+    { icon: '🏦', message: 'A savings account could earn you €312/year in interest.',          cta: 'Open savings account', prompt: 'How much can I earn by moving money to savings?' },
+    { icon: '💳', message: 'You have €1,380 available credit across your cards.',              cta: 'View card offers',     prompt: 'What is my available credit and how should I use it?' },
   ];
 
 

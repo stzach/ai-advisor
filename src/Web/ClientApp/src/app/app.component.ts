@@ -10,12 +10,11 @@ import { AuthService } from 'src/api-authorization/auth.service';
   templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
-  isChatOpen = false;
   isChatPage = false;
   isAuthenticated = false;
 
   constructor(
-    private chatHub: ChatHubService,
+    public chatHub: ChatHubService,
     private router: Router,
     private authService: AuthService
   ) {
@@ -33,12 +32,8 @@ export class AppComponent implements OnInit {
         await this.chatHub.connect();
       } else {
         await this.chatHub.disconnect();
-        this.isChatOpen = false;
+        this.chatHub.close();
       }
     });
-  }
-
-  toggleChat() {
-    this.isChatOpen = !this.isChatOpen;
   }
 }

@@ -77,7 +77,7 @@
       <div class="dash-insight-row">
         <span class="dash-insight-icon">{{ insight.icon }}</span>
         <span class="dash-insight-message">{{ insight.message }}</span>
-        <button class="dash-insight-cta">{{ insight.cta }}</button>
+        <button class="dash-insight-cta" (click)="chatHub.openWithPrompt(insight.prompt)">{{ insight.cta }}</button>
       </div>
     }
   </div>

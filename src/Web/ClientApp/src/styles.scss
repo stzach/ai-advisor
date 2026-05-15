@@ -642,6 +642,19 @@ app-root > main:has(> app-home) {
         flex-direction: column;
       }
 
+      .k-bubble ul {
+        margin: 0.25rem 0 0 1rem;
+        padding: 0;
+        li { margin-bottom: 0.2rem; }
+      }
+
+      .k-bubble code {
+        background: rgba(0,0,0,0.08);
+        border-radius: 3px;
+        padding: 0 3px;
+        font-size: 0.85em;
+      }
+
       .k-message-list {
         flex: 1;
         min-height: 0;
@@ -650,6 +663,7 @@ app-root > main:has(> app-home) {
     }
   }
 }
+
 
 .chat-toggle-btn {
   width: 3.25rem;
@@ -669,4 +683,8 @@ app-root > main:has(> app-home) {
   &:hover {
     background: var(--pico-primary-hover);
   }
+}
+
+address, blockquote, dl, ol, p, pre, table, ul {
+  color: black !important;
 }

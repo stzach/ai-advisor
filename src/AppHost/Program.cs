@@ -19,7 +19,7 @@ var search = builder.AddAzureSearch(Services.Search);
 
 var foundry = builder.AddFoundry(Services.Foundry);
 
-var chat = foundry.AddDeployment(Services.Chat, FoundryModel.Microsoft.Phi4MiniReasoning);
+var chat = foundry.AddDeployment(Services.Chat, FoundryModel.Microsoft.Phi4);
 
 var web = builder.AddProject<Projects.Web>(Services.WebApi)
     .WithReference(databaseServer)
