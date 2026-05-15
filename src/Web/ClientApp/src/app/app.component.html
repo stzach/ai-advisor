@@ -5,9 +5,9 @@
 
 @if (isAuthenticated && !isChatPage) {
   <div class="chat-widget">
-    <div class="chat-panel" [class.open]="isChatOpen">
+    <div class="chat-panel" [class.open]="chatHub.isOpen$ | async">
       <app-chat></app-chat>
     </div>
-    <button class="chat-toggle-btn" (click)="toggleChat()">💬</button>
+    <button class="chat-toggle-btn" (click)="chatHub.toggle()">💬</button>
   </div>
 }

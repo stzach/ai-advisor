@@ -1,8 +1,10 @@
-<section>
-  <h2>AI Chat</h2>
-  <kendo-chat
-    [messages]="messages"
-    [authorId]="user.id"
-    (sendMessage)="onSendMessage($event)"
-  ></kendo-chat>
-</section>
+<kendo-chat
+  [messages]="(feed | async) ?? []"
+  [authorId]="user.id"
+  (sendMessage)="sendMessage($event)"
+  (executeAction)="executeAction($event)"
+>
+  <ng-template kendoChatReceiverMessageContentTemplate let-message>
+    <div [innerHTML]="message.text | markdown"></div>
+  </ng-template>
+</kendo-chat>

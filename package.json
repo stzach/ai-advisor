@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@progress/kendo-angular-conversational-ui": "^23.4.0",
     "@progress/kendo-licensing": "^1.11.1"
   }
 }

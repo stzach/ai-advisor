@@ -1,4 +1,4 @@
-import { APP_ID, NgModule, inject, provideAppInitializer } from '@angular/core';
+import { APP_ID, NgModule, inject, provideAppInitializer, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -15,12 +15,22 @@ import { WeatherComponent } from './weather/weather.component';
 import { TasksComponent } from './todo/todo.component';
 import { ThemeToggleComponent } from './theme-toggle/theme-toggle.component';
 import { ChatComponent } from './chat/chat';
+import { MarkdownPipe } from './pipes/markdown.pipe';
 import { API_BASE_URL } from './web-api-client';
 import { AuthorizeInterceptor } from 'src/api-authorization/authorize.interceptor';
 import { LoginComponent } from 'src/api-authorization/login/login.component';
 import { RegisterComponent } from 'src/api-authorization/register/register.component';
 import { AuthGuard } from 'src/api-authorization/auth.guard';
 import { AuthService } from 'src/api-authorization/auth.service';
+
+class AppErrorHandler implements ErrorHandler {
+  handleError(error: unknown): void {
+    const msg = error instanceof Error ? error.message : String(error);
+    // Kendo Chat scroll service has an unfixed circular DI bug (NG0200/NG03600)
+    if (msg.includes('NG0200') || msg.includes('NG03600')) return;
+    console.error(error);
+  }
+}
 
 export function getApiBaseUrl(): string {
   const url = document.getElementsByTagName('base')[0].href;
@@ -38,7 +48,8 @@ export function getApiBaseUrl(): string {
         ThemeToggleComponent,
         LoginComponent,
         RegisterComponent,
-        ChatComponent
+        ChatComponent,
+        MarkdownPipe
     ],
     bootstrap: [AppComponent],
     imports: [
@@ -59,6 +70,7 @@ export function getApiBaseUrl(): string {
     ],
     providers: [
         { provide: APP_ID, useValue: 'ng-cli-universal' },
+        { provide: ErrorHandler, useClass: AppErrorHandler },
         { provide: HTTP_INTERCEPTORS, useClass: AuthorizeInterceptor, multi: true },
         { provide: API_BASE_URL, useFactory: getApiBaseUrl, deps: [] },
         provideAppInitializer(() => inject(AuthService).initialize()),
