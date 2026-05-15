@@ -18,6 +18,8 @@ public class UserTransaction : BaseAuditableEntity
 
     public TransactionCategory TransactionCategory { get; set; }
 
+    public TransactionDirection TransactionDirection { get; set; }
+
     public decimal Amount { get; set; }
 
     public Product Product { get; set; } = null!;

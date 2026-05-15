@@ -42,6 +42,11 @@ public class UserTransactionConfiguration : IEntityTypeConfiguration<UserTransac
             .HasMaxLength(50)
             .IsRequired();
 
+        builder.Property(t => t.TransactionDirection)
+            .HasConversion<string>()
+            .HasMaxLength(50)
+            .IsRequired();
+
         builder.Property(t => t.Amount)
             .HasColumnType("decimal(18,2)")
             .IsRequired();
