@@ -53,15 +53,7 @@
               <span class="dash-card-number">{{ card.number }}</span>
               <span class="dash-card-badge">{{ card.type }}</span>
             </div>
-            <div class="dash-card-usage">
-              <div class="dash-card-usage-label">
-                <span>€{{ card.spent | number:'1.0-0' }} spent</span>
-                <span>€{{ card.limit | number:'1.0-0' }} limit</span>
-              </div>
-              <div class="dash-progress-bar">
-                <div class="dash-progress-fill" [style.width.%]="spentPercent(card)"></div>
-              </div>
-            </div>
+            <div class="dash-account-balance">€{{ card.balance | number:'1.2-2' }}</div>
           </div>
         }
       </div>
@@ -87,13 +79,13 @@
     @for (tx of transactions; track tx.description) {
       <div class="dash-tx-row">
         <div class="dash-tx-icon" [class]="'dash-tx-icon--' + tx.type">
-          {{ tx.type === 'transfer' ? '↔' : tx.type === 'credit' ? '↓' : '↑' }}
+          {{ tx.type === TransactionType.Transfer ? '↔' : tx.amount > 0 ? '↓' : '↑' }}
         </div>
         <div class="dash-tx-info">
           <span class="dash-tx-desc">{{ tx.description }}</span>
           <span class="dash-tx-meta">
             {{ tx.from }}
-            @if (tx.type !== 'credit') { <span>→ {{ tx.to }}</span> }
+            @if (tx.type !== TransactionType.Loan) { <span>→ {{ tx.to }}</span> }
             @if (tx.category) { · <span class="dash-tx-cat">{{ tx.category }}</span> }
           </span>
         </div>
