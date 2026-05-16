@@ -8,7 +8,7 @@ namespace AiAdvisor.Web.Hubs;
 
 [Authorize]
 public class ChatHub(
-    IChatService chatService,
+    IAdvisorAgent advisorAgent,
     IMemoryCache memoryCache,
     ILogger<ChatHub> logger) : Hub
 {
@@ -32,8 +32,10 @@ public class ChatHub(
         // Add user message to history
         conversationHistory.Add(ConversationMessage.User(message));
 
-        // Get AI response with full conversation context
-        var raw = await chatService.SendAsync(message, conversationHistory, Context.ConnectionAborted);
+        // Get AI response with full conversation context using both agents
+        // Agent 1 (Financial Data): Builds personalized system prompt
+        // Agent 2 (Advisor): Uses system prompt + chat service to provide advice
+        var raw = await advisorAgent.GetAdviceAsync(userId, message, conversationHistory, Context.ConnectionAborted);
         var response = ThinkBlock.Replace(raw, string.Empty).Trim();
 
         // Add AI response to history
