@@ -7,7 +7,9 @@ namespace AiAdvisor.Infrastructure.AI;
 public interface IChatService
 {
     Task<string> SendAsync(string message, CancellationToken ct);
+    Task<string> SendAsync(string message, List<ConversationMessage> conversationHistory, CancellationToken ct);
     IAsyncEnumerable<string> StreamAsync(string message, CancellationToken ct);
+    IAsyncEnumerable<string> StreamAsync(string message, List<ConversationMessage> conversationHistory, CancellationToken ct);
 }
 
 public class ChatService : IChatService
@@ -55,11 +57,25 @@ public class ChatService : IChatService
 
     public async Task<string> SendAsync(string message, CancellationToken ct)
     {
-        var messages = new[]
+        return await SendAsync(message, [], ct);
+    }
+
+    public async Task<string> SendAsync(string message, List<ConversationMessage> conversationHistory, CancellationToken ct)
+    {
+        var messages = new List<ChatMessage>
         {
-            new ChatMessage(ChatRole.System, SystemPrompt),
-            new ChatMessage(ChatRole.User, message)
+            new ChatMessage(ChatRole.System, SystemPrompt)
         };
+
+        // Add previous conversation history
+        foreach (var entry in conversationHistory)
+        {
+            var role = entry.Role.Equals("user", StringComparison.OrdinalIgnoreCase) ? ChatRole.User : ChatRole.Assistant;
+            messages.Add(new ChatMessage(role, entry.Content));
+        }
+
+        // Add the current message
+        messages.Add(new ChatMessage(ChatRole.User, message));
 
         var response = await _chatClient.GetResponseAsync(messages, cancellationToken: ct);
 
@@ -74,11 +90,29 @@ public class ChatService : IChatService
         string message,
         [EnumeratorCancellation] CancellationToken ct)
     {
-        var messages = new[]
+        await foreach (var chunk in StreamAsync(message, [], ct))
+            yield return chunk;
+    }
+
+    public async IAsyncEnumerable<string> StreamAsync(
+        string message,
+        List<ConversationMessage> conversationHistory,
+        [EnumeratorCancellation] CancellationToken ct)
+    {
+        var messages = new List<ChatMessage>
         {
-            new ChatMessage(ChatRole.System, SystemPrompt),
-            new ChatMessage(ChatRole.User, message)
+            new ChatMessage(ChatRole.System, SystemPrompt)
         };
+
+        // Add previous conversation history
+        foreach (var entry in conversationHistory)
+        {
+            var role = entry.Role.Equals("user", StringComparison.OrdinalIgnoreCase) ? ChatRole.User : ChatRole.Assistant;
+            messages.Add(new ChatMessage(role, entry.Content));
+        }
+
+        // Add the current message
+        messages.Add(new ChatMessage(ChatRole.User, message));
 
         await foreach (var update in _chatClient.GetStreamingResponseAsync(messages, cancellationToken: ct))
         {

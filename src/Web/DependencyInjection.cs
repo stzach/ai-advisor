@@ -18,6 +18,8 @@ public static class DependencyInjection
 
         builder.Services.AddExceptionHandler<ProblemDetailsExceptionHandler>();
 
+        builder.Services.AddMemoryCache();
+
         // Customise default API behaviour
         builder.Services.Configure<ApiBehaviorOptions>(options =>
             options.SuppressModelStateInvalidFilter = true);
