@@ -1,44 +1,47 @@
-import { Component } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { API_BASE_URL, UsersClient } from '../web-api-client';
+import { ProductType, TransactionCategory, TransactionType } from '../enums';
 import { ChatHubService } from '../services/chat-hub.service';
+
+interface UserProductDto {
+  id: number;
+  productId: string;
+  productName: string;
+  productDescription?: string;
+  productType: ProductType;
+  availableBalance: number;
+  isActive: boolean;
+  cardNumber?: string;
+  accountNumber?: string;
+}
+
+interface UserTransactionDto {
+  transactionId: string;
+  productId: string;
+  productName: string;
+  transactionType: TransactionType;
+  transactionCategory: TransactionCategory;
+  amount: number;
+  from?: string;
+  to?: string;
+  created: string;
+}
 
 @Component({
   standalone: false,
   selector: 'app-home',
   templateUrl: './home.component.html',
 })
-export class HomeComponent {
-  constructor(public chatHub: ChatHubService) {}
-  username = 'Theodoros';
+export class HomeComponent implements OnInit {
+  username = '';
 
-  expenses = [
-    { category: 'Housing',       amount: 1200, color: '#c8102e' },
-    { category: 'Food',          amount: 450,  color: '#4a90d9' },
-    { category: 'Transport',     amount: 280,  color: '#2ecc71' },
-    { category: 'Entertainment', amount: 150,  color: '#f39c12' },
-    { category: 'Utilities',     amount: 200,  color: '#9b59b6' },
-    { category: 'Other',         amount: 120,  color: '#7f8c8d' },
-  ];
+  expenses: { category: string; amount: number; color: string }[] = [];
+  accounts: { name: string; iban: string; balance: number }[] = [];
+  cards: { name: string; number: string; type: string; balance: number }[] = [];
+  transactions: { type: TransactionType; date: Date; from: string; to: string; amount: number; category: TransactionCategory | null; description: string }[] = [];
 
-  accounts = [
-    { name: 'Current Account', iban: 'GR16 0140 1250 **** **** 0000', balance: 3420.50 },
-    { name: 'Savings Account', iban: 'GR16 0140 1250 **** **** 0012', balance: 12750.00 },
-  ];
-
-  cards = [
-    { name: 'Visa Debit',        number: '**** **** **** 4521', type: 'DEBIT',  limit: 5000,  spent: 1850 },
-    { name: 'Mastercard Credit', number: '**** **** **** 9032', type: 'CREDIT', limit: 3000,  spent: 620  },
-  ];
-
-  transactions = [
-    { type: 'transfer',  date: new Date('2025-05-10'), from: 'Current Account', to: 'Savings Account',     amount: -500.00,  category: null,          description: 'Transfer to Savings'       },
-    { type: 'payment',   date: new Date('2025-05-09'), from: 'Visa Debit',      to: 'Sklavenitis S.A.',   amount: -86.40,   category: 'Food',        description: 'Supermarket'               },
-    { type: 'payment',   date: new Date('2025-05-08'), from: 'Current Account', to: 'DEI',                amount: -94.00,   category: 'Utilities',   description: 'Electricity bill'          },
-    { type: 'credit',    date: new Date('2025-05-07'), from: 'Employer Ltd.',   to: 'Current Account',    amount: +2800.00, category: null,          description: 'Salary – May 2025'         },
-    { type: 'payment',   date: new Date('2025-05-06'), from: 'Mastercard',      to: 'Netflix',            amount: -14.99,   category: 'Entertainment', description: 'Streaming subscription'  },
-    { type: 'payment',   date: new Date('2025-05-05'), from: 'Visa Debit',      to: 'Shell Station',      amount: -65.20,   category: 'Transport',   description: 'Fuel'                      },
-    { type: 'payment',   date: new Date('2025-05-04'), from: 'Current Account', to: 'Landlord GR',        amount: -1200.00, category: 'Housing',     description: 'Rent – May 2025'           },
-    { type: 'payment',   date: new Date('2025-05-03'), from: 'Visa Debit',      to: 'Mikel Coffee',       amount: -8.60,    category: 'Food',        description: 'Coffee & snack'            },
-  ];
+  readonly TransactionType = TransactionType;
 
   insights = [
     { icon: '💡', message: 'You could save €180/month by switching your utilities provider.',  cta: 'Explore options',      prompt: 'How can I reduce my utilities spending?' },
@@ -47,12 +50,82 @@ export class HomeComponent {
     { icon: '💳', message: 'You have €1,380 available credit across your cards.',              cta: 'View card offers',     prompt: 'What is my available credit and how should I use it?' },
   ];
 
+  private readonly categoryColors: Record<TransactionCategory, string> = {
+    [TransactionCategory.Housing]:       '#c8102e',
+    [TransactionCategory.Food]:          '#4a90d9',
+    [TransactionCategory.Transport]:     '#2ecc71',
+    [TransactionCategory.Entertainment]: '#f39c12',
+    [TransactionCategory.Utilities]:     '#9b59b6',
+    [TransactionCategory.Other]:         '#7f8c8d',
+  };
+
+  constructor(
+    public chatHub: ChatHubService,
+    private http: HttpClient,
+    private usersClient: UsersClient,
+    @Inject(API_BASE_URL) private baseUrl: string
+  ) {}
+
+  ngOnInit(): void {
+    this.usersClient.infoGET().subscribe(info => {
+      this.username = info.email.split('@')[0];
+    });
+    this.loadProducts();
+    this.loadTransactions();
+  }
+
+  private loadProducts(): void {
+    this.http.get<UserProductDto[]>(`${this.baseUrl}/api/UserProducts`).subscribe(products => {
+      this.accounts = products
+        .filter(p => p.productType === ProductType.Account)
+        .map(p => ({
+          name:    p.productName,
+          iban:    p.accountNumber ?? 'N/A',
+          balance: p.availableBalance,
+        }));
+
+      this.cards = products
+        .filter(p => p.productType === ProductType.Card)
+        .map(p => ({
+          name:    p.productName,
+          number:  p.cardNumber ?? '**** **** **** ****',
+          type:    p.productName.toLowerCase().includes('credit') ? 'CREDIT' : 'DEBIT',
+          balance: p.availableBalance,
+        }));
+    });
+  }
+
+  private loadTransactions(): void {
+    this.http.get<UserTransactionDto[]>(`${this.baseUrl}/api/UserTransactions`).subscribe(txs => {
+      this.transactions = txs.map(tx => ({
+        type:        tx.transactionType,
+        date:        new Date(tx.created),
+        from:        tx.from ?? '',
+        to:          tx.to ?? '',
+        amount:      tx.amount,
+        category:    tx.transactionCategory ?? null,
+        description: tx.to ?? tx.productName,
+      }));
+
+      this.buildExpenses(txs);
+    });
+  }
+
+  private buildExpenses(txs: UserTransactionDto[]): void {
+    const totals: Partial<Record<TransactionCategory, number>> = {};
+    for (const tx of txs) {
+      if (tx.amount < 0 && tx.transactionCategory) {
+        totals[tx.transactionCategory] = (totals[tx.transactionCategory] ?? 0) + Math.abs(tx.amount);
+      }
+    }
+    this.expenses = (Object.entries(totals) as [TransactionCategory, number][]).map(([category, amount]) => ({
+      category,
+      amount,
+      color: this.categoryColors[category] ?? '#95a5a6',
+    }));
+  }
 
   get totalExpenses(): number {
     return this.expenses.reduce((s, e) => s + e.amount, 0);
-  }
-
-  spentPercent(card: { limit: number; spent: number }): number {
-    return Math.round((card.spent / card.limit) * 100);
   }
 }
