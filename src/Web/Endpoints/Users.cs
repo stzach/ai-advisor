@@ -33,8 +33,8 @@ public class Users : IEndpointGroup
     public static async Task<Ok<UserProfileDto>> Me(UserManager<ApplicationUser> userManager, HttpContext httpContext)
     {
         var user = await userManager.GetUserAsync(httpContext.User);
-        return TypedResults.Ok(new UserProfileDto(user?.FirstName, user?.LastName));
+        return TypedResults.Ok(new UserProfileDto(user?.FirstName, user?.LastName, user?.Email));
     }
 }
 
-public record UserProfileDto(string? FirstName, string? LastName);
+public record UserProfileDto(string? FirstName, string? LastName, string? Email);

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject, of } from 'rxjs';
 import { tap, catchError, map } from 'rxjs/operators';
 import { LoginRequest, RegisterRequest, UsersClient } from '../app/web-api-client';
 import { NotificationService } from 'src/app/services/notification.service';
@@ -9,19 +9,22 @@ import { NotificationService } from 'src/app/services/notification.service';
 })
 export class AuthService {
   private _isAuthenticated = new BehaviorSubject<boolean>(false);
+  private _ready$ = new ReplaySubject<void>(1);
+
   isAuthenticated$ = this._isAuthenticated.asObservable();
+  isReady$ = this._ready$.asObservable();
 
   constructor(private usersClient: UsersClient, private notificationService: NotificationService) {}
 
-  initialize(): Observable<boolean> {
-    return this.usersClient.infoGET().pipe(
+  initialize(): void {
+    this.usersClient.infoGET().pipe(
       map(() => true),
       catchError(() => of(false)),
       tap(isAuth => {
         this._isAuthenticated.next(isAuth);
         if (isAuth) this.notificationService.connect();
       })
-    );
+    ).subscribe(() => this._ready$.next());
   }
 
   login(email: string, password: string): Observable<void> {

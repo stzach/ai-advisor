@@ -53,7 +53,7 @@ export class HomeComponent {
     @Inject(API_BASE_URL) private baseUrl: string
   ) {
     this.username = toSignal(
-      this.usersClient.infoGET().pipe(map(info => info.email)),
+      this.usersClient.me().pipe(map(p => p.firstName || (p as any).email || '')),
       { initialValue: '' }
     );
 
