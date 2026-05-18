@@ -1,47 +1,85 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { API_BASE_URL, UsersClient } from '../web-api-client';
-import { ProductType, TransactionCategory, TransactionType } from '../enums';
+import { Component, computed, Signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Subject } from 'rxjs';
+import { map, startWith, switchMap } from 'rxjs/operators';
 import { ChatHubService } from '../services/chat-hub.service';
+import { UserProductsClient, UserProductDto, UserTransactionsClient, UserTransactionDto, UsersClient } from '../web-api-client';
 
-interface UserProductDto {
-  id: number;
-  productId: string;
-  productName: string;
-  productDescription?: string;
-  productType: ProductType;
-  availableBalance: number;
-  isActive: boolean;
-  cardNumber?: string;
-  accountNumber?: string;
-}
+interface Expense { category: string; amount: number; color: string; }
 
-interface UserTransactionDto {
-  transactionId: string;
-  productId: string;
-  productName: string;
-  transactionType: TransactionType;
-  transactionCategory: TransactionCategory;
-  amount: number;
-  from?: string;
-  to?: string;
-  created: string;
-}
+const CHART_COLORS = ['#4a90d9', '#2ecc71', '#f39c12', '#9b59b6', '#7f8c8d', '#1abc9c', '#e67e22'];
 
 @Component({
   standalone: false,
   selector: 'app-home',
   templateUrl: './home.component.html',
 })
-export class HomeComponent implements OnInit {
-  username = '';
+export class HomeComponent {
+  private transRefresh$    = new Subject<void>();
+  private productsRefresh$ = new Subject<void>();
 
-  expenses: { category: string; amount: number; color: string }[] = [];
-  accounts: { name: string; iban: string; balance: number }[] = [];
-  cards: { name: string; number: string; type: string; balance: number }[] = [];
-  transactions: { type: TransactionType; date: Date; from: string; to: string; amount: number; category: TransactionCategory | null; description: string }[] = [];
+  username:      Signal<string>;
+  userProducts:  Signal<UserProductDto[]>;
+  transactions:  Signal<UserTransactionDto[]>;
+  accounts:        Signal<UserProductDto[]>;
+  cards:           Signal<UserProductDto[]>;
+  payableProducts: Signal<UserProductDto[]>;
+  expenses:        Signal<Expense[]>;
+  totalExpenses:   Signal<number>;
 
-  readonly TransactionType = TransactionType;
+  constructor(
+    public chatHub: ChatHubService,
+    private productsClient: UserProductsClient,
+    private transactionsClient: UserTransactionsClient,
+    private usersClient: UsersClient
+  ) {
+    this.username = toSignal(
+      this.usersClient.me().pipe(map(p => p.firstName ?? '')),
+      { initialValue: '' }
+    );
+
+    this.userProducts = toSignal(
+      this.productsRefresh$.pipe(
+        startWith(null as null),
+        switchMap(() => this.productsClient.getUserProducts())
+      ),
+      { initialValue: [] as UserProductDto[] }
+    );
+
+    this.transactions = toSignal(
+      this.transRefresh$.pipe(
+        startWith(null as null),
+        switchMap(() => this.transactionsClient.getUserTransactions())
+      ),
+      { initialValue: [] as UserTransactionDto[] }
+    );
+
+    this.accounts        = computed(() => this.userProducts().filter(p => p.productType === 'Account'));
+    this.cards           = computed(() => this.userProducts().filter(p => p.productType === 'Card'));
+    this.payableProducts = computed(() => this.userProducts().filter(p => p.productType === 'Account' || p.productType === 'Card'));
+
+    this.expenses = computed<Expense[]>(() => {
+      const txs = this.transactions();
+      if (!txs.length) return [];
+
+      const summed = txs.reduce((acc, tx) => {
+        const cat = tx.transactionCategory ?? 'Other';
+        acc[cat] = (acc[cat] ?? 0) + tx.amount;
+        return acc;
+      }, {} as Record<string, number>);
+
+      const entries = Object.entries(summed);
+      const maxCat  = entries.reduce((a, b) => a[1] > b[1] ? a : b)[0];
+
+      return entries.map(([category, amount], i) => ({
+        category,
+        amount,
+        color: category === maxCat ? '#c8102e' : CHART_COLORS[i % CHART_COLORS.length],
+      }));
+    });
+
+    this.totalExpenses = computed(() => this.expenses().reduce((s, e) => s + e.amount, 0));
+  }
 
   insights = [
     { icon: '💡', message: 'You could save €180/month by switching your utilities provider.',  cta: 'Explore options',      prompt: 'How can I reduce my utilities spending?' },
@@ -50,82 +88,61 @@ export class HomeComponent implements OnInit {
     { icon: '💳', message: 'You have €1,380 available credit across your cards.',              cta: 'View card offers',     prompt: 'What is my available credit and how should I use it?' },
   ];
 
-  private readonly categoryColors: Record<TransactionCategory, string> = {
-    [TransactionCategory.Housing]:       '#c8102e',
-    [TransactionCategory.Food]:          '#4a90d9',
-    [TransactionCategory.Transport]:     '#2ecc71',
-    [TransactionCategory.Entertainment]: '#f39c12',
-    [TransactionCategory.Utilities]:     '#9b59b6',
-    [TransactionCategory.Other]:         '#7f8c8d',
-  };
+  showModal = false;
+  modalTab: 'payment' | 'transfer' = 'payment';
+  modalAmount: number | null = null;
+  modalFromProductId = '';
+  modalTo = '';
+  modalDescription = '';
+  submitting = false;
+  submitError: string | null = null;
 
-  constructor(
-    public chatHub: ChatHubService,
-    private http: HttpClient,
-    private usersClient: UsersClient,
-    @Inject(API_BASE_URL) private baseUrl: string
-  ) {}
-
-  ngOnInit(): void {
-    this.usersClient.infoGET().subscribe(info => {
-      this.username = info.email.split('@')[0];
-    });
-    this.loadProducts();
-    this.loadTransactions();
+  productLabel(p: UserProductDto): string {
+    const last4 = p.cardNumber?.slice(-4) ?? p.accountNumber?.slice(-4) ?? '0000';
+    return `${p.productName} ···${last4}`;
   }
 
-  private loadProducts(): void {
-    this.http.get<UserProductDto[]>(`${this.baseUrl}/api/UserProducts`).subscribe(products => {
-      this.accounts = products
-        .filter(p => p.productType === ProductType.Account)
-        .map(p => ({
-          name:    p.productName,
-          iban:    p.accountNumber ?? 'N/A',
-          balance: p.availableBalance,
-        }));
-
-      this.cards = products
-        .filter(p => p.productType === ProductType.Card)
-        .map(p => ({
-          name:    p.productName,
-          number:  p.cardNumber ?? '**** **** **** ****',
-          type:    p.productName.toLowerCase().includes('credit') ? 'CREDIT' : 'DEBIT',
-          balance: p.availableBalance,
-        }));
-    });
+  openModal() {
+    const products = this.payableProducts();
+    this.modalTab           = 'payment';
+    this.modalAmount        = null;
+    this.modalFromProductId = products.length ? (products[0].productId ?? '') : '';
+    this.modalTo            = '';
+    this.modalDescription   = '';
+    this.submitError        = null;
+    this.showModal          = true;
   }
 
-  private loadTransactions(): void {
-    this.http.get<UserTransactionDto[]>(`${this.baseUrl}/api/UserTransactions`).subscribe(txs => {
-      this.transactions = txs.map(tx => ({
-        type:        tx.transactionType,
-        date:        new Date(tx.created),
-        from:        tx.from ?? '',
-        to:          tx.to ?? '',
-        amount:      tx.amount,
-        category:    tx.transactionCategory ?? null,
-        description: tx.to ?? tx.productName,
-      }));
+  closeModal() { this.showModal = false; }
 
-      this.buildExpenses(txs);
-    });
-  }
+  submitTransaction() {
+    if (!this.modalAmount || this.modalAmount <= 0 || !this.modalFromProductId) return;
 
-  private buildExpenses(txs: UserTransactionDto[]): void {
-    const totals: Partial<Record<TransactionCategory, number>> = {};
-    for (const tx of txs) {
-      if (tx.amount < 0 && tx.transactionCategory) {
-        totals[tx.transactionCategory] = (totals[tx.transactionCategory] ?? 0) + Math.abs(tx.amount);
+    this.submitting  = true;
+    this.submitError = null;
+
+    const product = this.userProducts().find(p => p.productId === this.modalFromProductId);
+    const command: any = {
+      productId:            this.modalFromProductId,
+      transactionType:      this.modalTab === 'payment' ? 2 : 1,
+      transactionCategory:  6,
+      transactionDirection: 2,
+      amount: this.modalAmount,
+      from:   product ? this.productLabel(product) : '',
+      to:     this.modalTo || undefined,
+    };
+
+    this.transactionsClient.createUserTransaction(command).subscribe({
+      next: () => {
+        this.submitting = false;
+        this.closeModal();
+        this.transRefresh$.next();
+        this.productsRefresh$.next();
+      },
+      error: () => {
+        this.submitting  = false;
+        this.submitError = 'Transaction failed. Please try again.';
       }
-    }
-    this.expenses = (Object.entries(totals) as [TransactionCategory, number][]).map(([category, amount]) => ({
-      category,
-      amount,
-      color: this.categoryColors[category] ?? '#95a5a6',
-    }));
-  }
-
-  get totalExpenses(): number {
-    return this.expenses.reduce((s, e) => s + e.amount, 0);
+    });
   }
 }
