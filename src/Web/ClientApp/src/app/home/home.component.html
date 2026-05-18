@@ -3,7 +3,7 @@
   <!-- Welcome -->
   <div class="dash-welcome">
     <div>
-      <h2 class="dash-greeting">Welcome back, <span class="dash-name">{{ username }}</span></h2>
+      <h2 class="dash-greeting">Welcome back, <span class="dash-name">{{ username() }}</span></h2>
       <p class="dash-subtitle">Here's your financial overview</p>
     </div>
   </div>
@@ -12,12 +12,12 @@
 
     <div class="dash-card">
       <h3 class="dash-card-title">Expenses by Category</h3>
-      <p class="dash-total">Total: €{{ totalExpenses | number:'1.2-2' }}</p>
+      <p class="dash-total">Total: €{{ totalExpenses() | number:'1.2-2' }}</p>
       <kendo-chart style="height: 280px;">
         <kendo-chart-series>
           <kendo-chart-series-item
             type="donut"
-            [data]="expenses"
+            [data]="expenses()"
             field="amount"
             categoryField="category"
             colorField="color"
@@ -33,7 +33,7 @@
 
       <div class="dash-card">
         <h3 class="dash-card-title">Accounts</h3>
-        @for (account of accounts; track account.iban) {
+        @for (account of accounts(); track account.iban) {
           <div class="dash-account-row">
             <div>
               <div class="dash-account-name">{{ account.name }}</div>
@@ -42,11 +42,14 @@
             <div class="dash-account-balance">€{{ account.balance | number:'1.2-2' }}</div>
           </div>
         }
+        @if (!accounts().length) {
+          <p class="dash-empty">No accounts found.</p>
+        }
       </div>
 
       <div class="dash-card">
         <h3 class="dash-card-title">Cards</h3>
-        @for (card of cards; track card.number) {
+        @for (card of cards(); track card.number) {
           <div class="dash-card-row">
             <div class="dash-card-info">
               <span class="dash-card-name">{{ card.name }}</span>
@@ -55,6 +58,9 @@
             </div>
             <div class="dash-account-balance">€{{ card.balance | number:'1.2-2' }}</div>
           </div>
+        }
+        @if (!cards().length) {
+          <p class="dash-empty">No cards found.</p>
         }
       </div>
 
@@ -76,7 +82,7 @@
 
   <div class="dash-card dash-transactions">
     <h3 class="dash-card-title">Latest Transactions</h3>
-    @for (tx of transactions; track tx.description) {
+    @for (tx of transactions(); track tx.id) {
       <div class="dash-tx-row">
         <div class="dash-tx-icon" [class]="'dash-tx-icon--' + tx.type">
           {{ tx.type === TransactionType.Transfer ? '↔' : tx.amount > 0 ? '↓' : '↑' }}
@@ -96,6 +102,9 @@
           <span class="dash-tx-date">{{ tx.date | date:'dd MMM' }}</span>
         </div>
       </div>
+    }
+    @if (!transactions().length) {
+      <p class="dash-empty">No transactions yet.</p>
     }
   </div>
 
