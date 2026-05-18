@@ -53,6 +53,10 @@ public static class DependencyInjection
 
         builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddTransient<IIdentityService, IdentityService>();
+        
+        // AI Agents
         builder.Services.AddScoped<IChatService, ChatService>();
+        builder.Services.AddScoped<IFinancialDataAgent, FinancialDataAgent>();
+        builder.Services.AddScoped<IAdvisorAgent, AdvisorAgent>();
     }
 }

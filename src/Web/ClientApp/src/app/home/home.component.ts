@@ -28,14 +28,7 @@ export class HomeComponent implements OnInit {
   submitting = false;
   submitError: string | null = null;
 
-  expenses = [
-    { category: 'Housing',       amount: 1200, color: '#c8102e' },
-    { category: 'Food',          amount: 450,  color: '#4a90d9' },
-    { category: 'Transport',     amount: 280,  color: '#2ecc71' },
-    { category: 'Entertainment', amount: 150,  color: '#f39c12' },
-    { category: 'Utilities',     amount: 200,  color: '#9b59b6' },
-    { category: 'Other',         amount: 120,  color: '#7f8c8d' },
-  ];
+  expenses: { category: string; amount: number; color: string }[] = [];
 
   insights = [
     { icon: '💡', message: 'You could save €180/month by switching your utilities provider.',  cta: 'Explore options',      prompt: 'How can I reduce my utilities spending?' },
