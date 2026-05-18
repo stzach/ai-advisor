@@ -1,3 +1,4 @@
+using AiAdvisor.Application.UserTransactions.Commands.CreateUserTransaction;
 using AiAdvisor.Application.UserTransactions.Queries.GetUserTransactions;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -10,6 +11,7 @@ public class UserTransactions : IEndpointGroup
         groupBuilder.RequireAuthorization();
 
         groupBuilder.MapGet(GetUserTransactions);
+        groupBuilder.MapPost(CreateUserTransaction);
     }
 
     [EndpointSummary("Get transactions for the current user")]
@@ -18,5 +20,14 @@ public class UserTransactions : IEndpointGroup
     {
         var result = await sender.Send(new GetUserTransactionsQuery());
         return TypedResults.Ok(result);
+    }
+
+    [EndpointSummary("Create a new transaction for the current user")]
+    [EndpointDescription("Creates a new transaction for the currently authenticated user using the specified transaction type, category, direction, and amount.")]
+    public static async Task<Created<Guid>> CreateUserTransaction(ISender sender, CreateUserTransactionCommand command)
+    {
+        var id = await sender.Send(command);
+
+        return TypedResults.Created($"/api/UserTransactions/{id}", id);
     }
 }
