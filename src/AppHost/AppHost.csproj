@@ -15,6 +15,7 @@
     <PackageReference Include="Aspire.Hosting.Foundry" />
     <PackageReference Include="Aspire.Hosting.JavaScript" />
     <PackageReference Include="Aspire.Hosting.Azure.Sql" />
+    <PackageReference Include="Azure.AI.OpenAI" />
   </ItemGroup>
 
   <ItemGroup>
