@@ -138,7 +138,7 @@
         <div class="tx-field-group">
           <label class="tx-field-label">From account</label>
           <select class="tx-select" [(ngModel)]="modalFromProductId">
-            @for (p of userProducts(); track p.productId) {
+            @for (p of payableProducts(); track p.productId) {
               <option [value]="p.productId">{{ productLabel(p) }}</option>
             }
           </select>

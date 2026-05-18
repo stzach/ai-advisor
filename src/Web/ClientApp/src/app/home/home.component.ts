@@ -20,10 +20,11 @@ export class HomeComponent {
   username:      Signal<string>;
   userProducts:  Signal<UserProductDto[]>;
   transactions:  Signal<UserTransactionDto[]>;
-  accounts:      Signal<UserProductDto[]>;
-  cards:         Signal<UserProductDto[]>;
-  expenses:      Signal<Expense[]>;
-  totalExpenses: Signal<number>;
+  accounts:        Signal<UserProductDto[]>;
+  cards:           Signal<UserProductDto[]>;
+  payableProducts: Signal<UserProductDto[]>;
+  expenses:        Signal<Expense[]>;
+  totalExpenses:   Signal<number>;
 
   constructor(
     public chatHub: ChatHubService,
@@ -49,8 +50,9 @@ export class HomeComponent {
       { initialValue: [] as UserTransactionDto[] }
     );
 
-    this.accounts = computed(() => this.userProducts().filter(p => p.productType === 'Account'));
-    this.cards    = computed(() => this.userProducts().filter(p => p.productType === 'Card'));
+    this.accounts        = computed(() => this.userProducts().filter(p => p.productType === 'Account'));
+    this.cards           = computed(() => this.userProducts().filter(p => p.productType === 'Card'));
+    this.payableProducts = computed(() => this.userProducts().filter(p => p.productType === 'Account' || p.productType === 'Card'));
 
     this.expenses = computed<Expense[]>(() => {
       const txs = this.transactions();
@@ -97,7 +99,7 @@ export class HomeComponent {
   }
 
   openModal() {
-    const products = this.userProducts();
+    const products = this.payableProducts();
     this.modalTab           = 'payment';
     this.modalAmount        = null;
     this.modalFromProductId = products.length ? (products[0].productId ?? '') : '';
