@@ -15,7 +15,8 @@ const CHART_COLORS = ['#4a90d9', '#2ecc71', '#f39c12', '#9b59b6', '#7f8c8d', '#1
   templateUrl: './home.component.html',
 })
 export class HomeComponent {
-  private transRefresh$ = new Subject<void>();
+  private transRefresh$    = new Subject<void>();
+  private productsRefresh$ = new Subject<void>();
 
   username:      Signal<string>;
   userProducts:  Signal<UserProductDto[]>;
@@ -38,7 +39,10 @@ export class HomeComponent {
     );
 
     this.userProducts = toSignal(
-      this.productsClient.getUserProducts(),
+      this.productsRefresh$.pipe(
+        startWith(null as null),
+        switchMap(() => this.productsClient.getUserProducts())
+      ),
       { initialValue: [] as UserProductDto[] }
     );
 
@@ -133,6 +137,7 @@ export class HomeComponent {
         this.submitting = false;
         this.closeModal();
         this.transRefresh$.next();
+        this.productsRefresh$.next();
       },
       error: () => {
         this.submitting  = false;
