@@ -15,11 +15,12 @@ public class GetUserTransactionsQueryHandler : IRequestHandler<GetUserTransactio
 
     public async Task<List<UserTransactionDto>> Handle(GetUserTransactionsQuery request, CancellationToken cancellationToken)
     {
+        var from = request.From ?? DateTimeOffset.UtcNow.AddMonths(-1);
+        var to   = request.To   ?? DateTimeOffset.UtcNow;
+
         return await _context.UserTransactions
             .AsNoTracking()
-            .Where(t => t.UserId == _user.Id)
-            .Where(t => request.From == null || t.Created >= request.From)
-            .Where(t => request.To   == null || t.Created <= request.To)
+            .Where(t => t.UserId == _user.Id && t.Created >= from && t.Created <= to)
             .Select(t => new UserTransactionDto
             {
                 TransactionId       = t.TransactionId,
