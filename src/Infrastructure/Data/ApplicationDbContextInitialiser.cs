@@ -169,7 +169,7 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
             await UpsertUserProductsAsync(komliki.Id, new List<UserProduct>
             {
                 new() { UserId = komliki.Id, ProductId = CurrentAccId,  AvailableBalance = 4500,  AccountNumber = "GR13 1122 3344 5566 7788 9900 112", IsActive = true },
-                new() { UserId = komliki.Id, ProductId = MastercardId,  AvailableBalance = 1500,  CardNumber    = "1234 8255 7654 5733",                IsActive = true },
+                new() { UserId = komliki.Id, ProductId = MastercardId,  AvailableBalance = 1500,  CardNumber    = "1234 8255 7654 5733",                IsActive = true, CreditLimit = 3000m },
             });
         }
 
@@ -183,7 +183,7 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
                 new() { UserId = tzachristas.Id, ProductId = SavingAccId,    AvailableBalance = 69785,    AccountNumber = "GR13 1234 2222 6773 9421 5342 280", IsActive = true },
                 new() { UserId = tzachristas.Id, ProductId = MortgageLoanId, AvailableBalance = 200000,   AccountNumber = "GR45 6543 3333 7832 4723 1239 931", IsActive = true },
                 new() { UserId = tzachristas.Id, ProductId = CyberInsId,     AvailableBalance = 0,                                                             IsActive = true },
-                new() { UserId = tzachristas.Id, ProductId = MastercardId,   AvailableBalance = 2820,     CardNumber    = "5555 5555 5555 4444",                IsActive = true }
+                new() { UserId = tzachristas.Id, ProductId = MastercardId,   AvailableBalance = 2820,     CardNumber    = "5555 5555 5555 4444",                IsActive = true, CreditLimit = 10000m }
             });
         }
 
@@ -195,8 +195,8 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
                 new() { UserId = geronymakis.Id, ProductId = CurrentAccId,  AvailableBalance = 245,      AccountNumber = "GR13 6723 9388 6371 7319 1422 846", IsActive = true },
                 new() { UserId = geronymakis.Id, ProductId = SavingAccId,   AvailableBalance = 347.93m,  AccountNumber = "GR13 5678 1111 5784 1235 1095 732", IsActive = true },
                 new() { UserId = geronymakis.Id, ProductId = SavingAccId,   AvailableBalance = 2959.51m, AccountNumber = "GR13 7842 1234 9876 2637 1835 892", IsActive = true },
-                new() { UserId = geronymakis.Id, ProductId = MastercardId,  AvailableBalance = 567,      CardNumber    = "1254 2333 3444 5555",                IsActive = true },
-                new() { UserId = geronymakis.Id, ProductId = VisaDebitId,   AvailableBalance = 0,        CardNumber    = "6732 1212 6782 2333",                IsActive = true }
+                new() { UserId = geronymakis.Id, ProductId = MastercardId,  AvailableBalance = 567,      CardNumber    = "1254 2333 3444 5555",                IsActive = true, CreditLimit = 2000m },
+                new() { UserId = geronymakis.Id, ProductId = VisaDebitId,   AvailableBalance = 0,        CardNumber    = "6732 1212 6782 2333",                IsActive = true, CreditLimit = 500m }
             });
         }
 
@@ -208,7 +208,7 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
                 new() { UserId = kotrotsos.Id, ProductId = CurrentAccId, AvailableBalance = 5672.89m, AccountNumber = "GR13 4555 1111 6789 1234 7890 543", IsActive = true },
                 new() { UserId = kotrotsos.Id, ProductId = CurrentAccId, AvailableBalance = 1273.95m, AccountNumber = "GR13 6732 2323 1480 1780 9263 092", IsActive = true },
                 new() { UserId = kotrotsos.Id, ProductId = SavingAccId,  AvailableBalance = 2959.51m, AccountNumber = "GR13 9845 1230 4567 8901 2345 678", IsActive = true },
-                new() { UserId = kotrotsos.Id, ProductId = VisaDebitId,  AvailableBalance = 0,        CardNumber    = "5673 4567 1241 4523",                IsActive = true }
+                new() { UserId = kotrotsos.Id, ProductId = VisaDebitId,  AvailableBalance = 0,        CardNumber    = "5673 4567 1241 4523",                IsActive = true, CreditLimit = 1500m }
             });
         }
 
@@ -217,8 +217,8 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
         {
             await UpsertUserProductsAsync(billGates.Id, new List<UserProduct>
             {
-                new() { UserId = billGates.Id, ProductId = MastercardId,   AvailableBalance = 50000m,    CardNumber    = "4916 2345 6789 0123",                IsActive = true },
-                new() { UserId = billGates.Id, ProductId = VisaDebitId,    AvailableBalance = 25000m,    CardNumber    = "4539 1488 0343 6467",                IsActive = true },
+                new() { UserId = billGates.Id, ProductId = MastercardId,   AvailableBalance = 50000m,    CardNumber    = "4916 2345 6789 0123",                IsActive = true, CreditLimit = 100000m },
+                new() { UserId = billGates.Id, ProductId = VisaDebitId,    AvailableBalance = 25000m,    CardNumber    = "4539 1488 0343 6467",                IsActive = true, CreditLimit = 50000m },
                 new() { UserId = billGates.Id, ProductId = CurrentAccId,   AvailableBalance = 200000m,   AccountNumber = "GR13 0110 2250 0000 0012 3456 789", IsActive = true },
                 new() { UserId = billGates.Id, ProductId = CurrentAccId,   AvailableBalance = 350000m,   AccountNumber = "GR13 0260 2250 0001 2000 2330 113", IsActive = true },
                 new() { UserId = billGates.Id, ProductId = SavingAccId,    AvailableBalance = 500000m,   AccountNumber = "GR13 0140 3250 0000 0023 4567 890", IsActive = true },
@@ -236,8 +236,8 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
             {
                 new() { UserId = kafousis.Id, ProductId = CurrentAccId,   AvailableBalance = 18500.00m, AccountNumber = "GR13 7821 4532 1098 7654 3210 987", IsActive = true },
                 new() { UserId = kafousis.Id, ProductId = SavingAccId,    AvailableBalance = 45000.00m, AccountNumber = "GR13 6543 8921 4567 2345 8901 234", IsActive = true },
-                new() { UserId = kafousis.Id, ProductId = MastercardId,   AvailableBalance =  3200.00m, CardNumber    = "4716 2837 5948 1023",                IsActive = true },
-                new() { UserId = kafousis.Id, ProductId = VisaDebitId,    AvailableBalance =     0.00m, CardNumber    = "4539 7812 3456 9087",                IsActive = true },
+                new() { UserId = kafousis.Id, ProductId = MastercardId,   AvailableBalance =  3200.00m, CardNumber    = "4716 2837 5948 1023",                IsActive = true, CreditLimit = 8000m },
+                new() { UserId = kafousis.Id, ProductId = VisaDebitId,    AvailableBalance =     0.00m, CardNumber    = "4539 7812 3456 9087",                IsActive = true, CreditLimit = 2000m },
                 new() { UserId = kafousis.Id, ProductId = PersonalLoanId, AvailableBalance = 25000.00m, AccountNumber = "GR45 2345 6789 0123 4567 8901 234", IsActive = true },
                 new() { UserId = kafousis.Id, ProductId = CyberInsId,     AvailableBalance =     0.00m,                                                      IsActive = true },
             });
@@ -263,6 +263,7 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
             if (tracked is not null)
             {
                 tracked.AvailableBalance = product.AvailableBalance;
+                tracked.CreditLimit      = product.CreditLimit;
                 tracked.IsActive         = product.IsActive;
             }
             else
@@ -691,8 +692,9 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
 
             for (var i = 0; i < templates.Count; i++)
             {
-                var t  = templates[i];
-                var id = DeterministicGuid($"{prefix}-{year:D4}{month:D2}-{i:D2}");
+                var t    = templates[i];
+                var id   = DeterministicGuid($"{prefix}-{year:D4}{month:D2}-{i:D2}");
+                var date = new DateTimeOffset(year, month, t.Day, 9, 0, 0, TimeSpan.Zero);
                 transactions.Add(new UserTransaction
                 {
                     TransactionId        = id,
@@ -704,8 +706,10 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
                     TransactionCategory  = t.Cat,
                     TransactionDirection = t.Dir,
                     Amount               = t.Amount,
+                    Created              = date,
+                    LastModified         = date,
                 });
-                dates[id] = new DateTimeOffset(year, month, t.Day, 9, 0, 0, TimeSpan.Zero);
+                dates[id] = date;
             }
         }
 
