@@ -1,11 +1,16 @@
 import { Component, computed, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { map, startWith, switchMap } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Subject, of } from 'rxjs';
+import { map, startWith, switchMap, catchError } from 'rxjs/operators';
 import { ChatHubService } from '../services/chat-hub.service';
 import { UserProductsClient, UserProductDto, UserTransactionsClient, UserTransactionDto, UsersClient } from '../web-api-client';
+import { API_BASE_URL } from '../web-api-client';
+import { Inject } from '@angular/core';
 
-interface Expense { category: string; amount: number; color: string; }
+interface InsightDto { icon: string; message: string; cta: string; prompt: string; }
+
+interface Expense   { category: string; amount: number; color: string; }
 
 const CHART_COLORS = ['#4a90d9', '#2ecc71', '#f39c12', '#9b59b6', '#7f8c8d', '#1abc9c', '#e67e22'];
 
@@ -18,20 +23,23 @@ export class HomeComponent {
   private range$           = new BehaviorSubject<string>('month');
   private productsRefresh$ = new Subject<void>();
 
-  username:      Signal<string>;
-  userProducts:  Signal<UserProductDto[]>;
-  transactions:  Signal<UserTransactionDto[]>;
+  username:        Signal<string>;
+  userProducts:    Signal<UserProductDto[]>;
+  transactions:    Signal<UserTransactionDto[]>;
   accounts:        Signal<UserProductDto[]>;
   cards:           Signal<UserProductDto[]>;
   payableProducts: Signal<UserProductDto[]>;
   expenses:        Signal<Expense[]>;
   totalExpenses:   Signal<number>;
+  insights:        Signal<InsightDto[]>;
 
   constructor(
     public chatHub: ChatHubService,
     private productsClient: UserProductsClient,
     private transactionsClient: UserTransactionsClient,
-    private usersClient: UsersClient
+    private usersClient: UsersClient,
+    private http: HttpClient,
+    @Inject(API_BASE_URL) private baseUrl: string
   ) {
     this.username = toSignal(
       this.usersClient.me().pipe(map(p => p.firstName ?? '')),
@@ -81,14 +89,14 @@ export class HomeComponent {
     });
 
     this.totalExpenses = computed(() => this.expenses().reduce((s, e) => s + e.amount, 0));
-  }
 
-  insights = [
-    { icon: '💡', message: 'You could save €180/month by switching your utilities provider.',  cta: 'Explore options',      prompt: 'How can I reduce my utilities spending?' },
-    { icon: '📊', message: 'You\'re spending 18% more on food compared to last month.',        cta: 'See breakdown',        prompt: 'Break down my food spending this month.' },
-    { icon: '🏦', message: 'A savings account could earn you €312/year in interest.',          cta: 'Open savings account', prompt: 'How much can I earn by moving money to savings?' },
-    { icon: '💳', message: 'You have €1,380 available credit across your cards.',              cta: 'View card offers',     prompt: 'What is my available credit and how should I use it?' },
-  ];
+    this.insights = toSignal(
+      this.http.get<InsightDto[]>(`${this.baseUrl}/api/AiInsights`).pipe(
+        catchError(() => of([] as InsightDto[]))
+      ),
+      { initialValue: [] as InsightDto[] }
+    );
+  }
 
   showModal = false;
   modalTab: 'payment' | 'transfer' = 'payment';

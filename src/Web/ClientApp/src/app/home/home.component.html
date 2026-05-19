@@ -66,7 +66,10 @@
     <h3 class="dash-card-title">
       <span class="dash-insights-icon">🤖</span> AI Advisor Insights
     </h3>
-    @for (insight of insights; track insight.message) {
+    @if (!insights().length) {
+      <p class="dash-empty">Generating insights…</p>
+    }
+    @for (insight of insights(); track insight.message) {
       <div class="dash-insight-row">
         <span class="dash-insight-icon">{{ insight.icon }}</span>
         <span class="dash-insight-message">{{ insight.message }}</span>

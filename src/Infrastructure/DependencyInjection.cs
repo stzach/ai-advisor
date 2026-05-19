@@ -58,5 +58,6 @@ public static class DependencyInjection
         builder.Services.AddScoped<IChatService, ChatService>();
         builder.Services.AddScoped<IFinancialDataAgent, FinancialDataAgent>();
         builder.Services.AddScoped<IAdvisorAgent, AdvisorAgent>();
+        builder.Services.AddScoped<IInsightsOrchestrator, InsightsOrchestrator>();
     }
 }
