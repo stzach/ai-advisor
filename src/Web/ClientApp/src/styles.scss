@@ -375,7 +375,12 @@ app-root > main:has(> app-home) {
   color: #fff;
 }
 
-.dash-welcome { margin-bottom: 2rem; }
+.dash-welcome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
 
 .dash-greeting {
   font-size: 1.6rem;

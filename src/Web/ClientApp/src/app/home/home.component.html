@@ -6,6 +6,7 @@
       <h2 class="dash-greeting">Welcome back, <span class="dash-name">{{ username() }}</span></h2>
       <div class="dash-subtitle">Here's your financial overview</div>
     </div>
+    <button class="dash-new-tx-btn" (click)="openModal()">+ New Transaction</button>
   </div>
 
   <div class="dash-main-grid">
@@ -111,3 +112,51 @@
   </div>
 
 </div>
+
+@if (showModal) {
+  <div class="tx-modal-overlay" (click)="closeModal()">
+    <div class="tx-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+
+      <div class="tx-modal-header">
+        <span class="tx-modal-title">New Transaction</span>
+        <button class="tx-modal-close" (click)="closeModal()" aria-label="Close">✕</button>
+      </div>
+
+      <div class="tx-tabs">
+        <button class="tx-tab" [class.active]="modalTab === 'payment'"  (click)="modalTab = 'payment'">Payment</button>
+        <button class="tx-tab" [class.active]="modalTab === 'transfer'" (click)="modalTab = 'transfer'">Transfer</button>
+      </div>
+
+      <div class="tx-fields-row">
+        <div class="tx-field-group">
+          <span class="tx-field-label">From</span>
+          <select class="tx-select" [(ngModel)]="modalFromProductId">
+            @for (p of payableProducts(); track p.productId) {
+              <option [value]="p.productId">{{ productLabel(p) }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="tx-field-group">
+          <span class="tx-field-label">To</span>
+          <input class="tx-input" type="text" [(ngModel)]="modalTo"
+            [placeholder]="modalTab === 'payment' ? 'Recipient / merchant' : 'IBAN or account'" />
+        </div>
+      </div>
+
+      <div class="tx-field-group">
+        <span class="tx-field-label">Amount (€)</span>
+        <input class="tx-input" type="number" [(ngModel)]="modalAmount" min="0.01" step="0.01" placeholder="0.00" />
+      </div>
+
+      @if (submitError) {
+        <p class="tx-error">{{ submitError }}</p>
+      }
+
+      <button class="tx-submit-btn" (click)="submitTransaction()" [disabled]="submitting">
+        {{ submitting ? 'Processing…' : 'Submit' }}
+      </button>
+
+    </div>
+  </div>
+}
