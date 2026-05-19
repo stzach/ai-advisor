@@ -4,14 +4,14 @@
   <div class="dash-welcome">
     <div>
       <h2 class="dash-greeting">Welcome back, <span class="dash-name">{{ username() }}</span></h2>
-      <p class="dash-subtitle">Here's your financial overview</p>
+      <div class="dash-subtitle">Here's your financial overview</div>
     </div>
   </div>
 
   <div class="dash-main-grid">
 
     <div class="dash-card">
-      <h3 class="dash-card-title">Expenses by Category</h3>
+      <h3 class="dash-card-title">Expenses by Category - {{ rangeLabel() }}</h3>
       <p class="dash-total">Total: €{{ totalExpenses() | number:'1.2-2' }}</p>
       <kendo-chart style="height: 280px;">
         <kendo-chart-series>
@@ -42,9 +42,6 @@
             <div class="dash-account-balance">€{{ account.availableBalance | number:'1.2-2' }}</div>
           </div>
         }
-        @if (!accounts().length) {
-          <p class="dash-empty">No accounts found.</p>
-        }
       </div>
 
       <div class="dash-card">
@@ -54,15 +51,10 @@
             <div class="dash-card-info">
               <span class="dash-card-name">{{ card.productName }}</span>
               <span class="dash-card-number">{{ card.cardNumber }}</span>
-              <span class="dash-card-badge">{{ card.productType?.toUpperCase() }}</span>
+              <span class="dash-card-badge">{{ card.productType }}</span>
             </div>
-            <div class="dash-account-balance" style="font-size:0.95rem">
-              €{{ card.availableBalance | number:'1.2-2' }} available
-            </div>
+            <div class="dash-account-balance">€{{ card.availableBalance | number:'1.2-2' }}</div>
           </div>
-        }
-        @if (!cards().length) {
-          <p class="dash-empty">No cards found.</p>
         }
       </div>
 
@@ -84,86 +76,38 @@
 
   <div class="dash-card dash-transactions">
     <div class="dash-tx-header">
-      <h3 class="dash-card-title">Latest Transactions</h3>
-      <button class="dash-new-tx-btn" (click)="openModal()">+ New transaction</button>
+      <h3 class="dash-card-title">Transactions · {{ rangeLabel() }}</h3>
+      <div class="dash-range-tabs">
+        <button class="dash-range-tab" [class.active]="selectedRange === 'month'"   (click)="setRange('month')">This Month</button>
+        <button class="dash-range-tab" [class.active]="selectedRange === '3months'" (click)="setRange('3months')">3M</button>
+        <button class="dash-range-tab" [class.active]="selectedRange === '6months'" (click)="setRange('6months')">6M</button>
+        <button class="dash-range-tab" [class.active]="selectedRange === 'year'"    (click)="setRange('year')">1Y</button>
+      </div>
     </div>
     @for (tx of transactions(); track tx.transactionId) {
       <div class="dash-tx-row">
-        <div class="dash-tx-icon" [class]="'dash-tx-icon--' + (tx.transactionType?.toLowerCase() ?? 'payment')">
-          {{ tx.transactionType === 'Transfer' ? '↔' : '↑' }}
+        <div class="dash-tx-icon" [class]="'dash-tx-icon--' + tx.transactionType?.toLowerCase()">
+          {{ tx.transactionType === 'Transfer' ? '↔' : tx.amount > 0 ? '↓' : '↑' }}
         </div>
         <div class="dash-tx-info">
-          <span class="dash-tx-desc">{{ tx.to || tx.from }}</span>
+          <span class="dash-tx-desc">{{ tx.productName }}</span>
           <span class="dash-tx-meta">
             {{ tx.from }}
-            @if (tx.to) { <span>→ {{ tx.to }}</span> }
+            @if (tx.transactionType !== 'Loan') { <span>→ {{ tx.to }}</span> }
             @if (tx.transactionCategory) { · <span class="dash-tx-cat">{{ tx.transactionCategory }}</span> }
           </span>
         </div>
         <div class="dash-tx-right">
-          <span class="dash-tx-amount negative">-€{{ tx.amount | number:'1.2-2' }}</span>
+          <span class="dash-tx-amount" [class.positive]="tx.amount > 0" [class.negative]="tx.amount < 0">
+            {{ tx.amount > 0 ? '+' : '' }}€{{ tx.amount | number:'1.2-2' }}
+          </span>
           <span class="dash-tx-date">{{ tx.created | date:'dd MMM' }}</span>
         </div>
       </div>
     }
     @if (!transactions().length) {
-      <p class="dash-empty">No transactions yet. Add one above.</p>
+      <p class="dash-empty">No transactions for this period.</p>
     }
   </div>
 
 </div>
-
-@if (showModal) {
-  <div class="tx-modal-overlay" (click)="closeModal()">
-    <div class="tx-modal" (click)="$event.stopPropagation()">
-
-      <div class="tx-modal-header">
-        <span class="tx-modal-title">
-          <span class="tx-modal-arrow">⇄</span> New transaction
-        </span>
-        <button class="tx-modal-close" (click)="closeModal()">✕</button>
-      </div>
-
-      <div class="tx-tabs">
-        <button class="tx-tab" [class.active]="modalTab === 'payment'" (click)="modalTab = 'payment'">Payment</button>
-        <button class="tx-tab" [class.active]="modalTab === 'transfer'" (click)="modalTab = 'transfer'">Transfer</button>
-      </div>
-
-      <div class="tx-amount-display">
-        <span class="tx-currency-symbol">€</span>
-        <input class="tx-amount-input" type="number" [(ngModel)]="modalAmount" placeholder="0.00" min="0.01" step="0.01">
-      </div>
-
-      <div class="tx-fields-row">
-        <div class="tx-field-group">
-          <label class="tx-field-label">From account</label>
-          <select class="tx-select" [(ngModel)]="modalFromProductId">
-            @for (p of payableProducts(); track p.productId) {
-              <option [value]="p.productId">{{ productLabel(p) }}</option>
-            }
-          </select>
-        </div>
-        <div class="tx-field-group">
-          <label class="tx-field-label">{{ modalTab === 'payment' ? 'To IBAN / recipient' : 'To account' }}</label>
-          <input class="tx-input" type="text" [(ngModel)]="modalTo"
-                 [placeholder]="modalTab === 'payment' ? 'GR16 ...' : 'Account name or IBAN'">
-        </div>
-      </div>
-
-      <div class="tx-field-group">
-        <label class="tx-field-label">Description (optional)</label>
-        <input class="tx-input" type="text" [(ngModel)]="modalDescription" placeholder="e.g. Rent May 2026">
-      </div>
-
-      @if (submitError) {
-        <p class="tx-error">{{ submitError }}</p>
-      }
-
-      <button class="tx-submit-btn" (click)="submitTransaction()"
-              [disabled]="submitting || !modalAmount || modalAmount <= 0 || !modalFromProductId">
-        {{ submitting ? 'Processing...' : (modalTab === 'payment' ? 'Confirm payment →' : 'Confirm transfer →') }}
-      </button>
-
-    </div>
-  </div>
-}

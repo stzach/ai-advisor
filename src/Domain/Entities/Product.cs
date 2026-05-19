@@ -12,5 +12,7 @@ public class Product : BaseAuditableEntity
 
     public decimal? ProductPrice { get; set; }
 
+    public decimal? CreditLimit { get; set; }
+
     public ProductType ProductType { get; set; }
 }

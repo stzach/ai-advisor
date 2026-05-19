@@ -16,9 +16,12 @@ public class UserTransactions : IEndpointGroup
 
     [EndpointSummary("Get transactions for the current user")]
     [EndpointDescription("Returns all transactions for the currently authenticated user, ordered by most recent first.")]
-    public static async Task<Ok<List<UserTransactionDto>>> GetUserTransactions(ISender sender)
+    public static async Task<Ok<List<UserTransactionDto>>> GetUserTransactions(
+        ISender sender,
+        DateTimeOffset? from = null,
+        DateTimeOffset? to   = null)
     {
-        var result = await sender.Send(new GetUserTransactionsQuery());
+        var result = await sender.Send(new GetUserTransactionsQuery { From = from, To = to });
         return TypedResults.Ok(result);
     }
 

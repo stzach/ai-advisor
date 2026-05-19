@@ -32,7 +32,7 @@ export class AppComponent implements OnInit {
         await this.chatHub.connect();
       } else {
         await this.chatHub.disconnect();
-        this.chatHub.close();
+        this.chatHub.clear();
       }
     });
   }

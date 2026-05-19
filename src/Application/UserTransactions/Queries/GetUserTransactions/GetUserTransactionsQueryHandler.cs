@@ -18,6 +18,8 @@ public class GetUserTransactionsQueryHandler : IRequestHandler<GetUserTransactio
         return await _context.UserTransactions
             .AsNoTracking()
             .Where(t => t.UserId == _user.Id)
+            .Where(t => request.From == null || t.Created >= request.From)
+            .Where(t => request.To   == null || t.Created <= request.To)
             .Select(t => new UserTransactionDto
             {
                 TransactionId       = t.TransactionId,

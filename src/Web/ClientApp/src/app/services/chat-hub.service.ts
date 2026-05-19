@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { Subject, merge, Observable, of, BehaviorSubject } from 'rxjs';
-import { map, scan, observeOn, shareReplay } from 'rxjs/operators';
+import { map, scan, observeOn, shareReplay, startWith, switchMap } from 'rxjs/operators';
 import { asyncScheduler } from 'rxjs';
 import { Message, User, Action } from '@progress/kendo-angular-conversational-ui';
 
@@ -14,8 +14,9 @@ export class ChatHubService {
 
     isOpen$ = new BehaviorSubject<boolean>(false);
 
-    private msgId = 0;
-    private local$ = new Subject<Message>();
+    private msgId  = 0;
+    private reset$   = new Subject<void>();
+    private local$   = new Subject<Message>();
     private message$ = new Subject<string>();
 
     private readonly welcome: Message = {
@@ -44,25 +45,29 @@ export class ChatHubService {
             this.message$.next(msg);
         });
 
-        this.feed$ = merge(
-            of(this.welcome),
-            this.local$,
-            this.message$.pipe(
-                map(text => ({ id: ++this.msgId, author: this.bot, text, timestamp: new Date() } as Message))
-            )
-        ).pipe(
-            scan((acc: Message[], msg: Message) => {
-                const base = msg.typing ? acc : acc.filter(m => !m.typing);
-                return [...base, msg];
-            }, []),
+        this.feed$ = this.reset$.pipe(
+            startWith(null as null),
+            switchMap(() => merge(
+                of(this.welcome),
+                this.local$,
+                this.message$.pipe(
+                    map(text => ({ id: ++this.msgId, author: this.bot, text, timestamp: new Date() } as Message))
+                )
+            ).pipe(
+                scan((acc: Message[], msg: Message) => {
+                    const base = msg.typing ? acc : acc.filter(m => !m.typing);
+                    return [...base, msg];
+                }, [])
+            )),
             observeOn(asyncScheduler),
             shareReplay(1)
         );
     }
 
-    open(): void  { this.isOpen$.next(true); }
-    close(): void { this.isOpen$.next(false); }
+    open(): void   { this.isOpen$.next(true); }
+    close(): void  { this.isOpen$.next(false); }
     toggle(): void { this.isOpen$.next(!this.isOpen$.value); }
+    clear(): void  { this.isOpen$.next(false); this.reset$.next(); }
 
     openWithPrompt(text: string): void {
         this.isOpen$.next(true);

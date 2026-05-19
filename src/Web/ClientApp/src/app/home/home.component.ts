@@ -1,6 +1,6 @@
 import { Component, computed, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { map, startWith, switchMap } from 'rxjs/operators';
 import { ChatHubService } from '../services/chat-hub.service';
 import { UserProductsClient, UserProductDto, UserTransactionsClient, UserTransactionDto, UsersClient } from '../web-api-client';
@@ -15,7 +15,7 @@ const CHART_COLORS = ['#4a90d9', '#2ecc71', '#f39c12', '#9b59b6', '#7f8c8d', '#1
   templateUrl: './home.component.html',
 })
 export class HomeComponent {
-  private transRefresh$    = new Subject<void>();
+  private range$           = new BehaviorSubject<string>('month');
   private productsRefresh$ = new Subject<void>();
 
   username:      Signal<string>;
@@ -47,9 +47,11 @@ export class HomeComponent {
     );
 
     this.transactions = toSignal(
-      this.transRefresh$.pipe(
-        startWith(null as null),
-        switchMap(() => this.transactionsClient.getUserTransactions())
+      this.range$.pipe(
+        switchMap(range => {
+          const { from, to } = this.toDateRange(range);
+          return this.transactionsClient.getUserTransactions(from, to);
+        })
       ),
       { initialValue: [] as UserTransactionDto[] }
     );
@@ -115,6 +117,32 @@ export class HomeComponent {
 
   closeModal() { this.showModal = false; }
 
+  get selectedRange(): string { return this.range$.value; }
+
+  setRange(range: string): void { this.range$.next(range); }
+
+  rangeLabel(): string {
+    const labels: Record<string, string> = {
+      'month':   'This Month',
+      '3months': 'Last 3 Months',
+      '6months': 'Last 6 Months',
+      'year':    'This Year',
+    };
+    return labels[this.range$.value] ?? '';
+  }
+
+  private toDateRange(range: string): { from: Date; to: Date } {
+    const to = new Date();
+    let from: Date;
+    switch (range) {
+      case '3months': from = new Date(); from.setMonth(from.getMonth() - 3);       break;
+      case '6months': from = new Date(); from.setMonth(from.getMonth() - 6);       break;
+      case 'year':    from = new Date(); from.setFullYear(from.getFullYear() - 1); break;
+      default:        from = new Date(to.getFullYear(), to.getMonth(), 1);
+    }
+    return { from, to };
+  }
+
   submitTransaction() {
     if (!this.modalAmount || this.modalAmount <= 0 || !this.modalFromProductId) return;
 
@@ -136,7 +164,7 @@ export class HomeComponent {
       next: () => {
         this.submitting = false;
         this.closeModal();
-        this.transRefresh$.next();
+        this.range$.next(this.range$.value);
         this.productsRefresh$.next();
       },
       error: () => {

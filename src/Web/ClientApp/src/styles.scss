@@ -387,7 +387,7 @@ app-root > main:has(> app-home) {
 .dash-name { color: $bank-red; }
 
 .dash-subtitle {
-  color: rgba(255,255,255,0.55);
+  color: rgba(255,255,255,0.65);
   margin: 0;
   font-size: 0.9rem;
 }
@@ -419,14 +419,14 @@ app-root > main:has(> app-home) {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.65);
   margin: 0 0 1rem;
 }
 
 .dash-total {
   font-size: 1.1rem;
   font-weight: 600;
-  color: rgba(255,255,255,0.8);
+  color: rgba(255,255,255,0.9);
   margin: -0.5rem 0 0.75rem;
 }
 
@@ -440,7 +440,7 @@ app-root > main:has(> app-home) {
 }
 
 .dash-account-name { font-weight: 600; font-size: 0.95rem; color: #fff; }
-.dash-account-iban { font-size: 0.75rem; color: rgba(255,255,255,0.45); margin-top: 0.15rem; font-family: monospace; }
+.dash-account-iban { font-size: 0.75rem; color: rgba(255,255,255,0.6); margin-top: 0.15rem; font-family: monospace; }
 .dash-account-balance { font-size: 1.1rem; font-weight: 700; color: #fff; }
 
 .dash-card-row {
@@ -457,7 +457,7 @@ app-root > main:has(> app-home) {
 }
 
 .dash-card-name { font-weight: 600; font-size: 0.9rem; }
-.dash-card-number { font-size: 0.8rem; color: rgba(255,255,255,0.45); font-family: monospace; }
+.dash-card-number { font-size: 0.8rem; color: rgba(255,255,255,0.6); font-family: monospace; }
 
 .dash-card-badge {
   font-size: 0.65rem;
@@ -474,7 +474,7 @@ app-root > main:has(> app-home) {
   display: flex;
   justify-content: space-between;
   font-size: 0.75rem;
-  color: rgba(255,255,255,0.45);
+  color: rgba(255,255,255,0.6);
   margin-bottom: 0.35rem;
 }
 
@@ -492,7 +492,7 @@ app-root > main:has(> app-home) {
   transition: width 0.4s ease;
 }
 
-.dash-insights { padding: 1.25rem 1.5rem; }
+.dash-insights { padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; }
 .dash-insights-icon { margin-right: 0.4rem; }
 
 .dash-insight-row {
@@ -527,6 +527,39 @@ app-root > main:has(> app-home) {
   transition: background 0.2s;
 
   &:hover { background: darken($bank-red, 8%); }
+}
+
+// ── Transaction range tabs ────────────────────────────────────────────────────
+.dash-range-tabs {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.dash-range-tab {
+  padding: 0.3rem 0.7rem;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 1rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  background: transparent;
+  color: rgba(255,255,255,0.5);
+  transition: all 0.15s;
+  box-shadow: none;
+  --pico-form-element-spacing-vertical: 0;
+  --pico-form-element-spacing-horizontal: 0;
+
+  &.active {
+    background: $bank-red;
+    border-color: $bank-red;
+    color: #fff;
+  }
+
+  &:hover:not(.active) {
+    color: rgba(255,255,255,0.85);
+    border-color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.06);
+  }
 }
 
 // ── Latest Transactions ────────────────────────────────────────────────────────
@@ -576,7 +609,7 @@ app-root > main:has(> app-home) {
 
 .dash-tx-meta {
   font-size: 0.78rem;
-  color: #8a9bb5;
+  color: #a8bdd4;
 }
 
 .dash-tx-cat {
@@ -604,7 +637,7 @@ app-root > main:has(> app-home) {
 
 .dash-tx-date {
   font-size: 0.75rem;
-  color: #8a9bb5;
+  color: #a8bdd4;
 }
 
 .dash-empty {
@@ -773,7 +806,7 @@ app-root > main:has(> app-home) {
 
 .tx-field-label {
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.65);
   font-weight: 500;
 }
 
@@ -878,6 +911,33 @@ app-root > main:has(> app-home) {
         min-height: 0;
         overflow-y: auto;
       }
+
+      .k-message-quick-replies {
+        flex-wrap: wrap;
+        overflow-x: visible;
+        gap: 0.4rem;
+        padding: 0.5rem 0.75rem;
+      }
+
+      .k-quick-reply {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.35rem 0.85rem;
+        border-radius: 1rem;
+        font-size: 0.82rem;
+        font-weight: 500;
+        white-space: nowrap;
+        cursor: pointer;
+        border: 1px solid rgba(255,255,255,0.25);
+        background: rgba(255,255,255,0.08);
+        color: rgba(255,255,255,0.9);
+        transition: background 0.15s, border-color 0.15s;
+
+        &:hover {
+          background: rgba(255,255,255,0.18);
+          border-color: rgba(255,255,255,0.45);
+        }
+      }
     }
   }
 }
@@ -905,4 +965,10 @@ app-root > main:has(> app-home) {
 
 address, blockquote, dl, ol, p, pre, table, ul {
   color: black !important;
+}
+
+.dashboard {
+  address, blockquote, dl, ol, p, pre, table, ul {
+    color: inherit !important;
+  }
 }
