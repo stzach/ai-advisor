@@ -22,6 +22,10 @@ public class UserProductConfiguration : IEntityTypeConfiguration<UserProduct>
             .HasColumnType("decimal(18,2)")
             .IsRequired();
 
+        builder.Property(up => up.CreditLimit)
+            .HasColumnType("decimal(18,2)")
+            .IsRequired(false);
+
         builder.Property(up => up.IsActive)
             .IsRequired();
 

@@ -61,12 +61,12 @@ export class HomeComponent {
     this.payableProducts = computed(() => this.userProducts().filter(p => p.productType === 'Account' || p.productType === 'Card'));
 
     this.expenses = computed<Expense[]>(() => {
-      const txs = this.transactions();
+      const txs = this.transactions().filter(tx => tx.transactionDirection === 'Outgoing');
       if (!txs.length) return [];
 
       const summed = txs.reduce((acc, tx) => {
         const cat = tx.transactionCategory ?? 'Other';
-        acc[cat] = (acc[cat] ?? 0) + tx.amount;
+        acc[cat] = (acc[cat] ?? 0) + Math.abs(tx.amount ?? 0);
         return acc;
       }, {} as Record<string, number>);
 

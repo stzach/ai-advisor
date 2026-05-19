@@ -99,16 +99,17 @@ public class GetUserTransactionsQueryHandlerTests
         {
             new()
             {
-                TransactionId       = transactionId,
-                UserId              = userId,
-                ProductId           = productId,
-                Product             = product,
-                TransactionType     = TransactionType.Loan,
-                TransactionCategory = TransactionCategory.Housing,
-                Amount              = 200000m,
-                From                = "Bank",
-                To                  = "Customer",
-                Created             = created
+                TransactionId        = transactionId,
+                UserId               = userId,
+                ProductId            = productId,
+                Product              = product,
+                TransactionType      = TransactionType.Loan,
+                TransactionCategory  = TransactionCategory.Housing,
+                TransactionDirection = TransactionDirection.Incoming,
+                Amount               = 200000m,
+                From                 = "Bank",
+                To                   = "Customer",
+                Created              = created
             }
         };
 
@@ -123,6 +124,7 @@ public class GetUserTransactionsQueryHandlerTests
         dto.ProductName.ShouldBe("Mortgage Loan");
         dto.TransactionType.ShouldBe(nameof(TransactionType.Loan));
         dto.TransactionCategory.ShouldBe(nameof(TransactionCategory.Housing));
+        dto.TransactionDirection.ShouldBe(nameof(TransactionDirection.Incoming));
         dto.Amount.ShouldBe(200000m);
         dto.From.ShouldBe("Bank");
         dto.To.ShouldBe("Customer");
