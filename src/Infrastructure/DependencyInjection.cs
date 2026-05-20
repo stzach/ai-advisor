@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Azure;
+using Azure.Identity;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -94,22 +95,19 @@ public static class DependencyInjection
         {
             var config = sp.GetRequiredService<IConfiguration>();
 
-            var endpoint = new Uri(config["AzureSearch:Endpoint"]);
-            var indexName = config["AzureSearch:IndexName"];
-            var apiKey = config["AzureSearch:ApiKey"];
+            var endpoint = new Uri(config.GetConnectionString(Services.Search).Replace("Endpoint=", ""));
+            var indexName = "documents_index";
 
-            return new SearchClient(endpoint, indexName, new AzureKeyCredential(apiKey));
+            return new SearchClient(endpoint, indexName, new DefaultAzureCredential());
         });
 
         builder.Services.AddSingleton(sp =>
         {
             var config = sp.GetRequiredService<IConfiguration>();
 
-            var endpoint = new Uri(config["AzureSearch:Endpoint"]);
-            var indexName = config["AzureSearch:IndexName"];
-            var apiKey = config["AzureSearch:ApiKey"];
+            var endpoint = new Uri(config.GetConnectionString(Services.Search).Replace("Endpoint=", ""));
 
-            return new SearchIndexClient(endpoint, new AzureKeyCredential(apiKey));
+            return new SearchIndexClient(endpoint, new DefaultAzureCredential());
         });
     }
 }
