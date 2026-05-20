@@ -28,7 +28,8 @@ public class GetUserProductsQueryHandler : IRequestHandler<GetUserProductsQuery,
                 AvailableBalance   = up.AvailableBalance,
                 IsActive           = up.IsActive,
                 CardNumber         = up.CardNumber,
-                AccountNumber      = up.AccountNumber
+                AccountNumber      = up.AccountNumber,
+                CreditLimit        = up.CreditLimit
             })
             .ToListAsync(cancellationToken);
     }

@@ -28,9 +28,11 @@ export class HomeComponent {
   transactions:    Signal<UserTransactionDto[]>;
   accounts:        Signal<UserProductDto[]>;
   cards:           Signal<UserProductDto[]>;
+  loans:           Signal<UserProductDto[]>;
   payableProducts: Signal<UserProductDto[]>;
   expenses:        Signal<Expense[]>;
   totalExpenses:   Signal<number>;
+  netWorth:        Signal<number>;
   insights:        Signal<InsightDto[]>;
 
   constructor(
@@ -66,10 +68,11 @@ export class HomeComponent {
 
     this.accounts        = computed(() => this.userProducts().filter(p => p.productType === 'Account'));
     this.cards           = computed(() => this.userProducts().filter(p => p.productType === 'Card'));
+    this.loans           = computed(() => this.userProducts().filter(p => p.productType === 'Loan'));
     this.payableProducts = computed(() => this.userProducts().filter(p => p.productType === 'Account' || p.productType === 'Card'));
 
     this.expenses = computed<Expense[]>(() => {
-      const txs = this.transactions().filter(tx => tx.transactionDirection === 'Outgoing');
+      const txs = this.transactions().filter(tx => tx.transactionDirection === 'Outgoing' && tx.transactionType === 'Payment');
       if (!txs.length) return [];
 
       const summed = txs.reduce((acc, tx) => {
@@ -89,6 +92,12 @@ export class HomeComponent {
     });
 
     this.totalExpenses = computed(() => this.expenses().reduce((s, e) => s + e.amount, 0));
+
+    this.netWorth = computed(() => {
+      const assets      = this.userProducts().filter(p => p.productType === 'Account').reduce((s, p) => s + (p.availableBalance ?? 0), 0);
+      const liabilities = this.userProducts().filter(p => p.productType === 'Loan').reduce((s, p) => s + (p.availableBalance ?? 0), 0);
+      return assets - liabilities;
+    });
 
     this.insights = toSignal(
       this.http.get<InsightDto[]>(`${this.baseUrl}/api/AiInsights`).pipe(

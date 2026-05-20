@@ -6,7 +6,15 @@
       <h2 class="dash-greeting">Welcome back, <span class="dash-name">{{ username() }}</span></h2>
       <div class="dash-subtitle">Here's your financial overview</div>
     </div>
-    <button class="dash-new-tx-btn" (click)="openModal()">+ New Transaction</button>
+    <div class="dash-welcome-right">
+      <div class="dash-net-worth">
+        <span class="dash-net-worth-label">Net Worth</span>
+        <span class="dash-net-worth-value" [class.negative]="netWorth() < 0">
+          {{ netWorth() >= 0 ? '' : '-' }}€{{ (netWorth() < 0 ? -netWorth() : netWorth()) | number:'1.2-2' }}
+        </span>
+      </div>
+      <button class="dash-new-tx-btn" (click)="openModal()">+ New Transaction</button>
+    </div>
   </div>
 
   <div class="dash-main-grid">
@@ -56,8 +64,37 @@
             </div>
             <div class="dash-account-balance">€{{ card.availableBalance | number:'1.2-2' }}</div>
           </div>
+          @if (card.creditLimit) {
+            <div class="dash-credit-bar-wrap">
+              <div class="dash-credit-bar">
+                <div class="dash-credit-bar-fill"
+                  [style.width.%]="(card.creditLimit - (card.availableBalance ?? 0)) / card.creditLimit * 100"
+                  [class.danger]="(card.creditLimit - (card.availableBalance ?? 0)) / card.creditLimit > 0.8">
+                </div>
+              </div>
+              <div class="dash-credit-bar-labels">
+                <span>Used €{{ (card.creditLimit - (card.availableBalance ?? 0)) | number:'1.0-0' }}</span>
+                <span>Limit €{{ card.creditLimit | number:'1.0-0' }}</span>
+              </div>
+            </div>
+          }
         }
       </div>
+
+      @if (loans().length) {
+        <div class="dash-card">
+          <h3 class="dash-card-title">Loans</h3>
+          @for (loan of loans(); track loan.productId) {
+            <div class="dash-account-row">
+              <div>
+                <div class="dash-account-name">{{ loan.productName }}</div>
+                <div class="dash-account-iban">{{ loan.accountNumber }}</div>
+              </div>
+              <div class="dash-loan-balance">€{{ loan.availableBalance | number:'1.2-2' }}</div>
+            </div>
+          }
+        </div>
+      }
 
     </div>
   </div>
@@ -90,8 +127,8 @@
     </div>
     @for (tx of transactions(); track tx.transactionId) {
       <div class="dash-tx-row">
-        <div class="dash-tx-icon" [class]="'dash-tx-icon--' + tx.transactionType?.toLowerCase()">
-          {{ tx.transactionType === 'Transfer' ? '↔' : tx.amount > 0 ? '↓' : '↑' }}
+        <div class="dash-tx-icon" [class]="tx.transactionType === 'Transfer' ? 'dash-tx-icon--transfer' : tx.transactionType === 'Loan' ? 'dash-tx-icon--loan' : tx.transactionDirection === 'Incoming' ? 'dash-tx-icon--incoming' : 'dash-tx-icon--payment'">
+          {{ tx.transactionType === 'Transfer' ? '↔' : tx.transactionType === 'Loan' ? '⬆' : tx.transactionDirection === 'Incoming' ? '↓' : '↑' }}
         </div>
         <div class="dash-tx-info">
           <span class="dash-tx-desc">{{ tx.productName }}</span>

@@ -382,6 +382,32 @@ app-root > main:has(> app-home) {
   margin-bottom: 2rem;
 }
 
+.dash-welcome-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.dash-net-worth {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+}
+.dash-net-worth-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255,255,255,0.5);
+}
+.dash-net-worth-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2ecc71;
+  &.negative { color: #e57373; }
+}
+
 .dash-greeting {
   font-size: 1.6rem;
   font-weight: 700;
@@ -447,6 +473,7 @@ app-root > main:has(> app-home) {
 .dash-account-name { font-weight: 600; font-size: 0.95rem; color: #fff; }
 .dash-account-iban { font-size: 0.75rem; color: rgba(255,255,255,0.6); margin-top: 0.15rem; font-family: monospace; }
 .dash-account-balance { font-size: 1.1rem; font-weight: 700; color: #fff; }
+.dash-loan-balance    { font-size: 1.1rem; font-weight: 700; color: #e57373; }
 
 .dash-card-row {
   padding: 0.75rem 0;
@@ -473,6 +500,30 @@ app-root > main:has(> app-home) {
   border: 1px solid rgba($bank-red, 0.4);
   border-radius: 4px;
   padding: 0.1rem 0.4rem;
+}
+
+.dash-credit-bar-wrap {
+  margin-bottom: 0.75rem;
+}
+.dash-credit-bar {
+  height: 5px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 0.3rem;
+}
+.dash-credit-bar-fill {
+  height: 100%;
+  background: #4a90d9;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+  &.danger { background: $bank-red; }
+}
+.dash-credit-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.45);
 }
 
 .dash-card-usage-label {
@@ -591,7 +642,9 @@ app-root > main:has(> app-home) {
   flex-shrink: 0;
 
   &--payment  { background: rgba($bank-red, 0.15);  color: $bank-red;    }
+  &--incoming { background: rgba(46,204,113,0.15);  color: #2ecc71;      }
   &--transfer { background: rgba(74,144,217,0.15);  color: #4a90d9;      }
+  &--loan     { background: rgba(243,156,18,0.15);  color: #f39c12;      }
   &--credit   { background: rgba(46,204,113,0.15);  color: #2ecc71;      }
 }
 
