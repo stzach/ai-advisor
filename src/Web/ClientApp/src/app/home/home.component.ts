@@ -2,7 +2,7 @@ import { Component, computed, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Subject, of } from 'rxjs';
-import { map, startWith, switchMap, catchError } from 'rxjs/operators';
+import { map, startWith, switchMap, catchError, tap } from 'rxjs/operators';
 import { ChatHubService } from '../services/chat-hub.service';
 import { UserProductsClient, UserProductDto, UserTransactionsClient, UserTransactionDto, UsersClient } from '../web-api-client';
 import { API_BASE_URL } from '../web-api-client';
@@ -20,8 +20,9 @@ const CHART_COLORS = ['#4a90d9', '#2ecc71', '#f39c12', '#9b59b6', '#7f8c8d', '#1
   templateUrl: './home.component.html',
 })
 export class HomeComponent {
-  private range$           = new BehaviorSubject<string>('month');
-  private productsRefresh$ = new Subject<void>();
+  private range$            = new BehaviorSubject<string>('month');
+  private productsRefresh$  = new Subject<void>();
+  private insightsLoading$  = new BehaviorSubject<boolean>(true);
 
   username:        Signal<string>;
   userProducts:    Signal<UserProductDto[]>;
@@ -34,6 +35,7 @@ export class HomeComponent {
   totalExpenses:   Signal<number>;
   netWorth:        Signal<number>;
   insights:        Signal<InsightDto[]>;
+  insightsLoading: Signal<boolean>;
 
   constructor(
     public chatHub: ChatHubService,
@@ -108,12 +110,24 @@ export class HomeComponent {
       return assets - liabilities;
     });
 
+    this.insightsLoading = toSignal(this.insightsLoading$, { initialValue: true });
+
     this.insights = toSignal(
-      this.http.get<InsightDto[]>(`${this.baseUrl}/api/AiInsights`).pipe(
-        catchError(() => of([] as InsightDto[]))
+      this.range$.pipe(
+        switchMap(range => {
+          this.insightsLoading$.next(true);
+          const { from, to } = this.toDateRange(range);
+          return this.http.get<InsightDto[]>(`${this.baseUrl}/api/AiInsights`, {
+            params: { from: from.toISOString(), to: to.toISOString() }
+          }).pipe(
+            startWith([] as InsightDto[]),
+            catchError(() => of([] as InsightDto[])),
+            tap({ complete: () => this.insightsLoading$.next(false) })
+          );
+        })
       ),
       { initialValue: [] as InsightDto[] }
-    );
+    ) as Signal<InsightDto[]>;
   }
 
   showModal = false;

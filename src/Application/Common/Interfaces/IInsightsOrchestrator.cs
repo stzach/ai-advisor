@@ -4,5 +4,5 @@ namespace AiAdvisor.Application.Common.Interfaces;
 
 public interface IInsightsOrchestrator
 {
-    Task<List<InsightDto>> GetInsightsAsync(CancellationToken cancellationToken = default);
+    Task<List<InsightDto>> GetInsightsAsync(DateTimeOffset from, DateTimeOffset to, CancellationToken cancellationToken = default);
 }
