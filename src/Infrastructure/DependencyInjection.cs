@@ -2,7 +2,6 @@
 using AiAdvisor.Infrastructure.AI;
 using AiAdvisor.Infrastructure.AI.Services;
 using AiAdvisor.Infrastructure.AI.Services.Options;
-using AiAdvisor.Infrastructure.AI.Tools;
 using AiAdvisor.Infrastructure.Data;
 using AiAdvisor.Infrastructure.Data.Interceptors;
 using AiAdvisor.Infrastructure.Identity;
@@ -82,7 +81,6 @@ public static class DependencyInjection
         builder.Services.AddScoped<IEmbeddingsProvider, EmbeddingsProvider>();
         builder.Services.AddScoped<IDocumentVectorizationService, DocumentVectorizationService>();
         builder.Services.AddScoped<IFinancialDocumentSearchService, FinancialDocumentSearchService>();
-        builder.Services.AddScoped<FinancialDocumentSearchTool>();
 
         // Background Services
         builder.Services.AddHostedService<DocumentVectorizationBackgroundService>();
