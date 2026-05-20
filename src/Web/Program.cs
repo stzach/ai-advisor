@@ -64,7 +64,7 @@ app.MapVectorizationEndpoints();
 app.MapFinancialDocumentSearchEndpoints();
 
 var creator = new AzureSearchIndexCreator(
-    endpoint: builder.Configuration.GetConnectionString(Services.Search));
+    endpoint: builder.Configuration.GetConnectionString(Services.Search).Replace("Endpoint=", ""));
 
 await creator.CreateIndexAsync("documents_index");
 
