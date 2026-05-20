@@ -1,5 +1,6 @@
 using AiAdvisor.Infrastructure.Data;
 using AiAdvisor.Shared;
+using AiAdvisor.Web.Endpoints;
 using AiAdvisor.Web.Endpoints.Admin;
 using Scalar.AspNetCore;
 using AiAdvisor.Web.Hubs;
@@ -60,7 +61,7 @@ app.UseAuthorization();
 app.MapDefaultEndpoints();
 app.MapEndpoints(typeof(Program).Assembly);
 app.MapVectorizationEndpoints();
-
+app.MapFinancialDocumentSearchEndpoints();
 
 var creator = new AzureSearchIndexCreator(
     endpoint: builder.Configuration.GetValue<string>("AzureSearch:Endpoint"),

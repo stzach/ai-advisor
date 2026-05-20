@@ -1,6 +1,7 @@
 ﻿using AiAdvisor.Application.Common.Interfaces;
 using AiAdvisor.Infrastructure.AI;
 using AiAdvisor.Infrastructure.AI.Services;
+using AiAdvisor.Infrastructure.AI.Services.Options;
 using AiAdvisor.Infrastructure.AI.Tools;
 using AiAdvisor.Infrastructure.Data;
 using AiAdvisor.Infrastructure.Data.Interceptors;
@@ -13,7 +14,6 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Azure;
-using AiAdvisor.Infrastructure.AI.Services.Options;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -67,6 +67,10 @@ public static class DependencyInjection
 
         // Document Vectorization & Search
         builder.Services.AddSingleton<IMarkdownChunkingService, MarkdownChunkingService>();
+        builder.Services.AddOptions<DocumentIngestionOptions>()
+            .Bind(builder.Configuration.GetSection("DocumentIngestion"))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
         builder.Services.AddOptions<AzureOpenAiOptions>()
             .Bind(builder.Configuration.GetSection("AzureOpenAIEmbedings"))
             .ValidateDataAnnotations()

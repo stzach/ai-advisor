@@ -28,6 +28,16 @@ interface UserTransactionDto {
   created: string;
 }
 
+interface FinancialDocumentSearchResultDto {
+  id: string;
+  content: string;
+  sourceFileName: string;
+  sectionHeading: string;
+  relevanceScore: number;
+  chunkIndex: number;
+  totalChunks: number;
+}
+
 @Component({
   standalone: false,
   selector: 'app-home',
@@ -49,6 +59,10 @@ export class HomeComponent implements OnInit {
     { icon: '🏦', message: 'A savings account could earn you €312/year in interest.',          cta: 'Open savings account', prompt: 'How much can I earn by moving money to savings?' },
     { icon: '💳', message: 'You have €1,380 available credit across your cards.',              cta: 'View card offers',     prompt: 'What is my available credit and how should I use it?' },
   ];
+
+  searchQuery = '';
+  searchResults: FinancialDocumentSearchResultDto[] = [];
+  isSearching = false;
 
   private readonly categoryColors: Record<TransactionCategory, string> = {
     [TransactionCategory.Housing]:       '#c8102e',
@@ -123,6 +137,33 @@ export class HomeComponent implements OnInit {
       amount,
       color: this.categoryColors[category] ?? '#95a5a6',
     }));
+  }
+
+  searchDocuments(): void {
+    if (!this.searchQuery.trim()) {
+      this.searchResults = [];
+      return;
+    }
+
+    this.isSearching = true;
+    this.searchResults = [];
+
+    this.http
+      .post<FinancialDocumentSearchResultDto[]>(
+        `${this.baseUrl}/api/financial-documents/search`,
+        { query: this.searchQuery.trim(), topK: 5 }
+      )
+      .subscribe({
+        next: results => {
+          this.searchResults = results;
+        },
+        error: () => {
+          this.searchResults = [];
+        },
+        complete: () => {
+          this.isSearching = false;
+        }
+      });
   }
 
   get totalExpenses(): number {

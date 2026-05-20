@@ -98,5 +98,125 @@
       </div>
     }
   </div>
+<div class="dash-card dash-document-search">
+
+  <div class="dash-card-header">
+    <div>
+      <h3 class="dash-card-title">Document Search</h3>
+      <p class="dash-card-subtitle">
+        Search across your indexed financial documents and reports.
+      </p>
+    </div>
+  </div>
+
+  <div class="dash-search-form">
+
+    <label for="documentSearchQuery" class="dash-search-label">
+      Search financial documents
+    </label>
+
+    <div class="dash-search-input-group">
+
+      <input
+        id="documentSearchQuery"
+        type="search"
+        placeholder="Try: revenue growth, EBITDA, Q4 guidance..."
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="searchDocuments()"
+      />
+
+      <button
+        class="contrast dash-search-btn"
+        type="button"
+        (click)="searchDocuments()"
+        [disabled]="isSearching || !searchQuery.trim()"
+      >
+        @if (!isSearching) {
+          <span>Search</span>
+        } @else {
+          <span class="dash-spinner"></span>
+          <span>Searching...</span>
+        }
+      </button>
+
+    </div>
+  </div>
+
+  @if (isSearching) {
+    <div class="dash-loading-state">
+      <div class="dash-loading-card"></div>
+      <div class="dash-loading-card"></div>
+      <div class="dash-loading-card"></div>
+    </div>
+  }
+
+  @if (!isSearching && searchResults.length > 0) {
+
+    <div class="dash-results-header">
+      <div>
+        <strong>{{ searchResults.length }}</strong>
+        results found
+      </div>
+    </div>
+
+    <div class="dash-search-results">
+
+      @for (result of searchResults; track result.id) {
+
+        <article class="dash-search-result">
+
+          <div class="dash-search-result-top">
+
+            <div>
+              <h4>{{ result.sourceFileName }}</h4>
+
+              @if (result.sectionHeading) {
+                <p class="dash-section-heading">
+                  {{ result.sectionHeading }}
+                </p>
+              }
+            </div>
+
+            <div
+              class="dash-search-score"
+              [class.high-score]="result.relevanceScore >= 0.85"
+              [class.medium-score]="result.relevanceScore >= 0.65 && result.relevanceScore < 0.85"
+              [class.low-score]="result.relevanceScore < 0.65"
+            >
+              {{ result.relevanceScore | percent:'1.0-0' }} Match
+            </div>
+
+          </div>
+
+          <div class="dash-result-content">
+            <p>{{ result.content }}</p>
+          </div>
+
+          <div class="dash-result-footer">
+            <span>
+              Chunk {{ result.chunkIndex + 1 }} / {{ result.totalChunks }}
+            </span>
+          </div>
+
+        </article>
+      }
+
+    </div>
+  }
+
+  @if (!isSearching && searchQuery.trim() && searchResults.length === 0) {
+
+    <div class="dash-empty-state">
+      <div class="dash-empty-icon">🔍</div>
+
+      <h4>No matching documents found</h4>
+
+      <p>
+        Try broader keywords or different financial terminology.
+      </p>
+    </div>
+  }
+
+</div>
 
 </div>
