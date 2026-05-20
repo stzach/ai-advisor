@@ -23,8 +23,12 @@ public class CreateUserTransactionCommandHandler : IRequestHandler<CreateUserTra
         if (userProduct is null)
             throw new InvalidOperationException($"Product {request.ProductId} not found for user.");
 
+        var absAmount = Math.Abs(request.Amount);
+
         if (request.TransactionDirection == TransactionDirection.Outgoing)
-            userProduct.AvailableBalance -= request.Amount;
+            userProduct.AvailableBalance -= absAmount;
+        else
+            userProduct.AvailableBalance += absAmount;
 
         var entity = new UserTransaction
         {
@@ -33,7 +37,7 @@ public class CreateUserTransactionCommandHandler : IRequestHandler<CreateUserTra
             TransactionType      = request.TransactionType,
             TransactionCategory  = request.TransactionCategory,
             TransactionDirection = request.TransactionDirection,
-            Amount               = request.Amount,
+            Amount               = request.TransactionDirection == TransactionDirection.Outgoing ? -absAmount : absAmount,
             From                 = request.From,
             To                   = request.To
         };
