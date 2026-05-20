@@ -2,7 +2,7 @@ import { Component, computed, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Subject, of } from 'rxjs';
-import { map, startWith, switchMap, catchError } from 'rxjs/operators';
+import { map, startWith, switchMap, catchError, tap } from 'rxjs/operators';
 import { ChatHubService } from '../services/chat-hub.service';
 import { UserProductsClient, UserProductDto, UserTransactionsClient, UserTransactionDto, UsersClient } from '../web-api-client';
 import { API_BASE_URL } from '../web-api-client';
@@ -31,8 +31,9 @@ interface FinancialDocumentSearchResultDto {
 })
 
 export class HomeComponent {
-  private range$           = new BehaviorSubject<string>('month');
-  private productsRefresh$ = new Subject<void>();
+  private range$            = new BehaviorSubject<string>('month');
+  private productsRefresh$  = new Subject<void>();
+  private insightsLoading$  = new BehaviorSubject<boolean>(true);
 
   username:        Signal<string>;
   userProducts:    Signal<UserProductDto[]>;
@@ -45,6 +46,7 @@ export class HomeComponent {
   totalExpenses:   Signal<number>;
   netWorth:        Signal<number>;
   insights:        Signal<InsightDto[]>;
+  insightsLoading: Signal<boolean>;
 
   constructor(
     public chatHub: ChatHubService,
@@ -83,7 +85,16 @@ export class HomeComponent {
     this.payableProducts = computed(() => this.userProducts().filter(p => p.productType === 'Account' || p.productType === 'Card'));
 
     this.expenses = computed<Expense[]>(() => {
-      const txs = this.transactions().filter(tx => tx.transactionDirection === 'Outgoing' && tx.transactionType === 'Payment');
+      const ownNumbers = new Set(
+        this.userProducts().flatMap(p => [p.accountNumber, p.cardNumber]).filter(Boolean) as string[]
+      );
+
+      const txs = this.transactions().filter(tx => {
+        if (tx.transactionDirection !== 'Outgoing') return false;
+        if (tx.transactionType === 'Loan') return false;
+        if (tx.transactionType === 'Transfer') return !ownNumbers.has(tx.to ?? '');
+        return true; // Payment
+      });
       if (!txs.length) return [];
 
       const summed = txs.reduce((acc, tx) => {
@@ -110,12 +121,24 @@ export class HomeComponent {
       return assets - liabilities;
     });
 
+    this.insightsLoading = toSignal(this.insightsLoading$, { initialValue: true });
+
     this.insights = toSignal(
-      this.http.get<InsightDto[]>(`${this.baseUrl}/api/AiInsights`).pipe(
-        catchError(() => of([] as InsightDto[]))
+      this.range$.pipe(
+        switchMap(range => {
+          this.insightsLoading$.next(true);
+          const { from, to } = this.toDateRange(range);
+          return this.http.get<InsightDto[]>(`${this.baseUrl}/api/AiInsights`, {
+            params: { from: from.toISOString(), to: to.toISOString() }
+          }).pipe(
+            startWith([] as InsightDto[]),
+            catchError(() => of([] as InsightDto[])),
+            tap({ complete: () => this.insightsLoading$.next(false) })
+          );
+        })
       ),
       { initialValue: [] as InsightDto[] }
-    );
+    ) as Signal<InsightDto[]>;
   }
 
   showModal = false;
