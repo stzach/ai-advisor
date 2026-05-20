@@ -1,13 +1,20 @@
 ﻿using AiAdvisor.Application.Common.Interfaces;
 using AiAdvisor.Infrastructure.AI;
+using AiAdvisor.Infrastructure.AI.Services;
+using AiAdvisor.Infrastructure.AI.Services.Options;
+using AiAdvisor.Infrastructure.AI.Tools;
 using AiAdvisor.Infrastructure.Data;
 using AiAdvisor.Infrastructure.Data.Interceptors;
 using AiAdvisor.Infrastructure.Identity;
+using Azure.Search.Documents;
+using Azure.Search.Documents.Indexes;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Azure;
+using Azure.Identity;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -58,6 +65,51 @@ public static class DependencyInjection
         builder.Services.AddScoped<IChatService, ChatService>();
         builder.Services.AddScoped<IFinancialDataAgent, FinancialDataAgent>();
         builder.Services.AddScoped<IAdvisorAgent, AdvisorAgent>();
+
+        // Document Vectorization & Search
+        builder.Services.AddSingleton<IMarkdownChunkingService, MarkdownChunkingService>();
+        builder.Services.AddOptions<DocumentIngestionOptions>()
+            .Bind(builder.Configuration.GetSection("DocumentIngestion"))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        builder.Services.AddOptions<AzureOpenAiOptions>()
+            .Bind(builder.Configuration.GetSection("AzureOpenAIEmbedings"))
+            .ValidateDataAnnotations()
+            .Validate(options => !string.IsNullOrWhiteSpace(options.Endpoint), "Azure OpenAI endpoint must be configured.")
+            .Validate(options => !string.IsNullOrWhiteSpace(options.ApiKey), "Azure OpenAI API key must be configured.")
+            .Validate(options => !string.IsNullOrWhiteSpace(options.EmbeddingDeployment), "Azure OpenAI embedding deployment must be configured.")
+            .ValidateOnStart();
+        builder.Services.AddScoped<IEmbeddingsProvider, EmbeddingsProvider>();
+        builder.Services.AddScoped<IDocumentVectorizationService, DocumentVectorizationService>();
+        builder.Services.AddScoped<IFinancialDocumentSearchService, FinancialDocumentSearchService>();
+        builder.Services.AddScoped<FinancialDocumentSearchTool>();
+
+        // Background Services
+        builder.Services.AddHostedService<DocumentVectorizationBackgroundService>();
+
+        // Azure Search clients
+        builder.AddAzureSearchClient(Services.Search);
+
+        
+        builder.Services.AddSingleton(sp =>
+        {
+            var config = sp.GetRequiredService<IConfiguration>();
+
+            var endpoint = new Uri(config.GetConnectionString(Services.Search).Replace("Endpoint=", ""));
+            var indexName = "documents_index";
+
+            return new SearchClient(endpoint, indexName, new DefaultAzureCredential());
+        });
+
+        builder.Services.AddSingleton(sp =>
+        {
+            var config = sp.GetRequiredService<IConfiguration>();
+
+            var endpoint = new Uri(config.GetConnectionString(Services.Search).Replace("Endpoint=", ""));
+
+            return new SearchIndexClient(endpoint, new DefaultAzureCredential());
+        });
+
         builder.Services.AddScoped<IInsightsOrchestrator, InsightsOrchestrator>();
     }
 }

@@ -14,11 +14,22 @@ interface Expense   { category: string; amount: number; color: string; }
 
 const CHART_COLORS = ['#4a90d9', '#2ecc71', '#f39c12', '#9b59b6', '#7f8c8d', '#1abc9c', '#e67e22'];
 
+interface FinancialDocumentSearchResultDto {
+  id: string;
+  content: string;
+  sourceFileName: string;
+  sectionHeading: string;
+  relevanceScore: number;
+  chunkIndex: number;
+  totalChunks: number;
+}
+
 @Component({
   standalone: false,
   selector: 'app-home',
   templateUrl: './home.component.html',
 })
+
 export class HomeComponent {
   private range$           = new BehaviorSubject<string>('month');
   private productsRefresh$ = new Subject<void>();
@@ -160,6 +171,40 @@ export class HomeComponent {
     return { from, to };
   }
 
+  searchQuery = '';
+  searchResults: FinancialDocumentSearchResultDto[] = [];
+  isSearching = false;
+
+  searchDocuments(): void {
+    if (!this.searchQuery.trim()) {
+      this.searchResults = [];
+      return;
+    }
+
+    this.isSearching = true;
+    this.searchResults = [];
+
+    this.http
+      .post<FinancialDocumentSearchResultDto[]>(
+        `${this.baseUrl}/api/financial-documents/search`,
+        { query: this.searchQuery.trim(), topK: 5 }
+      )
+      .subscribe({
+        next: results => {
+          this.searchResults = results;
+        },
+        error: () => {
+          this.searchResults = [];
+        },
+        complete: () => {
+          this.isSearching = false;
+        }
+      });
+  }
+
+  get totalExpenses(): number {
+    return this.expenses.reduce((s, e) => s + e.amount, 0);
+    
   submitTransaction() {
     if (!this.modalAmount || this.modalAmount <= 0 || !this.modalFromProductId) return;
 

@@ -1,7 +1,10 @@
 using AiAdvisor.Infrastructure.Data;
 using AiAdvisor.Shared;
+using AiAdvisor.Web.Endpoints;
+using AiAdvisor.Web.Endpoints.Admin;
 using Scalar.AspNetCore;
 using AiAdvisor.Web.Hubs;
+using AiAdvisor.Infrastructure.AI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +25,9 @@ var signalRBuilder = builder.Services.AddSignalR();
 if (!string.IsNullOrEmpty(builder.Configuration.GetConnectionString(Services.SignalR)))
     signalRBuilder.AddNamedAzureSignalR(Services.SignalR);
 
+builder.Services.AddSingleton<IAzureSearchService, AzureSearchService>();
+
+builder.Services.AddSingleton<DocumentVectorizationBackgroundService>();
 
 var app = builder.Build();
 
@@ -52,6 +58,13 @@ app.UseAuthorization();
 
 app.MapDefaultEndpoints();
 app.MapEndpoints(typeof(Program).Assembly);
+app.MapVectorizationEndpoints();
+app.MapFinancialDocumentSearchEndpoints();
+
+var creator = new AzureSearchIndexCreator(
+    endpoint: builder.Configuration.GetConnectionString(Services.Search).Replace("Endpoint=", ""));
+
+await creator.CreateIndexAsync("documents_index");
 
 app.MapHub<NotificationHub>("/chat").ExcludeFromApiReference().ExcludeFromDescription();
 app.MapHub<ChatHub>("/ai-chat").ExcludeFromApiReference().ExcludeFromDescription();
