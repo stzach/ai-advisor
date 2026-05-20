@@ -72,7 +72,16 @@ export class HomeComponent {
     this.payableProducts = computed(() => this.userProducts().filter(p => p.productType === 'Account' || p.productType === 'Card'));
 
     this.expenses = computed<Expense[]>(() => {
-      const txs = this.transactions().filter(tx => tx.transactionDirection === 'Outgoing' && tx.transactionType === 'Payment');
+      const ownNumbers = new Set(
+        this.userProducts().flatMap(p => [p.accountNumber, p.cardNumber]).filter(Boolean) as string[]
+      );
+
+      const txs = this.transactions().filter(tx => {
+        if (tx.transactionDirection !== 'Outgoing') return false;
+        if (tx.transactionType === 'Loan') return false;
+        if (tx.transactionType === 'Transfer') return !ownNumbers.has(tx.to ?? '');
+        return true; // Payment
+      });
       if (!txs.length) return [];
 
       const summed = txs.reduce((acc, tx) => {

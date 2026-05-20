@@ -20,8 +20,16 @@
   <div class="dash-main-grid">
 
     <div class="dash-card">
-      <h3 class="dash-card-title">Expenses by Category - {{ rangeLabel() }}</h3>
-      <p class="dash-total">Total: €{{ totalExpenses() | number:'1.2-2' }}</p>
+      <div class="dash-expenses-header">
+        <div>
+          <h3 class="dash-card-title">Expenses by Category</h3>
+          <span class="dash-expenses-range">{{ rangeLabel() }}</span>
+        </div>
+        <div class="dash-expenses-total">
+          <span class="dash-expenses-total-label">Total Spent</span>
+          <span class="dash-expenses-total-value">€{{ totalExpenses() | number:'1.2-2' }}</span>
+        </div>
+      </div>
       <kendo-chart style="height: 280px;">
         <kendo-chart-series>
           <kendo-chart-series-item
@@ -60,7 +68,7 @@
             <div class="dash-card-info">
               <span class="dash-card-name">{{ card.productName }}</span>
               <span class="dash-card-number">{{ card.cardNumber }}</span>
-              <span class="dash-card-badge">{{ card.productType }}</span>
+              <span class="dash-card-badge">{{ card.productDescription }}</span>
             </div>
             <div class="dash-account-balance">€{{ card.availableBalance | number:'1.2-2' }}</div>
           </div>
