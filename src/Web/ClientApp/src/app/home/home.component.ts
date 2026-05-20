@@ -202,8 +202,6 @@ export class HomeComponent {
       });
   }
 
-  get totalExpenses(): number {
-    return this.expenses.reduce((s, e) => s + e.amount, 0);
     
   submitTransaction() {
     if (!this.modalAmount || this.modalAmount <= 0 || !this.modalFromProductId) return;
