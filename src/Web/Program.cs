@@ -64,10 +64,9 @@ app.MapVectorizationEndpoints();
 app.MapFinancialDocumentSearchEndpoints();
 
 var creator = new AzureSearchIndexCreator(
-    endpoint: builder.Configuration.GetValue<string>("AzureSearch:Endpoint"),
-    apiKey: builder.Configuration.GetValue<string>("AzureSearch:ApiKey"));
+    endpoint: builder.Configuration.GetConnectionString(Services.Search));
 
-await creator.CreateIndexAsync( builder.Configuration.GetValue<string>("AzureSearch:indexName"));
+await creator.CreateIndexAsync("documents_index");
 
 app.MapHub<NotificationHub>("/chat").ExcludeFromApiReference().ExcludeFromDescription();
 app.MapHub<ChatHub>("/ai-chat").ExcludeFromApiReference().ExcludeFromDescription();

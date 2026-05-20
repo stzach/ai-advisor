@@ -1,4 +1,5 @@
 using Azure;
+using Azure.Identity;
 using Azure.Search.Documents.Indexes;
 using Azure.Search.Documents.Indexes.Models;
 
@@ -8,11 +9,11 @@ public class AzureSearchIndexCreator
 {
     private readonly SearchIndexClient _indexClient;
 
-    public AzureSearchIndexCreator(string endpoint, string apiKey)
+    public AzureSearchIndexCreator(string endpoint)
     {
         _indexClient = new SearchIndexClient(
             new Uri(endpoint),
-            new AzureKeyCredential(apiKey));
+            new DefaultAzureCredential()); //AzureKeyCredential(apiKey));
     }
 
     public async Task CreateIndexAsync(string indexName)
