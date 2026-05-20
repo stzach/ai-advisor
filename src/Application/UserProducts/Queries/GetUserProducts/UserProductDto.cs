@@ -11,4 +11,5 @@ public class UserProductDto
     public bool IsActive { get; init; }
     public string? CardNumber { get; init; }
     public string? AccountNumber { get; init; }
+    public decimal? CreditLimit { get; init; }
 }

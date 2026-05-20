@@ -3,21 +3,30 @@
   <!-- Welcome -->
   <div class="dash-welcome">
     <div>
-      <h2 class="dash-greeting">Welcome back, <span class="dash-name">{{ username }}</span></h2>
-      <p class="dash-subtitle">Here's your financial overview</p>
+      <h2 class="dash-greeting">Welcome back, <span class="dash-name">{{ username() }}</span></h2>
+      <div class="dash-subtitle">Here's your financial overview</div>
+    </div>
+    <div class="dash-welcome-right">
+      <div class="dash-net-worth">
+        <span class="dash-net-worth-label">Net Worth</span>
+        <span class="dash-net-worth-value" [class.negative]="netWorth() < 0">
+          {{ netWorth() >= 0 ? '' : '-' }}€{{ (netWorth() < 0 ? -netWorth() : netWorth()) | number:'1.2-2' }}
+        </span>
+      </div>
+      <button class="dash-new-tx-btn" (click)="openModal()">+ New Transaction</button>
     </div>
   </div>
 
   <div class="dash-main-grid">
 
     <div class="dash-card">
-      <h3 class="dash-card-title">Expenses by Category</h3>
-      <p class="dash-total">Total: €{{ totalExpenses | number:'1.2-2' }}</p>
+      <h3 class="dash-card-title">Expenses by Category - {{ rangeLabel() }}</h3>
+      <p class="dash-total">Total: €{{ totalExpenses() | number:'1.2-2' }}</p>
       <kendo-chart style="height: 280px;">
         <kendo-chart-series>
           <kendo-chart-series-item
             type="donut"
-            [data]="expenses"
+            [data]="expenses()"
             field="amount"
             categoryField="category"
             colorField="color"
@@ -33,30 +42,59 @@
 
       <div class="dash-card">
         <h3 class="dash-card-title">Accounts</h3>
-        @for (account of accounts; track account.iban) {
+        @for (account of accounts(); track account.productId) {
           <div class="dash-account-row">
             <div>
-              <div class="dash-account-name">{{ account.name }}</div>
-              <div class="dash-account-iban">{{ account.iban }}</div>
+              <div class="dash-account-name">{{ account.productName }}</div>
+              <div class="dash-account-iban">{{ account.accountNumber }}</div>
             </div>
-            <div class="dash-account-balance">€{{ account.balance | number:'1.2-2' }}</div>
+            <div class="dash-account-balance">€{{ account.availableBalance | number:'1.2-2' }}</div>
           </div>
         }
       </div>
 
       <div class="dash-card">
         <h3 class="dash-card-title">Cards</h3>
-        @for (card of cards; track card.number) {
+        @for (card of cards(); track card.productId) {
           <div class="dash-card-row">
             <div class="dash-card-info">
-              <span class="dash-card-name">{{ card.name }}</span>
-              <span class="dash-card-number">{{ card.number }}</span>
-              <span class="dash-card-badge">{{ card.type }}</span>
+              <span class="dash-card-name">{{ card.productName }}</span>
+              <span class="dash-card-number">{{ card.cardNumber }}</span>
+              <span class="dash-card-badge">{{ card.productType }}</span>
             </div>
-            <div class="dash-account-balance">€{{ card.balance | number:'1.2-2' }}</div>
+            <div class="dash-account-balance">€{{ card.availableBalance | number:'1.2-2' }}</div>
           </div>
+          @if (card.creditLimit) {
+            <div class="dash-credit-bar-wrap">
+              <div class="dash-credit-bar">
+                <div class="dash-credit-bar-fill"
+                  [style.width.%]="(card.creditLimit - (card.availableBalance ?? 0)) / card.creditLimit * 100"
+                  [class.danger]="(card.creditLimit - (card.availableBalance ?? 0)) / card.creditLimit > 0.8">
+                </div>
+              </div>
+              <div class="dash-credit-bar-labels">
+                <span>Used €{{ (card.creditLimit - (card.availableBalance ?? 0)) | number:'1.0-0' }}</span>
+                <span>Limit €{{ card.creditLimit | number:'1.0-0' }}</span>
+              </div>
+            </div>
+          }
         }
       </div>
+
+      @if (loans().length) {
+        <div class="dash-card">
+          <h3 class="dash-card-title">Loans</h3>
+          @for (loan of loans(); track loan.productId) {
+            <div class="dash-account-row">
+              <div>
+                <div class="dash-account-name">{{ loan.productName }}</div>
+                <div class="dash-account-iban">{{ loan.accountNumber }}</div>
+              </div>
+              <div class="dash-loan-balance">€{{ loan.availableBalance | number:'1.2-2' }}</div>
+            </div>
+          }
+        </div>
+      }
 
     </div>
   </div>
@@ -65,7 +103,10 @@
     <h3 class="dash-card-title">
       <span class="dash-insights-icon">🤖</span> AI Advisor Insights
     </h3>
-    @for (insight of insights; track insight.message) {
+    @if (!insights().length) {
+      <p class="dash-empty">Generating insights…</p>
+    }
+    @for (insight of insights(); track insight.message) {
       <div class="dash-insight-row">
         <span class="dash-insight-icon">{{ insight.icon }}</span>
         <span class="dash-insight-message">{{ insight.message }}</span>
@@ -75,27 +116,38 @@
   </div>
 
   <div class="dash-card dash-transactions">
-    <h3 class="dash-card-title">Latest Transactions</h3>
-    @for (tx of transactions; track tx.description) {
+    <div class="dash-tx-header">
+      <h3 class="dash-card-title">Transactions · {{ rangeLabel() }}</h3>
+      <div class="dash-range-tabs">
+        <button class="dash-range-tab" [class.active]="selectedRange === 'month'"   (click)="setRange('month')">This Month</button>
+        <button class="dash-range-tab" [class.active]="selectedRange === '3months'" (click)="setRange('3months')">3M</button>
+        <button class="dash-range-tab" [class.active]="selectedRange === '6months'" (click)="setRange('6months')">6M</button>
+        <button class="dash-range-tab" [class.active]="selectedRange === 'year'"    (click)="setRange('year')">1Y</button>
+      </div>
+    </div>
+    @for (tx of transactions(); track tx.transactionId) {
       <div class="dash-tx-row">
-        <div class="dash-tx-icon" [class]="'dash-tx-icon--' + tx.type">
-          {{ tx.type === TransactionType.Transfer ? '↔' : tx.amount > 0 ? '↓' : '↑' }}
+        <div class="dash-tx-icon" [class]="tx.transactionType === 'Transfer' ? 'dash-tx-icon--transfer' : tx.transactionType === 'Loan' ? 'dash-tx-icon--loan' : tx.transactionDirection === 'Incoming' ? 'dash-tx-icon--incoming' : 'dash-tx-icon--payment'">
+          {{ tx.transactionType === 'Transfer' ? '↔' : tx.transactionType === 'Loan' ? '⬆' : tx.transactionDirection === 'Incoming' ? '↓' : '↑' }}
         </div>
         <div class="dash-tx-info">
-          <span class="dash-tx-desc">{{ tx.description }}</span>
+          <span class="dash-tx-desc">{{ tx.productName }}</span>
           <span class="dash-tx-meta">
             {{ tx.from }}
-            @if (tx.type !== TransactionType.Loan) { <span>→ {{ tx.to }}</span> }
-            @if (tx.category) { · <span class="dash-tx-cat">{{ tx.category }}</span> }
+            @if (tx.transactionType !== 'Loan') { <span>→ {{ tx.to }}</span> }
+            @if (tx.transactionCategory) { · <span class="dash-tx-cat">{{ tx.transactionCategory }}</span> }
           </span>
         </div>
         <div class="dash-tx-right">
           <span class="dash-tx-amount" [class.positive]="tx.amount > 0" [class.negative]="tx.amount < 0">
             {{ tx.amount > 0 ? '+' : '' }}€{{ tx.amount | number:'1.2-2' }}
           </span>
-          <span class="dash-tx-date">{{ tx.date | date:'dd MMM' }}</span>
+          <span class="dash-tx-date">{{ tx.created | date:'dd MMM' }}</span>
         </div>
       </div>
+    }
+    @if (!transactions().length) {
+      <p class="dash-empty">No transactions for this period.</p>
     }
   </div>
 <div class="dash-card dash-document-search">
@@ -220,3 +272,51 @@
 </div>
 
 </div>
+
+@if (showModal) {
+  <div class="tx-modal-overlay" (click)="closeModal()">
+    <div class="tx-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+
+      <div class="tx-modal-header">
+        <span class="tx-modal-title">New Transaction</span>
+        <button class="tx-modal-close" (click)="closeModal()" aria-label="Close">✕</button>
+      </div>
+
+      <div class="tx-tabs">
+        <button class="tx-tab" [class.active]="modalTab === 'payment'"  (click)="modalTab = 'payment'">Payment</button>
+        <button class="tx-tab" [class.active]="modalTab === 'transfer'" (click)="modalTab = 'transfer'">Transfer</button>
+      </div>
+
+      <div class="tx-fields-row">
+        <div class="tx-field-group">
+          <span class="tx-field-label">From</span>
+          <select class="tx-select" [(ngModel)]="modalFromProductId">
+            @for (p of payableProducts(); track p.productId) {
+              <option [value]="p.productId">{{ productLabel(p) }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="tx-field-group">
+          <span class="tx-field-label">To</span>
+          <input class="tx-input" type="text" [(ngModel)]="modalTo"
+            [placeholder]="modalTab === 'payment' ? 'Recipient / merchant' : 'IBAN or account'" />
+        </div>
+      </div>
+
+      <div class="tx-field-group">
+        <span class="tx-field-label">Amount (€)</span>
+        <input class="tx-input" type="number" [(ngModel)]="modalAmount" min="0.01" step="0.01" placeholder="0.00" />
+      </div>
+
+      @if (submitError) {
+        <p class="tx-error">{{ submitError }}</p>
+      }
+
+      <button class="tx-submit-btn" (click)="submitTransaction()" [disabled]="submitting">
+        {{ submitting ? 'Processing…' : 'Submit' }}
+      </button>
+
+    </div>
+  </div>
+}

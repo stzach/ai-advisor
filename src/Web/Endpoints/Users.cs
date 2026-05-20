@@ -12,6 +12,7 @@ public class Users : IEndpointGroup
         groupBuilder.MapIdentityApi<ApplicationUser>();
 
         groupBuilder.MapPost(Logout, "logout").RequireAuthorization();
+        groupBuilder.MapGet(Me, "me").RequireAuthorization();
     }
 
     [EndpointSummary("Log out")]
@@ -26,4 +27,14 @@ public class Users : IEndpointGroup
 
         return TypedResults.Unauthorized();
     }
+
+    [EndpointSummary("Get current user profile")]
+    [EndpointDescription("Returns the first name and last name of the currently authenticated user.")]
+    public static async Task<Ok<UserProfileDto>> Me(UserManager<ApplicationUser> userManager, HttpContext httpContext)
+    {
+        var user = await userManager.GetUserAsync(httpContext.User);
+        return TypedResults.Ok(new UserProfileDto(user?.FirstName, user?.LastName));
+    }
 }
+
+public record UserProfileDto(string? FirstName, string? LastName);

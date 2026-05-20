@@ -8,6 +8,8 @@ public class UserProduct : BaseAuditableEntity
 
     public decimal AvailableBalance { get; set; }
 
+    public decimal? CreditLimit { get; set; }
+
     public bool IsActive { get; set; }
 
     public string? CardNumber { get; set; }

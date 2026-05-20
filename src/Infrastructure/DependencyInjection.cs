@@ -109,5 +109,7 @@ public static class DependencyInjection
 
             return new SearchIndexClient(endpoint, new DefaultAzureCredential());
         });
+
+        builder.Services.AddScoped<IInsightsOrchestrator, InsightsOrchestrator>();
     }
 }
