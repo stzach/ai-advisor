@@ -2,13 +2,15 @@ import { Component, computed, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Subject, of } from 'rxjs';
-import { map, startWith, switchMap, catchError } from 'rxjs/operators';
+import { map, startWith, switchMap, catchError, shareReplay } from 'rxjs/operators';
 import { ChatHubService } from '../services/chat-hub.service';
 import { UserProductsClient, UserProductDto, UserTransactionsClient, UserTransactionDto, UsersClient } from '../web-api-client';
 import { API_BASE_URL } from '../web-api-client';
 import { Inject } from '@angular/core';
 
 interface InsightDto { icon: string; message: string; cta: string; prompt: string; }
+
+interface ProductRecommendationDto { productName: string; redirectUri: string; reason: string; }
 
 interface Expense   { category: string; amount: number; color: string; }
 
@@ -45,6 +47,8 @@ export class HomeComponent {
   totalExpenses:   Signal<number>;
   netWorth:        Signal<number>;
   insights:        Signal<InsightDto[]>;
+  productRecommendations: Signal<ProductRecommendationDto[]>;
+  isLoadingRecommendations = true;
 
   constructor(
     public chatHub: ChatHubService,
@@ -116,6 +120,18 @@ export class HomeComponent {
       ),
       { initialValue: [] as InsightDto[] }
     );
+
+    const recommendations$ = this.http.get<ProductRecommendationDto[]>(`${this.baseUrl}/api/ProductRecommendations`).pipe(
+      catchError(() => of([] as ProductRecommendationDto[])),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
+
+    this.productRecommendations = toSignal(recommendations$, { initialValue: [] as ProductRecommendationDto[] });
+
+    recommendations$.subscribe({
+      next: () => this.isLoadingRecommendations = false,
+      error: () => this.isLoadingRecommendations = false
+    });
   }
 
   showModal = false;

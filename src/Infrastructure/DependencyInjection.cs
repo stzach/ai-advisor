@@ -82,7 +82,6 @@ public static class DependencyInjection
         builder.Services.AddScoped<IEmbeddingsProvider, EmbeddingsProvider>();
         builder.Services.AddScoped<IDocumentVectorizationService, DocumentVectorizationService>();
         builder.Services.AddScoped<IFinancialDocumentSearchService, FinancialDocumentSearchService>();
-        builder.Services.AddScoped<FinancialDocumentSearchTool>();
 
         // Background Services
         builder.Services.AddHostedService<DocumentVectorizationBackgroundService>();
@@ -106,10 +105,13 @@ public static class DependencyInjection
             var config = sp.GetRequiredService<IConfiguration>();
 
             var endpoint = new Uri(config.GetConnectionString(Services.Search).Replace("Endpoint=", ""));
-
+            
             return new SearchIndexClient(endpoint, new DefaultAzureCredential());
         });
 
         builder.Services.AddScoped<IInsightsOrchestrator, InsightsOrchestrator>();
+
+        builder.Services.AddScoped<IFinancialDocumentsSearchAgent, FinancialDocumentsSearchAgent>();
+        builder.Services.AddScoped<IProductRecomendationAgent, ProductRecomendationAgent>();
     }
 }
