@@ -735,15 +735,67 @@ app-root > main:has(> app-home) {
   text-align: center;
   padding: 1rem 0;
   margin: 0;
-
-  &--loading {
-    animation: pulse 1.4s ease-in-out infinite;
-  }
 }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.35; }
+}
+
+// ── Insight skeleton loading ──────────────────────────────────────────────────
+$shimmer-base:      rgba(255,255,255,0.06);
+$shimmer-highlight: rgba(255,255,255,0.13);
+
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+
+%shimmer {
+  background: linear-gradient(90deg, $shimmer-base 25%, $shimmer-highlight 50%, $shimmer-base 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.5s infinite linear;
+  border-radius: 4px;
+}
+
+.dash-insight-skeleton {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid $bank-border;
+  &:last-child { border-bottom: none; }
+}
+
+.dash-skeleton-icon {
+  @extend %shimmer;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dash-skeleton-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.dash-skeleton-line {
+  @extend %shimmer;
+  height: 0.75rem;
+
+  &--wide   { width: 80%; }
+  &--narrow { width: 45%; }
+}
+
+.dash-skeleton-btn {
+  @extend %shimmer;
+  width: 5rem;
+  height: 2rem;
+  border-radius: 0.375rem;
+  flex-shrink: 0;
 }
 
 // ── Transactions card header with button ──────────────────────────────────────
@@ -1073,6 +1125,17 @@ address, blockquote, dl, ol, p, pre, table, ul {
   color: black !important;
 }
 
+.dashboard address,
+.dashboard blockquote,
+.dashboard dl,
+.dashboard ol,
+.dashboard p,
+.dashboard pre,
+.dashboard table,
+.dashboard ul {
+  color: inherit !important;
+}
+
 .dash-document-search {
 }
 
@@ -1149,11 +1212,4 @@ address, blockquote, dl, ol, p, pre, table, ul {
   .dash-search-result-top {
     flex-direction: column;
   }
-.dashboard {
-  address, blockquote, dl, ol, p, pre, table, ul {
-    color: inherit !important;
-  }
-}
-
-
 }

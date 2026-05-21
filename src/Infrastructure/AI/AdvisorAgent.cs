@@ -82,8 +82,8 @@ public class AdvisorAgent : IAdvisorAgent
         }
 
         _logger.LogInformation("Building system prompt for user {UserId}", userId);
-        var to   = DateTimeOffset.UtcNow;
-        var from = to.AddDays(-30);
+        var to  = DateTimeOffset.UtcNow;
+        var from = new DateTimeOffset(to.Year, to.Month, 1, 0, 0, 0, TimeSpan.Zero);
         var systemPrompt = await _financialDataAgent.BuildUserSystemPromptAsync(userId, from, to, ct);
 
         // Cache the system prompt

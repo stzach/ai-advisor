@@ -112,7 +112,16 @@
       <span class="dash-insights-icon">🤖</span> AI Advisor Insights · {{ rangeLabel() }}
     </h3>
     @if (insightsLoading()) {
-      <p class="dash-empty dash-empty--loading">Analysing {{ rangeLabel() }} data…</p>
+      @for (i of [1,2,3,4]; track i) {
+        <div class="dash-insight-skeleton">
+          <div class="dash-skeleton-icon"></div>
+          <div class="dash-skeleton-lines">
+            <div class="dash-skeleton-line dash-skeleton-line--wide"></div>
+            <div class="dash-skeleton-line dash-skeleton-line--narrow"></div>
+          </div>
+          <div class="dash-skeleton-btn"></div>
+        </div>
+      }
     }
     @if (!insightsLoading() && !insights().length) {
       <p class="dash-empty">No insights available.</p>
