@@ -40,10 +40,15 @@ public class FinancialDataAgent : IFinancialDataAgent
                 .OrderByDescending(ut => ut.Created)
                 .ToListAsync(ct);
 
-            // Build financial profile
-            var accountsSection = BuildAccountsSection(userProducts);
-            var expensesSummary = BuildExpensesSummary(userTransactions);
-            var recentTransactionsSection = BuildRecentTransactionsSection(userTransactions.Take(10));
+            var ownAccountNumbers = userProducts
+                .SelectMany(p => new[] { p.AccountNumber, p.CardNumber })
+                .Where(n => !string.IsNullOrWhiteSpace(n))
+                .Select(n => n!)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            var accountsSection             = BuildAccountsSection(userProducts);
+            var expensesSummary             = BuildExpensesSummary(userTransactions, ownAccountNumbers);
+            var recentTransactionsSection   = BuildRecentTransactionsSection(userTransactions.Take(10));
 
             var systemPrompt = $"""
                 You are a concise AI financial advisor for a retail bank customer.
@@ -75,11 +80,12 @@ public class FinancialDataAgent : IFinancialDataAgent
                 {accountsSection}
                 </accounts_cards_loans_and_net_worth>
 
-                <monthly_expenses_by_category>
+                <expenses_by_category from="{from:yyyy-MM-dd}" to="{to:yyyy-MM-dd}">
+                Excludes transfers between the user's own accounts. Includes loan repayments and card payments.
                 {expensesSummary}
-                </monthly_expenses_by_category>
+                </expenses_by_category>
 
-                <recent_transactions>
+                <recent_transactions from="{from:yyyy-MM-dd}" to="{to:yyyy-MM-dd}">
                 {recentTransactionsSection}
                 </recent_transactions>
                 """;
@@ -154,17 +160,23 @@ public class FinancialDataAgent : IFinancialDataAgent
         return sb.ToString().TrimEnd();
     }
 
-    private string BuildExpensesSummary(List<Domain.Entities.UserTransaction> transactions)
+    private string BuildExpensesSummary(List<Domain.Entities.UserTransaction> transactions, HashSet<string> ownAccountNumbers)
     {
         if (transactions.Count == 0)
             return "No transactions found.";
 
+        // Mirror the frontend filter: outgoing only, exclude own-account transfers.
+        // Loan repayments and card payments count as real expenses.
         var expenses = transactions
-            .Where(t => t.TransactionDirection.ToString() == "Outgoing")
+            .Where(t =>
+                t.TransactionDirection == Domain.Enums.TransactionDirection.Outgoing &&
+                !(t.TransactionType   == Domain.Enums.TransactionType.Transfer &&
+                  !string.IsNullOrWhiteSpace(t.To) &&
+                  ownAccountNumbers.Contains(t.To)))
             .GroupBy(t => t.TransactionCategory)
             .ToDictionary(
                 g => g.Key.ToString(),
-                g => g.Sum(t => t.Amount)
+                g => g.Sum(t => Math.Abs(t.Amount))
             );
 
         if (expenses.Count == 0)
@@ -185,9 +197,9 @@ public class FinancialDataAgent : IFinancialDataAgent
     {
         var lines = transactions.Select(t =>
         {
-            var direction = t.TransactionDirection.ToString() == "Incoming" ? "+" : "-";
-            var counterparty = t.TransactionDirection.ToString() == "Incoming" ? t.From : t.To;
-            return $"- {t.Created:d MMM}: {counterparty} ({direction}€{t.Amount:F2}) [{t.TransactionCategory}]";
+            var direction    = t.TransactionDirection == Domain.Enums.TransactionDirection.Incoming ? "+" : "-";
+            var counterparty = t.TransactionDirection == Domain.Enums.TransactionDirection.Incoming ? t.From : t.To;
+            return $"- {t.Created:d MMM}: {counterparty} ({direction}€{Math.Abs(t.Amount):F2}) [{t.TransactionCategory}]";
         });
 
         return string.Join("\n", lines);

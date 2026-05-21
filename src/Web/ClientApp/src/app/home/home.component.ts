@@ -91,9 +91,8 @@ export class HomeComponent {
 
       const txs = this.transactions().filter(tx => {
         if (tx.transactionDirection !== 'Outgoing') return false;
-        if (tx.transactionType === 'Loan') return false;
         if (tx.transactionType === 'Transfer') return !ownNumbers.has(tx.to ?? '');
-        return true; // Payment
+        return true; // Payment + Loan repayments
       });
       if (!txs.length) return [];
 
