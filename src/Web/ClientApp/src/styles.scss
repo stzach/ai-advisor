@@ -454,6 +454,37 @@ app-root > main:has(> app-home) {
   margin: 0 0 1rem;
 }
 
+.dash-expenses-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+.dash-expenses-range {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.45);
+  font-weight: 500;
+}
+.dash-expenses-total {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+}
+.dash-expenses-total-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255,255,255,0.45);
+}
+.dash-expenses-total-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: $bank-red;
+  letter-spacing: -0.02em;
+}
+
 .dash-total {
   font-size: 1.1rem;
   font-weight: 600;
@@ -731,6 +762,15 @@ app-root > main:has(> app-home) {
   text-align: center;
   padding: 1rem 0;
   margin: 0;
+
+  &--loading {
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.35; }
 }
 
 // ── Transactions card header with button ──────────────────────────────────────

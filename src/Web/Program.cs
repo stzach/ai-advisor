@@ -19,15 +19,17 @@ builder.AddWebServices();
 builder.AddAzureChatCompletionsClient(connectionName: Services.Chat)
     .AddChatClient(Services.Chat);
 
-builder.AddAzureSearchClient(connectionName: Services.Search);
+var searchCs = builder.Configuration.GetConnectionString(Services.Search);
+if (!string.IsNullOrEmpty(searchCs))
+{
+    builder.AddAzureSearchClient(connectionName: Services.Search);
+    builder.Services.AddSingleton<IAzureSearchService, AzureSearchService>();
+    builder.Services.AddSingleton<DocumentVectorizationBackgroundService>();
+}
 
 var signalRBuilder = builder.Services.AddSignalR();
 if (!string.IsNullOrEmpty(builder.Configuration.GetConnectionString(Services.SignalR)))
     signalRBuilder.AddNamedAzureSignalR(Services.SignalR);
-
-builder.Services.AddSingleton<IAzureSearchService, AzureSearchService>();
-
-builder.Services.AddSingleton<DocumentVectorizationBackgroundService>();
 
 var app = builder.Build();
 
@@ -61,10 +63,11 @@ app.MapEndpoints(typeof(Program).Assembly);
 app.MapVectorizationEndpoints();
 app.MapFinancialDocumentSearchEndpoints();
 
-var creator = new AzureSearchIndexCreator(
-    endpoint: builder.Configuration.GetConnectionString(Services.Search).Replace("Endpoint=", ""));
-
-await creator.CreateIndexAsync("documents_index");
+if (!string.IsNullOrEmpty(searchCs))
+{
+    var creator = new AzureSearchIndexCreator(endpoint: searchCs.Replace("Endpoint=", ""));
+    await creator.CreateIndexAsync("documents_index");
+}
 
 app.MapHub<NotificationHub>("/chat").ExcludeFromApiReference().ExcludeFromDescription();
 app.MapHub<ChatHub>("/ai-chat").ExcludeFromApiReference().ExcludeFromDescription();

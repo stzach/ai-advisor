@@ -2,7 +2,6 @@
 using AiAdvisor.Infrastructure.AI;
 using AiAdvisor.Infrastructure.AI.Services;
 using AiAdvisor.Infrastructure.AI.Services.Options;
-using AiAdvisor.Infrastructure.AI.Tools;
 using AiAdvisor.Infrastructure.Data;
 using AiAdvisor.Infrastructure.Data.Interceptors;
 using AiAdvisor.Infrastructure.Identity;

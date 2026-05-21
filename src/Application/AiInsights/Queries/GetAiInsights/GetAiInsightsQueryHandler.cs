@@ -12,5 +12,5 @@ public class GetAiInsightsQueryHandler : IRequestHandler<GetAiInsightsQuery, Lis
     }
 
     public Task<List<InsightDto>> Handle(GetAiInsightsQuery request, CancellationToken cancellationToken)
-        => _orchestrator.GetInsightsAsync(cancellationToken);
+        => _orchestrator.GetInsightsAsync(request.From, request.To, cancellationToken);
 }
