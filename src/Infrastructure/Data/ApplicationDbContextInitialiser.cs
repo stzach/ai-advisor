@@ -639,6 +639,45 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
             foreach (var kv in r.Dates) allGeneratedDates[kv.Key] = kv.Value;
         }
 
+        var demouser1Txn = await _userManager.FindByNameAsync("demouser1");
+        if (demouser1Txn is not null)
+        {
+            var tpl = new (Guid, string?, string?, TransactionType, TransactionCategory, TransactionDirection, decimal, int)[]
+            {
+                (CurrentAccId, "Employer GR",                        "GR13 9900 1122 3344 5566 7788 001", TransactionType.Transfer, TransactionCategory.Other,         TransactionDirection.Incoming,  4500.00m,  1),
+                (CurrentAccId, "GR13 9900 1122 3344 5566 7788 001", "Landlord GR",                        TransactionType.Transfer, TransactionCategory.Housing,       TransactionDirection.Outgoing,  -950.00m,  5),
+                (CurrentAccId, "GR13 9900 1122 3344 5566 7788 001", "DEI Electric",                       TransactionType.Payment,  TransactionCategory.Utilities,     TransactionDirection.Outgoing,  -120.00m, 10),
+                (VisaDebitId,  "4111 2233 4455 6677",                "Sklavenitis",                        TransactionType.Payment,  TransactionCategory.Food,          TransactionDirection.Outgoing,  -250.00m, 14),
+                (CurrentAccId, "GR13 9900 1122 3344 5566 7788 001", "GR13 9900 1122 3344 5566 7788 002", TransactionType.Transfer, TransactionCategory.Other,         TransactionDirection.Outgoing, -1000.00m, 18),
+                (SavingAccId,  "GR13 9900 1122 3344 5566 7788 001", "GR13 9900 1122 3344 5566 7788 002", TransactionType.Transfer, TransactionCategory.Other,         TransactionDirection.Incoming,  1000.00m, 18),
+                (VisaDebitId,  "4111 2233 4455 6677",                "Pharmacy",                           TransactionType.Payment,  TransactionCategory.Other,         TransactionDirection.Outgoing,   -85.00m, 22),
+                (CurrentAccId, "GR13 9900 1122 3344 5566 7788 001", "COSMOTE",                            TransactionType.Payment,  TransactionCategory.Utilities,     TransactionDirection.Outgoing,   -45.00m, 27),
+                (VisaDebitId,  "4111 2233 4455 6677",                "Netflix",                            TransactionType.Payment,  TransactionCategory.Entertainment, TransactionDirection.Outgoing,   -14.99m, 28),
+            };
+            var r = GenerateMonthlyTransactions(demouser1Txn.Id, "txn-d1", tpl);
+            await UpsertTransactionsAsync(r.Transactions);
+            foreach (var kv in r.Dates) allGeneratedDates[kv.Key] = kv.Value;
+        }
+
+        var demouser2Txn = await _userManager.FindByNameAsync("demouser2");
+        if (demouser2Txn is not null)
+        {
+            var tpl = new (Guid, string?, string?, TransactionType, TransactionCategory, TransactionDirection, decimal, int)[]
+            {
+                (CurrentAccId, "Employer GR",                        "GR13 9900 1122 3344 5566 7788 003", TransactionType.Transfer, TransactionCategory.Other,         TransactionDirection.Incoming,  2500.00m,  1),
+                (CurrentAccId, "GR13 9900 1122 3344 5566 7788 003", "Landlord GR",                        TransactionType.Transfer, TransactionCategory.Housing,       TransactionDirection.Outgoing,  -750.00m,  5),
+                (VisaDebitId,  "4111 2233 4455 6688",                "Sklavenitis",                        TransactionType.Payment,  TransactionCategory.Food,          TransactionDirection.Outgoing,  -150.00m,  9),
+                (CurrentAccId, "GR13 9900 1122 3344 5566 7788 003", "DEI Electric",                       TransactionType.Payment,  TransactionCategory.Utilities,     TransactionDirection.Outgoing,   -80.00m, 12),
+                (VisaDebitId,  "4111 2233 4455 6688",                "Netflix",                            TransactionType.Payment,  TransactionCategory.Entertainment, TransactionDirection.Outgoing,   -14.00m, 15),
+                (VisaDebitId,  "4111 2233 4455 6688",                "ISAP Metro",                         TransactionType.Payment,  TransactionCategory.Transport,     TransactionDirection.Outgoing,   -30.00m, 19),
+                (VisaDebitId,  "4111 2233 4455 6688",                "Coffee & Food",                      TransactionType.Payment,  TransactionCategory.Food,          TransactionDirection.Outgoing,   -40.00m, 24),
+                (CurrentAccId, "GR13 9900 1122 3344 5566 7788 003", "Spotify",                            TransactionType.Payment,  TransactionCategory.Entertainment, TransactionDirection.Outgoing,    -9.99m, 28),
+            };
+            var r = GenerateMonthlyTransactions(demouser2Txn.Id, "txn-d2", tpl);
+            await UpsertTransactionsAsync(r.Transactions);
+            foreach (var kv in r.Dates) allGeneratedDates[kv.Key] = kv.Value;
+        }
+
         try
         {
             await FixTransactionDatesAsync(allGeneratedDates);
