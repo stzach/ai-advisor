@@ -73,14 +73,19 @@ public class DocumentVectorizationService : IDocumentVectorizationService
 
         // For folder source, construct documents directory relative to the application
         // This is kept for backward compatibility and folder mode
+        var libraryPath = Path.GetDirectoryName(typeof(DocumentVectorizationService).Assembly.Location)!;
         _documentsDirectory = Path.Combine(
-            AppContext.BaseDirectory,
-            "..",
-            "..",
-            "..",
-            "Infrastructure",
+            libraryPath,
             "AI",
             "FinancialDocuments");
+        // _documentsDirectory = Path.Combine(
+        //     AppContext.BaseDirectory,
+        //     "..",
+        //     "..",
+        //     "..",
+        //     "Infrastructure",
+        //     "AI",
+        //     "FinancialDocuments");
 
         // Normalize path
         _documentsDirectory = Path.GetFullPath(_documentsDirectory);
@@ -96,14 +101,9 @@ public class DocumentVectorizationService : IDocumentVectorizationService
 
         try
         {
-            if (_ingestionOptions.SourceType == "Blob")
-            {
-                return await VectorizeDocumentsFromBlobAsync(startTime, cancellationToken);
-            }
-            else
-            {
-                return await VectorizeDocumentsFromFolderAsync(startTime, cancellationToken);
-            }
+            return _ingestionOptions.SourceType == "Blob"
+                ? await VectorizeDocumentsFromBlobAsync(startTime, cancellationToken)
+                : await VectorizeDocumentsFromFolderAsync(startTime, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -116,7 +116,7 @@ public class DocumentVectorizationService : IDocumentVectorizationService
     private async Task<VectorizationResult> VectorizeDocumentsFromFolderAsync(DateTime startTime, CancellationToken cancellationToken)
     {
         var documentsPath = _ingestionOptions.DocumentsPath ?? _documentsDirectory;
-        
+
         _logger.LogInformation("Starting document vectorization from folder. Documents directory: {Directory}", documentsPath);
 
         // Ensure documents directory exists
@@ -128,7 +128,7 @@ public class DocumentVectorizationService : IDocumentVectorizationService
         }
 
         // Get all markdown files
-        var markdownFiles = Directory.GetFiles(documentsPath, "*.md", SearchOption.TopDirectoryOnly);
+        var markdownFiles = Directory.GetFiles(documentsPath, "*.*", SearchOption.AllDirectories);
         _logger.LogInformation("Found {Count} markdown documents in folder", markdownFiles.Length);
 
         if (markdownFiles.Length == 0)

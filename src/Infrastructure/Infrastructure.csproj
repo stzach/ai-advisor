@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Update="AI\FinancialDocuments\**\*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Aspire.Azure.AI.Inference" />
     <PackageReference Include="Aspire.Azure.Search.Documents" />
     <PackageReference Include="Azure.Storage.Blobs" />
