@@ -3,7 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Subject, of } from 'rxjs';
 
-import { map, startWith, switchMap, catchError, tap, shareReplay } from 'rxjs/operators';
+import { map, startWith, switchMap, catchError, shareReplay } from 'rxjs/operators';
 import { ChatHubService } from '../services/chat-hub.service';
 import { UserProductsClient, UserProductDto, UserTransactionsClient, UserTransactionDto, UsersClient } from '../web-api-client';
 import { API_BASE_URL } from '../web-api-client';
@@ -151,6 +151,49 @@ export class HomeComponent {
     });
 }
 
+  private readonly TX_PAGE_SIZE = 10;
+  private txDisplayCount = signal(this.TX_PAGE_SIZE);
+  txTypeFilter          = signal<string>('all');
+  txSearchQuery         = signal<string>('');
+
+  filteredTransactions = computed(() => {
+    let txs = this.transactions();
+    const type = this.txTypeFilter();
+    if (type !== 'all') txs = txs.filter(tx => tx.transactionType === type);
+    const q = this.txSearchQuery().toLowerCase().trim();
+    if (q) txs = txs.filter(tx =>
+      tx.productName?.toLowerCase().includes(q) ||
+      tx.from?.toLowerCase().includes(q) ||
+      tx.to?.toLowerCase().includes(q) ||
+      tx.transactionCategory?.toLowerCase().includes(q)
+    );
+    return txs;
+  });
+
+  displayedTransactions = computed(() =>
+    this.filteredTransactions().slice(0, this.txDisplayCount())
+  );
+
+  hasMoreTransactions = computed(() =>
+    this.txDisplayCount() < this.filteredTransactions().length
+  );
+
+  nextBatchSize = computed(() =>
+    Math.min(this.TX_PAGE_SIZE, this.filteredTransactions().length - this.txDisplayCount())
+  );
+
+  loadMoreTransactions(): void { this.txDisplayCount.update(n => n + this.TX_PAGE_SIZE); }
+
+  setTxFilter(type: string): void {
+    this.txTypeFilter.set(type);
+    this.txDisplayCount.set(this.TX_PAGE_SIZE);
+  }
+
+  setTxSearch(q: string): void {
+    this.txSearchQuery.set(q);
+    this.txDisplayCount.set(this.TX_PAGE_SIZE);
+  }
+
   expandedInsight: number | null = null;
 
   toggleInsight(i: number): void {
@@ -186,7 +229,12 @@ export class HomeComponent {
 
   get selectedRange(): string { return this.range$.value; }
 
-  setRange(range: string): void { this.range$.next(range); }
+  setRange(range: string): void {
+    this.range$.next(range);
+    this.txDisplayCount.set(this.TX_PAGE_SIZE);
+    this.txTypeFilter.set('all');
+    this.txSearchQuery.set('');
+  }
 
   rangeLabel(): string {
     const labels: Record<string, string> = {

@@ -989,6 +989,102 @@ app-root > main:has(> app-home) {
   color: $bank-text-muted;
 }
 
+// ── Transaction controls (search + filter) ────────────────────────────────────
+.dash-tx-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.75rem 0 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dash-tx-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 180px;
+}
+
+.dash-tx-search-icon {
+  position: absolute;
+  left: 0.7rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.85rem;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.dash-tx-search {
+  width: 100%;
+  padding: 0.45rem 0.75rem 0.45rem 2rem;
+  border: 1.5px solid $bank-border;
+  border-radius: 36px;
+  font-size: 0.85rem;
+  color: $bank-text;
+  background: rgba(36,59,115,0.04);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+
+  &::placeholder { color: $bank-text-muted; }
+  &:focus { border-color: rgba(36,59,115,0.35); }
+
+  &::-webkit-search-cancel-button { cursor: pointer; }
+}
+
+.dash-tx-filter-tabs {
+  display: flex;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.dash-tx-filter-tab {
+  padding: 0.35rem 0.85rem;
+  border: 1.5px solid $bank-border;
+  border-radius: 36px;
+  background: transparent;
+  color: $bank-text-muted;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+  width: auto;
+
+  &:hover { border-color: rgba(36,59,115,0.3); color: $bank-text; }
+  &.active { background: $bank-navy; color: #fff; border-color: $bank-navy; }
+}
+
+.dash-tx-count {
+  font-size: 0.82rem;
+  color: $bank-text-muted;
+  margin-bottom: 0.25rem;
+
+  strong { color: $bank-text; }
+}
+
+.dash-load-more-btn {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.6rem 1.25rem;
+  background: transparent;
+  border: 1.5px solid $bank-border;
+  border-radius: 36px;
+  color: $bank-text;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  text-align: center;
+
+  &:hover {
+    background: $bank-navy;
+    border-color: $bank-navy;
+    color: #fff;
+  }
+}
+
 .dash-empty {
   color: $bank-text-muted;
   font-size: 0.9rem;
@@ -1559,6 +1655,11 @@ address, blockquote, dl, ol, p, pre, table, ul {
     padding: 0.25rem 0.55rem;
     font-size: 0.74rem;
   }
+
+  // Transaction controls: stack on mobile
+  .dash-tx-controls { flex-direction: column; align-items: stretch; }
+  .dash-tx-search-wrap { min-width: unset; }
+  .dash-tx-filter-tabs { flex-wrap: wrap; }
 
   // Transaction rows: tighter gap
   .dash-tx-row { gap: 0.6rem; }

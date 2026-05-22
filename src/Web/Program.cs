@@ -19,7 +19,7 @@ builder.AddInfrastructureServices();
 builder.AddWebServices();
 
 var chatClient = builder.AddAzureChatCompletionsClient(connectionName: Services.Chat)
-    .AddChatClient(Services.Chat);   
+    .AddChatClient(Services.Chat);
 
 var searchCs = builder.Configuration.GetConnectionString(Services.Search);
 if (!string.IsNullOrEmpty(searchCs))
