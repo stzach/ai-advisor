@@ -93,19 +93,21 @@ public static class DependencyInjection
         {
             var config = sp.GetRequiredService<IConfiguration>();
 
-            var endpoint = new Uri(config.GetConnectionString(Services.Search).Replace("Endpoint=", ""));
+            var endpoint = new Uri(builder.Configuration["AzureSearch:Endpoint"]);
+            var apiKey = builder.Configuration["AzureSearch:ApiKey"];
             var indexName = "documents_index";
 
-            return new SearchClient(endpoint, indexName, new DefaultAzureCredential());
+            return new SearchClient(endpoint, indexName, new AzureKeyCredential(apiKey));
         });
 
         builder.Services.AddSingleton(sp =>
         {
             var config = sp.GetRequiredService<IConfiguration>();
 
-            var endpoint = new Uri(config.GetConnectionString(Services.Search).Replace("Endpoint=", ""));
-            
-            return new SearchIndexClient(endpoint, new DefaultAzureCredential());
+            var endpoint = new Uri(builder.Configuration["AzureSearch:Endpoint"]);
+            var apiKey = builder.Configuration["AzureSearch:ApiKey"];
+
+            return new SearchIndexClient(endpoint, new AzureKeyCredential(apiKey));
         });
 
         builder.Services.AddScoped<IInsightsOrchestrator, InsightsOrchestrator>();
