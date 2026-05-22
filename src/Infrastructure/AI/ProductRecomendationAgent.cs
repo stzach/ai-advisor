@@ -42,7 +42,9 @@ public class ProductRecomendationAgent :IProductRecomendationAgent
 
         _logger.LogInformation("Generating AI insights for user {UserId}", userId);
 
-        var financialContext = await _financialDataAgent.BuildUserSystemPromptAsync(userId, cancellationToken);
+        var to  = DateTimeOffset.UtcNow;
+        var from = new DateTimeOffset(to.Year, to.Month, 1, 0, 0, 0, TimeSpan.Zero);
+        var financialContext = await _financialDataAgent.BuildUserSystemPromptAsync(userId, from, to, cancellationToken);
 
         var documentSearchResults = await _financialDocumentsSearchAgent.GetSearchResultsAsync(cancellationToken);
 

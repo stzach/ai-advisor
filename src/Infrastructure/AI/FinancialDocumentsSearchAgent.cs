@@ -40,7 +40,9 @@ public class FinancialDocumentsSearchAgent : IFinancialDocumentsSearchAgent
 
         _logger.LogInformation("Generating search query for user {UserId}", userId);
 
-        var financialContext = await _financialDataAgent.BuildUserSystemPromptAsync(userId, cancellationToken);
+        var to  = DateTimeOffset.UtcNow;
+        var from = new DateTimeOffset(to.Year, to.Month, 1, 0, 0, 0, TimeSpan.Zero);
+        var financialContext = await _financialDataAgent.BuildUserSystemPromptAsync(userId, from, to, cancellationToken);
 
         var systemPrompt = """
         You are a Retrieval Query Builder Agent for a banking assistant system.
