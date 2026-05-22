@@ -67,6 +67,7 @@ public static class DependencyInjection
 
         // Document Vectorization & Search
         builder.Services.AddSingleton<IMarkdownChunkingService, MarkdownChunkingService>();
+        builder.Services.AddScoped<IPdfTextExtractor, PdfPigPdfTextExtractor>();
         builder.Services.AddOptions<DocumentIngestionOptions>()
             .Bind(builder.Configuration.GetSection("DocumentIngestion"))
             .ValidateDataAnnotations()

@@ -21,6 +21,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.Extensions.AI.OpenAI" />
+    <PackageReference Include="UglyToad.PdfPig" />
     <PackageReference Include="System.Security.Cryptography.Xml" />
   </ItemGroup>
 

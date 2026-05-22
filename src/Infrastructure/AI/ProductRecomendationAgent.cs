@@ -68,6 +68,7 @@ public class ProductRecomendationAgent :IProductRecomendationAgent
             DECISION GUIDELINES
             - Prioritize maximum user benefit (cost savings, rewards, interest gains, financial protection).
             - Use transaction patterns to infer intent (e.g., travel, savings behavior, loans, investments).
+            - Explain recommendations with clear, user-friendly reasons based on the user's financial context offer example if necessary. 
             - If multiple products are similar, choose the one with better overall value.
             - If no product is suitable, return no actions.
 
@@ -96,6 +97,7 @@ public class ProductRecomendationAgent :IProductRecomendationAgent
             - No financial jargon unless necessary.
             - If no suitable product is found:
             - actions must be []
+            - reason should be why this product is a good fit for the user, based on their financial context and behavior.
             - message should briefly explain why no recommendation is available
             """;
 

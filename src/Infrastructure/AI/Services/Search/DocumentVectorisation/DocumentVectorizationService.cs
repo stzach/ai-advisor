@@ -54,6 +54,7 @@ public class DocumentVectorizationService : IDocumentVectorizationService
     private readonly SearchClient _searchClient;
     private readonly IEmbeddingsProvider _embeddingsProvider;
     private readonly IMarkdownChunkingService _chunkingService;
+    private readonly IPdfTextExtractor _pdfExtractor;
     private readonly ILogger<DocumentVectorizationService> _logger;
     private readonly DocumentIngestionOptions _ingestionOptions;
     private readonly string _documentsDirectory;
@@ -62,12 +63,14 @@ public class DocumentVectorizationService : IDocumentVectorizationService
         SearchClient searchClient,
         IEmbeddingsProvider embeddingsProvider,
         IMarkdownChunkingService chunkingService,
+        IPdfTextExtractor pdfExtractor,
         IOptions<DocumentIngestionOptions> ingestionOptions,
         ILogger<DocumentVectorizationService> logger)
     {
         _searchClient = searchClient ?? throw new ArgumentNullException(nameof(searchClient));
         _embeddingsProvider = embeddingsProvider ?? throw new ArgumentNullException(nameof(embeddingsProvider));
         _chunkingService = chunkingService ?? throw new ArgumentNullException(nameof(chunkingService));
+        _pdfExtractor = pdfExtractor ?? throw new ArgumentNullException(nameof(pdfExtractor));
         _ingestionOptions = ingestionOptions?.Value ?? throw new ArgumentNullException(nameof(ingestionOptions));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
@@ -127,17 +130,19 @@ public class DocumentVectorizationService : IDocumentVectorizationService
             return new VectorizationResult { DocumentsProcessed = 0, ChunksIndexed = 0 };
         }
 
-        // Get all markdown files
-        var markdownFiles = Directory.GetFiles(documentsPath, "*.*", SearchOption.AllDirectories);
-        _logger.LogInformation("Found {Count} markdown documents in folder", markdownFiles.Length);
+        var mdFiles = Directory.GetFiles(documentsPath, "*.md", SearchOption.AllDirectories);
+        var pdfFiles = Directory.GetFiles(documentsPath, "*.pdf", SearchOption.AllDirectories);
 
-        if (markdownFiles.Length == 0)
+        var allFiles = mdFiles.Concat(pdfFiles).ToArray();
+        _logger.LogInformation("Found {MdCount} markdown and {PdfCount} pdf documents in folder", mdFiles.Length, pdfFiles.Length);
+
+        if (allFiles.Length == 0)
         {
-            _logger.LogWarning("No markdown documents found in {Directory}", documentsPath);
+            _logger.LogWarning("No documents found in {Directory}", documentsPath);
             return new VectorizationResult { DocumentsProcessed = 0, ChunksIndexed = 0 };
         }
 
-        return await ProcessMarkdownFilesAsync(markdownFiles, startTime, cancellationToken);
+        return await ProcessFilesAsync(allFiles, startTime, cancellationToken);
     }
 
     private async Task<VectorizationResult> VectorizeDocumentsFromBlobAsync(DateTime startTime, CancellationToken cancellationToken)
@@ -154,8 +159,8 @@ public class DocumentVectorizationService : IDocumentVectorizationService
         var containerUri = new Uri(_ingestionOptions.BlobContainerUri);
         var containerClient = new BlobContainerClient(containerUri, new DefaultAzureCredential());
 
-        // List all markdown blobs
-        var markdownBlobs = new List<(string Name, BlobClient Client)>();
+        // List all markdown and pdf blobs
+        var blobs = new List<(string Name, BlobClient Client)>();
         var prefix = _ingestionOptions.BlobPrefix ?? string.Empty;
 
         await foreach (var blobItem in containerClient.GetBlobsAsync(
@@ -164,18 +169,18 @@ public class DocumentVectorizationService : IDocumentVectorizationService
             prefix,
             cancellationToken))
         {
-            if (blobItem.Name.EndsWith(".md", StringComparison.OrdinalIgnoreCase))
+            if (blobItem.Name.EndsWith(".md", StringComparison.OrdinalIgnoreCase) ||
+                blobItem.Name.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
             {
                 var blobClient = containerClient.GetBlobClient(blobItem.Name);
-                markdownBlobs.Add((blobItem.Name, blobClient));
+                blobs.Add((blobItem.Name, blobClient));
             }
         }
+        _logger.LogInformation("Found {Count} documents in blob storage", blobs.Count);
 
-        _logger.LogInformation("Found {Count} markdown documents in blob storage", markdownBlobs.Count);
-
-        if (markdownBlobs.Count == 0)
+        if (blobs.Count == 0)
         {
-            _logger.LogWarning("No markdown documents found in blob container: {ContainerUri}", _ingestionOptions.BlobContainerUri);
+            _logger.LogWarning("No documents found in blob container: {ContainerUri}", _ingestionOptions.BlobContainerUri);
             return new VectorizationResult { DocumentsProcessed = 0, ChunksIndexed = 0 };
         }
 
@@ -183,24 +188,43 @@ public class DocumentVectorizationService : IDocumentVectorizationService
         var allChunks = new List<SearchDocumentChunk>();
         var totalTokens = 0L;
 
-        foreach (var (blobName, blobClient) in markdownBlobs)
+        foreach (var (blobName, blobClient) in blobs)
         {
             try
             {
                 _logger.LogInformation("Processing blob: {BlobName}", blobName);
 
-                // Download blob content
-                var download = await blobClient.DownloadAsync(cancellationToken: cancellationToken);
-                using var reader = new StreamReader(download.Value.Content, Encoding.UTF8);
-                var content = await reader.ReadToEndAsync();
+                IReadOnlyList<(string Content, DocumentMetadata Metadata)> chunks;
 
-                // Chunk the content
-                var chunks = await _chunkingService.ChunkContentAsync(
-                    content,
-                    Path.GetFileName(blobName),
-                    blobName,
-                    maxTokensPerChunk: 500,
-                    overlapTokens: 50);
+                if (blobName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+                {
+                    // For PDFs, stream to extractor
+                    var download = await blobClient.OpenReadAsync(cancellationToken: cancellationToken);
+                    using var stream = download;
+                    var text = await _pdfExtractor.ExtractTextAsync(stream);
+
+                    chunks = await _chunkingService.ChunkContentAsync(
+                        text,
+                        Path.GetFileName(blobName),
+                        blobName,
+                        maxTokensPerChunk: 500,
+                        overlapTokens: 50);
+                }
+                else
+                {
+                    // Assume markdown/plain text
+                    var download = await blobClient.DownloadAsync(cancellationToken: cancellationToken);
+                    using var reader = new StreamReader(download.Value.Content, Encoding.UTF8);
+                    var content = await reader.ReadToEndAsync();
+
+                    // Chunk the content
+                    chunks = await _chunkingService.ChunkContentAsync(
+                        content,
+                        Path.GetFileName(blobName),
+                        blobName,
+                        maxTokensPerChunk: 500,
+                        overlapTokens: 50);
+                }
 
                 _logger.LogInformation("Blob {BlobName} chunked into {ChunkCount} chunks", blobName, chunks.Count);
 
@@ -247,15 +271,103 @@ public class DocumentVectorizationService : IDocumentVectorizationService
 
         var duration = DateTime.UtcNow - startTime;
         _logger.LogInformation(
-            "Vectorization complete. Documents: {DocCount}, Chunks: {ChunkCount}, Tokens: {Tokens}, Duration: {Duration}",
-            markdownBlobs.Count,
+            "Vectorization complete. Chunks: {ChunkCount}, Tokens: {Tokens}, Duration: {Duration}",
             allChunks.Count,
             totalTokens,
             duration);
 
         return new VectorizationResult
         {
-            DocumentsProcessed = markdownBlobs.Count,
+            DocumentsProcessed = blobs.Count,
+            ChunksIndexed = allChunks.Count,
+            TotalTokensEmbedded = totalTokens,
+            Duration = duration
+        };
+    }
+
+    private async Task<VectorizationResult> ProcessFilesAsync(
+        string[] files,
+        DateTime startTime,
+        CancellationToken cancellationToken)
+    {
+        // Process each document
+        var allChunks = new List<SearchDocumentChunk>();
+        var totalTokens = 0L;
+
+        foreach (var filePath in files)
+        {
+            try
+            {
+                _logger.LogInformation("Processing document: {FileName}", Path.GetFileName(filePath));
+
+                IReadOnlyList<(string Content, DocumentMetadata Metadata)> chunks;
+
+                if (filePath.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+                {
+                    await using var fs = File.OpenRead(filePath);
+                    var text = await _pdfExtractor.ExtractTextAsync(fs);
+                    chunks = await _chunkingService.ChunkContentAsync(text, Path.GetFileName(filePath), filePath);
+                }
+                else
+                {
+                    // markdown or plain text
+                    chunks = await _chunkingService.ChunkDocumentAsync(filePath);
+                }
+
+                _logger.LogInformation("Document chunked into {ChunkCount} chunks", chunks.Count);
+
+                // Generate embeddings for each chunk
+                foreach (var chunk in chunks)
+                {
+                    var content = chunk.Content;
+                    var metadata = chunk.Metadata;
+
+                    var embedding = await GenerateEmbeddingAsync(content, cancellationToken);
+                    totalTokens += metadata.TokenCount;
+
+                    var searchDoc = new SearchDocumentChunk
+                    {
+                        Id = metadata.ChunkId,
+                        Content = content,
+                        ContentVector = embedding,
+                        SourceFileName = metadata.SourceFileName,
+                        SectionHeading = metadata.SectionHeading,
+                        HeadingLevel = metadata.HeadingLevel,
+                        ChunkIndex = metadata.ChunkIndex,
+                        TotalChunks = metadata.TotalChunks,
+                        TokenCount = metadata.TokenCount,
+                        IndexedAt = DateTime.UtcNow
+                    };
+
+                    allChunks.Add(searchDoc);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing document: {FileName}", Path.GetFileName(filePath));
+                // Continue with next document
+            }
+        }
+
+        // Index all chunks
+        if (allChunks.Count > 0)
+        {
+            _logger.LogInformation("Uploading {ChunkCount} chunks to search index", allChunks.Count);
+            var result = await _searchClient.MergeOrUploadDocumentsAsync(allChunks, cancellationToken: cancellationToken);
+            _logger.LogInformation("Successfully indexed {SuccessCount} documents", result.Value.Results.Count(r => r.Succeeded));
+        }
+
+        var duration = DateTime.UtcNow - startTime;
+        _logger.LogInformation(
+            "Vectorization complete. Documents: {DocCount}, Chunks: {ChunkCount}, Tokens: {Tokens}, Duration: {Duration}",
+            files.Length,
+            allChunks.Count,
+            totalTokens,
+            duration);
+
+        return new VectorizationResult
+        {
+            DocumentsProcessed = files.Length,
             ChunksIndexed = allChunks.Count,
             TotalTokensEmbedded = totalTokens,
             Duration = duration

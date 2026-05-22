@@ -83,7 +83,7 @@ public class FinancialDocumentsSearchAgent : IFinancialDocumentsSearchAgent
 
         var response = await _chatService.SendAsync(userMessage, systemPrompt, cancellationToken);
 
-        _logger.LogInformation("Received search query for user {UserId}", userId);
+        _logger.LogInformation("Received insights response for user {UserId} \n\n Response: \n{Response}", userId, response);
 
         return Search(response);
     }
@@ -95,8 +95,8 @@ public class FinancialDocumentsSearchAgent : IFinancialDocumentsSearchAgent
             var query = response.Trim();
            var results = _financialDocumentSearchService.SearchDocumentsAsync(query, topK: 5).Result;
           var formattedResults = FormatSearchResults(results);
-            _logger.LogInformation("Search completed with {ResultCount} results", results.Count);
-            return formattedResults;
+            _logger.LogInformation("Search completed with {ResultCount} results \n\n Content: \n{Content}", results.Count, formattedResults);
+            return "" ;//formattedResults;
         }
         catch (Exception ex)
         {
