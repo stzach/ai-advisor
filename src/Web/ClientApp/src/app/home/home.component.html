@@ -216,7 +216,33 @@
         <button class="dash-range-tab" [class.active]="selectedRange === 'year'"    (click)="setRange('year')">1Y</button>
       </div>
     </div>
-    @for (tx of transactions(); track tx.transactionId) {
+
+    <div class="dash-tx-controls">
+      <div class="dash-tx-search-wrap">
+        <span class="dash-tx-search-icon">🔍</span>
+        <input
+          class="dash-tx-search"
+          type="search"
+          placeholder="Search by merchant, category…"
+          [value]="txSearchQuery()"
+          (input)="setTxSearch($any($event.target).value)"
+        />
+      </div>
+      <div class="dash-tx-filter-tabs">
+        <button class="dash-tx-filter-tab" [class.active]="txTypeFilter() === 'all'"      (click)="setTxFilter('all')">All</button>
+        <button class="dash-tx-filter-tab" [class.active]="txTypeFilter() === 'Payment'"  (click)="setTxFilter('Payment')">Payments</button>
+        <button class="dash-tx-filter-tab" [class.active]="txTypeFilter() === 'Transfer'" (click)="setTxFilter('Transfer')">Transfers</button>
+        <button class="dash-tx-filter-tab" [class.active]="txTypeFilter() === 'Loan'"     (click)="setTxFilter('Loan')">Loans</button>
+      </div>
+    </div>
+
+    @if (transactions().length) {
+      <div class="dash-tx-count">
+        Showing <strong>{{ displayedTransactions().length }}</strong> of <strong>{{ filteredTransactions().length }}</strong> transactions
+      </div>
+    }
+
+    @for (tx of displayedTransactions(); track tx.transactionId) {
       <div class="dash-tx-row">
         <div class="dash-tx-icon" [class]="tx.transactionType === 'Transfer' ? 'dash-tx-icon--transfer' : tx.transactionType === 'Loan' ? 'dash-tx-icon--loan' : tx.transactionDirection === 'Incoming' ? 'dash-tx-icon--incoming' : 'dash-tx-icon--payment'">
           {{ tx.transactionType === 'Transfer' ? '↔' : tx.transactionType === 'Loan' ? '⬆' : tx.transactionDirection === 'Incoming' ? '↓' : '↑' }}
@@ -236,6 +262,16 @@
           <span class="dash-tx-date">{{ tx.created | date:'dd MMM' }}</span>
         </div>
       </div>
+    }
+
+    @if (hasMoreTransactions()) {
+      <button class="dash-load-more-btn" (click)="loadMoreTransactions()">
+        Load {{ nextBatchSize() }} more
+      </button>
+    }
+
+    @if (!filteredTransactions().length && transactions().length) {
+      <p class="dash-empty" data-icon="🔍">No transactions match your search.</p>
     }
     @if (!transactions().length) {
       <p class="dash-empty" data-icon="💸">No transactions for this period.</p>
