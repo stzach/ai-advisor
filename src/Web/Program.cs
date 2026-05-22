@@ -33,10 +33,6 @@ var signalRBuilder = builder.Services.AddSignalR();
 if (!string.IsNullOrEmpty(builder.Configuration.GetConnectionString(Services.SignalR)))
     signalRBuilder.AddNamedAzureSignalR(Services.SignalR);
 
-builder.Services.AddSingleton<IAzureSearchService, AzureSearchService>();
-
-builder.Services.AddSingleton<DocumentVectorizationBackgroundService>();
-
 var app = builder.Build();
 
 
@@ -70,11 +66,13 @@ app.MapEndpoints(typeof(Program).Assembly);
 app.MapVectorizationEndpoints();
 app.MapFinancialDocumentSearchEndpoints();
 
-var creator = new AzureSearchIndexCreator(
-    endpoint: builder.Configuration["AzureSearch:Endpoint"],
-    apiKey: builder.Configuration["AzureSearch:ApiKey"]);
-
-await creator.CreateIndexAsync("documents_index");
+var azureSearchEndpoint = builder.Configuration["AzureSearch:Endpoint"];
+var azureSearchApiKey   = builder.Configuration["AzureSearch:ApiKey"];
+if (!string.IsNullOrEmpty(azureSearchEndpoint) && !string.IsNullOrEmpty(azureSearchApiKey))
+{
+    var creator = new AzureSearchIndexCreator(endpoint: azureSearchEndpoint, apiKey: azureSearchApiKey);
+    await creator.CreateIndexAsync("documents_index");
+}
 
 app.MapHub<NotificationHub>("/chat").ExcludeFromApiReference().ExcludeFromDescription();
 app.MapHub<ChatHub>("/ai-chat").ExcludeFromApiReference().ExcludeFromDescription();
