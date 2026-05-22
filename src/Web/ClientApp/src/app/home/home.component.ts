@@ -3,7 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Subject, of } from 'rxjs';
 
-import { map, startWith, switchMap, catchError, tap } from 'rxjs/operators';
+import { map, startWith, switchMap, catchError, tap, shareReplay } from 'rxjs/operators';
 import { ChatHubService } from '../services/chat-hub.service';
 import { UserProductsClient, UserProductDto, UserTransactionsClient, UserTransactionDto, UsersClient } from '../web-api-client';
 import { API_BASE_URL } from '../web-api-client';
@@ -51,6 +51,7 @@ export class HomeComponent {
   insights:        Signal<InsightDto[]>;
   productRecommendations: Signal<ProductRecommendationDto[]>;
   insightsLoading: Signal<boolean>;
+  isLoadingRecommendations = true;
 
   constructor(
     public chatHub: ChatHubService,
