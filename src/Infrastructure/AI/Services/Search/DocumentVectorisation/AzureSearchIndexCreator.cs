@@ -9,11 +9,11 @@ public class AzureSearchIndexCreator
 {
     private readonly SearchIndexClient _indexClient;
 
-    public AzureSearchIndexCreator(string endpoint)
+    public AzureSearchIndexCreator(string endpoint, string apiKey)
     {
         _indexClient = new SearchIndexClient(
             new Uri(endpoint),
-            new DefaultAzureCredential()); //AzureKeyCredential(apiKey));
+            new AzureKeyCredential(apiKey));
     }
 
     public async Task CreateIndexAsync(string indexName)

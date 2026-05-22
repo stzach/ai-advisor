@@ -5,6 +5,8 @@ using AiAdvisor.Web.Endpoints.Admin;
 using Scalar.AspNetCore;
 using AiAdvisor.Web.Hubs;
 using AiAdvisor.Infrastructure.AI.Services;
+using Microsoft.Extensions.AI;
+using AiAdvisor.Infrastructure.AI.Tools;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,8 +18,8 @@ builder.AddApplicationServices();
 builder.AddInfrastructureServices();
 builder.AddWebServices();
 
-builder.AddAzureChatCompletionsClient(connectionName: Services.Chat)
-    .AddChatClient(Services.Chat);
+var chatClient = builder.AddAzureChatCompletionsClient(connectionName: Services.Chat)
+    .AddChatClient(Services.Chat);   
 
 var searchCs = builder.Configuration.GetConnectionString(Services.Search);
 if (!string.IsNullOrEmpty(searchCs))
@@ -31,7 +33,12 @@ var signalRBuilder = builder.Services.AddSignalR();
 if (!string.IsNullOrEmpty(builder.Configuration.GetConnectionString(Services.SignalR)))
     signalRBuilder.AddNamedAzureSignalR(Services.SignalR);
 
+builder.Services.AddSingleton<IAzureSearchService, AzureSearchService>();
+
+builder.Services.AddSingleton<DocumentVectorizationBackgroundService>();
+
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 await app.InitialiseDatabaseAsync();
@@ -63,11 +70,11 @@ app.MapEndpoints(typeof(Program).Assembly);
 app.MapVectorizationEndpoints();
 app.MapFinancialDocumentSearchEndpoints();
 
-if (!string.IsNullOrEmpty(searchCs))
-{
-    var creator = new AzureSearchIndexCreator(endpoint: searchCs.Replace("Endpoint=", ""));
-    await creator.CreateIndexAsync("documents_index");
-}
+var creator = new AzureSearchIndexCreator(
+    endpoint: builder.Configuration["AzureSearch:Endpoint"],
+    apiKey: builder.Configuration["AzureSearch:ApiKey"]);
+
+await creator.CreateIndexAsync("documents_index");
 
 app.MapHub<NotificationHub>("/chat").ExcludeFromApiReference().ExcludeFromDescription();
 app.MapHub<ChatHub>("/ai-chat").ExcludeFromApiReference().ExcludeFromDescription();
