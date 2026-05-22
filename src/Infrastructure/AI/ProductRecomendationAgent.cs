@@ -1,7 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AiAdvisor.Application;
-using AiAdvisor.Application.AiInsights.Queries.GetAiInsights;
 using AiAdvisor.Application.Common.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -9,9 +8,9 @@ namespace AiAdvisor.Infrastructure.AI;
 
 public class ProductRecomendationAgent :IProductRecomendationAgent
 {
-    private readonly IFinancialDataAgent _financialDataAgent;
+    private readonly IFinancialService _financialDataAgent;
     private readonly IChatService _chatService;
-    
+
     private readonly IFinancialDocumentsSearchAgent _financialDocumentsSearchAgent;
     private readonly IUser _user;
     private readonly ILogger<ProductRecomendationAgent> _logger;
@@ -23,7 +22,7 @@ public class ProductRecomendationAgent :IProductRecomendationAgent
     };
 
     public ProductRecomendationAgent(
-        IFinancialDataAgent financialDataAgent,
+        IFinancialService financialDataAgent,
         IFinancialDocumentsSearchAgent financialDocumentsSearchAgent,
         IChatService chatService,
         IUser user,

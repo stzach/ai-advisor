@@ -1,6 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using AiAdvisor.Application.AiInsights.Queries.GetAiInsights;
 using AiAdvisor.Application.Common.Interfaces;
 using AiAdvisor.Infrastructure.AI.Services;
 using Microsoft.Extensions.Logging;
@@ -12,16 +9,16 @@ public interface IFinancialDocumentsSearchAgent
 }
 public class FinancialDocumentsSearchAgent : IFinancialDocumentsSearchAgent
 {
-    private readonly IFinancialDataAgent _financialDataAgent;
+    private readonly IFinancialService _financialDataAgent;
     private readonly IChatService _chatService;
-    
+
     private readonly IFinancialDocumentSearchService _financialDocumentSearchService;
     private readonly IUser _user;
     private readonly ILogger<FinancialDocumentsSearchAgent> _logger;
 
 
     public FinancialDocumentsSearchAgent(
-        IFinancialDataAgent financialDataAgent,
+        IFinancialService financialDataAgent,
         IFinancialDocumentSearchService financialDocumentSearchService,
         IChatService chatService,
         IUser user,
@@ -93,7 +90,7 @@ public class FinancialDocumentsSearchAgent : IFinancialDocumentsSearchAgent
         try
         {
             var query = response.Trim();
-           var results = _financialDocumentSearchService.SearchDocumentsAsync(query, topK: 5).Result;
+            var results = _financialDocumentSearchService.SearchDocumentsAsync(query, topK: 5).Result;
           var formattedResults = FormatSearchResults(results);
             _logger.LogInformation("Search completed with {ResultCount} results \n\n Content: \n{Content}", results.Count, formattedResults);
             return "" ;//formattedResults;

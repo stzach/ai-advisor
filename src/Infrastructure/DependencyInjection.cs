@@ -62,7 +62,7 @@ public static class DependencyInjection
         
         // AI Agents
         builder.Services.AddScoped<IChatService, ChatService>();
-        builder.Services.AddScoped<IFinancialDataAgent, FinancialDataAgent>();
+        builder.Services.AddScoped<IFinancialService, FinancialService>();
         builder.Services.AddScoped<IAdvisorAgent, AdvisorAgent>();
 
         // Document Vectorization & Search

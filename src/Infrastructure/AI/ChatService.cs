@@ -12,6 +12,9 @@ public interface IChatService
     IAsyncEnumerable<string> StreamAsync(string message, string systemPrompt, List<ConversationMessage> conversationHistory, CancellationToken ct);
 }
 
+/// <summary>
+/// This is th LLM Service
+/// </summary>
 public class ChatService : IChatService
 {
     private readonly IChatClient _chatClient;

@@ -33,8 +33,6 @@ public static class DependencyInjection
         });
 
         builder.Services.AddCors();
-
-        builder.Services.AddHostedService<NotificationBackgroundService>();
     }
 
     public static void AddKeyVaultIfConfigured(this IHostApplicationBuilder builder)

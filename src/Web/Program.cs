@@ -74,7 +74,6 @@ if (!string.IsNullOrEmpty(azureSearchEndpoint) && !string.IsNullOrEmpty(azureSea
     await creator.CreateIndexAsync("documents_index");
 }
 
-app.MapHub<NotificationHub>("/chat").ExcludeFromApiReference().ExcludeFromDescription();
 app.MapHub<ChatHub>("/ai-chat").ExcludeFromApiReference().ExcludeFromDescription();
 
 

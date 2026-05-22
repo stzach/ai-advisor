@@ -10,7 +10,7 @@ namespace AiAdvisor.Infrastructure.AI;
 
 public class InsightsOrchestrator : IInsightsOrchestrator
 {
-    private readonly IFinancialDataAgent _financialDataAgent;
+    private readonly IFinancialService _financialDataAgent;
     private readonly IChatService _chatService;
     private readonly IUser _user;
     private readonly ILogger<InsightsOrchestrator> _logger;
@@ -22,7 +22,7 @@ public class InsightsOrchestrator : IInsightsOrchestrator
     };
 
     public InsightsOrchestrator(
-        IFinancialDataAgent financialDataAgent,
+        IFinancialService financialDataAgent,
         IChatService chatService,
         IUser user,
         ILogger<InsightsOrchestrator> logger)

@@ -16,7 +16,7 @@ public interface IAdvisorAgent
 
 public class AdvisorAgent : IAdvisorAgent
 {
-    private readonly IFinancialDataAgent _financialDataAgent;
+    private readonly IFinancialService _financialDataAgent;
     private readonly IChatService _chatService;
     private readonly IMemoryCache _memoryCache;
     private readonly ILogger<AdvisorAgent> _logger;
@@ -25,7 +25,7 @@ public class AdvisorAgent : IAdvisorAgent
     private const int SystemPromptCacheHours = 1;
 
     public AdvisorAgent(
-        IFinancialDataAgent financialDataAgent,
+        IFinancialService financialDataAgent,
         IChatService chatService,
         IMemoryCache memoryCache,
         ILogger<AdvisorAgent> logger)

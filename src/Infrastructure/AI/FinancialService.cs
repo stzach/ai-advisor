@@ -9,17 +9,17 @@ namespace AiAdvisor.Infrastructure.AI;
 /// <summary>
 /// Agent 1: Fetches user's financial data and builds personalized system prompt
 /// </summary>
-public interface IFinancialDataAgent
+public interface IFinancialService
 {
     Task<string> BuildUserSystemPromptAsync(string userId, DateTimeOffset from, DateTimeOffset to, CancellationToken ct);
 }
 
-public class FinancialDataAgent : IFinancialDataAgent
+public class FinancialService : IFinancialService
 {
     private readonly ApplicationDbContext _dbContext;
-    private readonly ILogger<FinancialDataAgent> _logger;
+    private readonly ILogger<FinancialService> _logger;
 
-    public FinancialDataAgent(ApplicationDbContext dbContext, ILogger<FinancialDataAgent> logger)
+    public FinancialService(ApplicationDbContext dbContext, ILogger<FinancialService> logger)
     {
         _dbContext = dbContext;
         _logger = logger;
