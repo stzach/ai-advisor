@@ -104,10 +104,13 @@ public static class DependencyInjection
             var config = sp.GetRequiredService<IConfiguration>();
 
             var endpoint = new Uri(config.GetConnectionString(Services.Search).Replace("Endpoint=", ""));
-
+            
             return new SearchIndexClient(endpoint, new DefaultAzureCredential());
         });
 
         builder.Services.AddScoped<IInsightsOrchestrator, InsightsOrchestrator>();
+
+        builder.Services.AddScoped<IFinancialDocumentsSearchAgent, FinancialDocumentsSearchAgent>();
+        builder.Services.AddScoped<IProductRecomendationAgent, ProductRecomendationAgent>();
     }
 }

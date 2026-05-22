@@ -1,29 +1,16 @@
+using System.Text;
 using System.Text.RegularExpressions;
 using AiAdvisor.Infrastructure.AI.Models;
 
 namespace AiAdvisor.Infrastructure.AI.Services;
 
-/// <summary>
-/// Service for parsing and chunking markdown documents into manageable pieces
-/// while preserving document structure and respecting token limits.
-/// </summary>
 public interface IMarkdownChunkingService
 {
-    /// <summary>
-    /// Reads a markdown file and chunks it by sections.
-    /// </summary>
-    /// <param name="filePath">Full path to the markdown file</param>
-    /// <param name="maxTokensPerChunk">Maximum tokens per chunk (approximate, ~4 chars per token)</param>
-    /// <param name="overlapTokens">Number of tokens to overlap between chunks</param>
-    /// <returns>List of document chunks with metadata</returns>
     Task<IReadOnlyList<(string Content, DocumentMetadata Metadata)>> ChunkDocumentAsync(
         string filePath,
         int maxTokensPerChunk = 500,
         int overlapTokens = 50);
 
-    /// <summary>
-    /// Chunks markdown content (as string) instead of reading from file.
-    /// </summary>
     Task<IReadOnlyList<(string Content, DocumentMetadata Metadata)>> ChunkContentAsync(
         string content,
         string sourceFileName,
@@ -32,12 +19,18 @@ public interface IMarkdownChunkingService
         int overlapTokens = 50);
 }
 
-/// <summary>
-/// Implementation of markdown chunking service.
-/// </summary>
 public class MarkdownChunkingService : IMarkdownChunkingService
 {
-    private const int CharsPerToken = 4; // Rough estimate for token counting
+    private const int CharsPerToken = 4;
+
+    private static readonly Regex HeadingRegex =
+        new(@"^(#{1,6})\s+(.+)$", RegexOptions.Compiled);
+
+    private static readonly Regex ListItemRegex =
+        new(@"^(\s*[-*+]\s+.+)$", RegexOptions.Compiled);
+
+    private static readonly Regex CodeFenceRegex =
+        new(@"^```", RegexOptions.Compiled);
 
     public async Task<IReadOnlyList<(string Content, DocumentMetadata Metadata)>> ChunkDocumentAsync(
         string filePath,
@@ -45,17 +38,19 @@ public class MarkdownChunkingService : IMarkdownChunkingService
         int overlapTokens = 50)
     {
         if (!File.Exists(filePath))
-        {
-            throw new FileNotFoundException($"Document not found: {filePath}");
-        }
+            throw new FileNotFoundException(filePath);
 
         var content = await File.ReadAllTextAsync(filePath);
-        var fileName = Path.GetFileName(filePath);
 
-        return await ChunkContentAsync(content, fileName, filePath, maxTokensPerChunk, overlapTokens);
+        return await ChunkContentAsync(
+            content,
+            Path.GetFileName(filePath),
+            filePath,
+            maxTokensPerChunk,
+            overlapTokens);
     }
 
-    public async Task<IReadOnlyList<(string Content, DocumentMetadata Metadata)>> ChunkContentAsync(
+    public Task<IReadOnlyList<(string Content, DocumentMetadata Metadata)>> ChunkContentAsync(
         string content,
         string sourceFileName,
         string sourceFilePath,
@@ -63,175 +58,233 @@ public class MarkdownChunkingService : IMarkdownChunkingService
         int overlapTokens = 50)
     {
         if (string.IsNullOrWhiteSpace(content))
+            return Task.FromResult<IReadOnlyList<(string, DocumentMetadata)>>(Array.Empty<(string, DocumentMetadata)>());
+
+        var blocks = ParseBlocks(content);
+        var chunks = PackBlocks(
+            blocks,
+            sourceFileName,
+            sourceFilePath,
+            maxTokensPerChunk,
+            overlapTokens);
+
+        return Task.FromResult<IReadOnlyList<(string, DocumentMetadata)>>(chunks);
+    }
+
+    #region Block model
+
+    private record Block(string Type, string Content, int Tokens);
+
+    #endregion
+
+    #region Parsing
+
+    private List<Block> ParseBlocks(string content)
+    {
+        var lines = content.Split(Environment.NewLine);
+        var blocks = new List<Block>();
+
+        var sb = new StringBuilder();
+
+        bool inCode = false;
+        bool inList = false;
+
+        foreach (var line in lines)
         {
-            return Array.Empty<(string, DocumentMetadata)>();
-        }
-
-        await Task.CompletedTask; // Allow async context
-
-        var chunks = new List<(string Content, DocumentMetadata Metadata)>();
-
-        // Split by heading levels (## or ###)
-        var sectionPattern = @"^(#{2,3})\s+(.+)$";
-        var lines = content.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-
-        var currentSection = "";
-        var currentHeadingLevel = 0;
-        var sectionContent = new List<string>();
-        var chunkIndex = 0;
-
-        for (int i = 0; i < lines.Length; i++)
-        {
-            var line = lines[i];
-            var match = Regex.Match(line, sectionPattern, RegexOptions.Multiline);
-
-            if (match.Success)
+            // Code blocks (atomic)
+            if (CodeFenceRegex.IsMatch(line))
             {
-                // We found a new heading - process accumulated content from previous section
-                if (sectionContent.Count > 0)
+                if (inCode)
                 {
-                    var sectionText = string.Join(Environment.NewLine, sectionContent).Trim();
-                    if (!string.IsNullOrWhiteSpace(sectionText))
+                    sb.AppendLine(line);
+                    blocks.Add(MakeBlock("code", sb.ToString()));
+                    sb.Clear();
+                    inCode = false;
+                }
+                else
+                {
+                    if (sb.Length > 0)
                     {
-                        CreateChunksFromSection(
-                            sectionText,
-                            currentSection,
-                            currentHeadingLevel,
-                            sourceFileName[..sourceFileName.LastIndexOf('.')],
-                            sourceFilePath,
-                            ref chunkIndex,
-                            maxTokensPerChunk,
-                            overlapTokens,
-                            chunks);
+                        blocks.Add(MakeBlock("paragraph", sb.ToString()));
+                        sb.Clear();
                     }
+                    sb.AppendLine(line);
+                    inCode = true;
                 }
 
-                // Start new section
-                currentSection = match.Groups[2].Value;
-                currentHeadingLevel = match.Groups[1].Value.Length - 1; // 2 hashes = level 1, 3 hashes = level 2
-                sectionContent = new List<string> { line };
+                continue;
             }
-            else
+
+            if (inCode)
             {
-                sectionContent.Add(line);
+                sb.AppendLine(line);
+                continue;
             }
+
+            // Heading
+            var headingMatch = HeadingRegex.Match(line);
+            if (headingMatch.Success)
+            {
+                if (sb.Length > 0)
+                {
+                    blocks.Add(MakeBlock(inList ? "list" : "paragraph", sb.ToString()));
+                    sb.Clear();
+                    inList = false;
+                }
+
+                blocks.Add(MakeBlock("heading", line));
+                continue;
+            }
+
+            // List items
+            if (ListItemRegex.IsMatch(line))
+            {
+                inList = true;
+                sb.AppendLine(line);
+                continue;
+            }
+
+            // Paragraph break
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                if (sb.Length > 0)
+                {
+                    blocks.Add(MakeBlock(inList ? "list" : "paragraph", sb.ToString()));
+                    sb.Clear();
+                    inList = false;
+                }
+                continue;
+            }
+
+            sb.AppendLine(line);
         }
 
-        // Process last section
-        if (sectionContent.Count > 0)
+        if (sb.Length > 0)
+            blocks.Add(MakeBlock(inList ? "list" : "paragraph", sb.ToString()));
+
+        return blocks;
+    }
+
+    private static Block MakeBlock(string type, string content)
+    {
+        var tokens = EstimateTokens(content);
+        return new Block(type, content.Trim(), tokens);
+    }
+
+    #endregion
+
+    #region Packing
+
+    private List<(string Content, DocumentMetadata Metadata)> PackBlocks(
+        List<Block> blocks,
+        string fileName,
+        string filePath,
+        int maxTokens,
+        int overlapTokens)
+    {
+        var chunks = new List<(string, DocumentMetadata)>();
+
+        var current = new List<Block>();
+        int currentTokens = 0;
+        int chunkIndex = 0;
+
+        var context = new List<string>();
+
+        foreach (var block in blocks)
         {
-            var sectionText = string.Join(Environment.NewLine, sectionContent).Trim();
-            if (!string.IsNullOrWhiteSpace(sectionText))
+            // Update heading context
+            if (block.Type == "heading")
+                UpdateContext(context, block.Content);
+
+            if (currentTokens + block.Tokens > maxTokens && current.Count > 0)
             {
-                CreateChunksFromSection(
-                    sectionText,
-                    currentSection,
-                    currentHeadingLevel,
-                    sourceFileName,
-                    sourceFilePath,
-                    ref chunkIndex,
-                    maxTokensPerChunk,
-                    overlapTokens,
-                    chunks);
+                chunks.Add(CreateChunk(current, context, fileName, filePath, chunkIndex++));
+
+                current = TakeOverlap(current, overlapTokens);
+                currentTokens = current.Sum(b => b.Tokens);
             }
+
+            current.Add(block);
+            currentTokens += block.Tokens;
         }
 
-        // Update total chunks count for all chunks
-        var totalChunks = chunks.Count;
-        for (int i = 0; i < chunks.Count; i++)
+        if (current.Count > 0)
         {
-            var (conten, metadata) = chunks[i];
-            chunks[i] = (conten, metadata with { TotalChunks = totalChunks });
+            chunks.Add(CreateChunk(current, context, fileName, filePath, chunkIndex));
         }
 
         return chunks;
     }
 
-    private void CreateChunksFromSection(
-        string sectionContent,
-        string sectionHeading,
-        int headingLevel,
-        string sourceFileName,
-        string sourceFilePath,
-        ref int chunkIndex,
-        int maxTokensPerChunk,
-        int overlapTokens,
-        List<(string Content, DocumentMetadata Metadata)> chunks)
+    private static List<Block> TakeOverlap(List<Block> blocks, int overlapTokens)
     {
-        var maxChars = maxTokensPerChunk * CharsPerToken;
-        var overlapChars = overlapTokens * CharsPerToken;
+        var result = new List<Block>();
+        int tokens = 0;
 
-        // If section is small, add as single chunk
-        if (sectionContent.Length <= maxChars)
+        for (int i = blocks.Count - 1; i >= 0; i--)
         {
-            var tokenCount = EstimateTokens(sectionContent);
-            var metadata = new DocumentMetadata
-            {
-                ChunkId = $"{Path.GetFileNameWithoutExtension(sourceFileName)}_{chunkIndex}",
-                SourceFileName = sourceFileName,
-                SourceFilePath = sourceFilePath,
-                SectionHeading = sectionHeading,
-                HeadingLevel = headingLevel,
-                ChunkIndex = chunkIndex,
-                TokenCount = tokenCount,
-                IndexedAt = DateTime.UtcNow
-            };
+            var b = blocks[i];
+            result.Insert(0, b);
+            tokens += b.Tokens;
 
-            chunks.Add((sectionContent, metadata));
-            chunkIndex++;
+            if (tokens >= overlapTokens)
+                break;
+        }
+
+        return result;
+    }
+
+    private static void UpdateContext(List<string> context, string heading)
+    {
+        if (context.Count == 0)
+        {
+            context.Add(heading);
             return;
         }
 
-        // Split large sections into overlapping chunks
-        int offset = 0;
-        while (offset < sectionContent.Length)
-        {
-            var endIndex = Math.Min(offset + maxChars, sectionContent.Length);
+        context.Add(heading);
 
-            // Try to break at sentence boundary
-            if (endIndex < sectionContent.Length)
-            {
-                var lastPeriod = sectionContent.LastIndexOf('.', endIndex);
-                var lastNewline = sectionContent.LastIndexOf('\n', endIndex);
-                var breakPoint = Math.Max(lastPeriod, lastNewline);
-
-                if (breakPoint > offset + (maxChars / 2)) // Only use if reasonable break point exists
-                {
-                    endIndex = breakPoint + 1;
-                }
-            }
-
-            var chunk = sectionContent[offset..endIndex].Trim();
-            if (!string.IsNullOrWhiteSpace(chunk))
-            {
-                var tokenCount = EstimateTokens(chunk);
-                var metadata = new DocumentMetadata
-                {
-                    ChunkId = $"{Path.GetFileNameWithoutExtension(sourceFileName)}#{chunkIndex}",
-                    SourceFileName = sourceFileName,
-                    SourceFilePath = sourceFilePath,
-                    SectionHeading = sectionHeading,
-                    HeadingLevel = headingLevel,
-                    ChunkIndex = chunkIndex,
-                    TokenCount = tokenCount,
-                    IndexedAt = DateTime.UtcNow
-                };
-
-                chunks.Add((chunk, metadata));
-                chunkIndex++;
-            }
-
-            // Move offset with overlap
-            offset = endIndex - overlapChars;
-            if (offset <= 0) break;
-        }
+        if (context.Count > 4)
+            context.RemoveAt(0);
     }
 
-    /// <summary>
-    /// Rough estimate of token count (typically ~4 characters per token)
-    /// </summary>
-    private static int EstimateTokens(string text)
+    private static (string Content, DocumentMetadata Metadata) CreateChunk(
+        List<Block> blocks,
+        List<string> context,
+        string fileName,
+        string filePath,
+        int index)
     {
-        return (int)Math.Ceiling(text.Length / (double)CharsPerToken);
+        var content = new StringBuilder();
+
+        content.AppendLine($"Source: {fileName}");
+        content.AppendLine($"Context: {string.Join(" > ", context)}");
+        content.AppendLine("---");
+
+        foreach (var b in blocks)
+        {
+            content.AppendLine(b.Content);
+        }
+
+        var text = content.ToString();
+
+        return (text, new DocumentMetadata
+        {
+            ChunkId = $"{Path.GetFileNameWithoutExtension(fileName)}_{index}",
+            SourceFileName = fileName,
+            SourceFilePath = filePath,
+            ChunkIndex = index,
+            TokenCount = EstimateTokens(text),
+            IndexedAt = DateTime.UtcNow
+        });
     }
+
+    #endregion
+
+    #region Token estimation
+
+    private static int EstimateTokens(string text)
+        => (int)Math.Ceiling(text.Length / (double)CharsPerToken);
+
+    #endregion
 }

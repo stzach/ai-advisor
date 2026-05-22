@@ -291,6 +291,26 @@
 
 </div>
 
+  <div class="dash-card dash-recommendations">
+    <h3 class="dash-card-title">Recommended Products</h3>
+
+    @if (isLoadingRecommendations) {
+      <p class="dash-empty">Loading recommendations…</p>
+    } @else if (!productRecommendations().length) {
+      <p class="dash-empty">No tailored recommendations are available right now.</p>
+    }
+
+    @for (recommendation of productRecommendations(); track recommendation.productName) {
+      <div class="dash-recommendation-row">
+        <div>
+          <div class="dash-recommendation-name">{{ recommendation.productName }}</div>
+          <div class="dash-recommendation-reason">{{ recommendation.reason }}</div>
+        </div>
+        <a class="dash-recommendation-link" [href]="recommendation.redirectUri">View product</a>
+      </div>
+    }
+  </div>
+
 </div>
 
 @if (showModal) {

@@ -582,6 +582,33 @@ app-root > main:has(> app-home) {
 .dash-insights { padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; }
 .dash-insights-icon { margin-right: 0.4rem; }
 
+.dash-recommendations { padding: 1.25rem 1.5rem; margin-top: 1.25rem; }
+.dash-recommendation-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid $bank-border;
+}
+.dash-recommendation-row:last-child { border-bottom: none; }
+.dash-recommendation-name { font-weight: 600; font-size: 0.95rem; }
+.dash-recommendation-reason { color: rgba(255,255,255,0.75); font-size: 0.9rem; margin-top: 0.25rem; }
+.dash-recommendation-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: $bank-red;
+  color: #fff;
+  border-radius: 0.375rem;
+  padding: 0.45rem 0.85rem;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+.dash-recommendation-link:hover { background: darken($bank-red, 8%); }
+
 .dash-insight-row {
   display: flex;
   align-items: center;
