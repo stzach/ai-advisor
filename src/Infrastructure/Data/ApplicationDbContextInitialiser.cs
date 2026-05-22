@@ -97,6 +97,8 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
         await UpsertUserAsync("kotrotsos",    "kotrotsos@gmail.com",         "Konstantinos", "Kotrotsos",   "Asdf135!");
         await UpsertUserAsync("komliki",      "christinakomliki@gmail.com",  "Christina",    "Komliki",     "Asdf135!");
         await UpsertUserAsync("billGates",    "plousios@gmail.com",          "Bill",         "Gates",       "Asdf135!");
+        await UpsertUserAsync("demouser1",   "demouser1@demo.com",           "Demo",         "User",        "Asdf135!", userAge: 55);
+        await UpsertUserAsync("demouser2",   "demouser2@demo.com",           "Demo",         "User 2",      "Asdf135!", userAge: 28);
 
 
 
@@ -240,6 +242,27 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
                 new() { UserId = kafousis.Id, ProductId = VisaDebitId,    AvailableBalance =     0.00m, CardNumber    = "4539 7812 3456 9087",                IsActive = true, CreditLimit = 2000m },
                 new() { UserId = kafousis.Id, ProductId = PersonalLoanId, AvailableBalance = 25000.00m, AccountNumber = "GR45 2345 6789 0123 4567 8901 234", IsActive = true },
                 new() { UserId = kafousis.Id, ProductId = CyberInsId,     AvailableBalance =     0.00m,                                                      IsActive = true },
+            });
+        }
+
+        var demouser1 = await _userManager.FindByNameAsync("demouser1");
+        if (demouser1 is not null)
+        {
+            await UpsertUserProductsAsync(demouser1.Id, new List<UserProduct>
+            {
+                new() { UserId = demouser1.Id, ProductId = CurrentAccId, AvailableBalance =  30000.00m, AccountNumber = "GR13 9900 1122 3344 5566 7788 001", IsActive = true },
+                new() { UserId = demouser1.Id, ProductId = SavingAccId,  AvailableBalance = 170000.00m, AccountNumber = "GR13 9900 1122 3344 5566 7788 002", IsActive = true },
+                new() { UserId = demouser1.Id, ProductId = VisaDebitId,  AvailableBalance =      0.00m, CardNumber    = "4111 2233 4455 6677",                IsActive = true },
+            });
+        }
+
+        var demouser2 = await _userManager.FindByNameAsync("demouser2");
+        if (demouser2 is not null)
+        {
+            await UpsertUserProductsAsync(demouser2.Id, new List<UserProduct>
+            {
+                new() { UserId = demouser2.Id, ProductId = CurrentAccId, AvailableBalance = 2238.64m, AccountNumber = "GR13 9900 1122 3344 5566 7788 003", IsActive = true },
+                new() { UserId = demouser2.Id, ProductId = VisaDebitId,  AvailableBalance =    0.00m, CardNumber    = "4111 2233 4455 6688",                IsActive = true },
             });
         }
 
@@ -635,12 +658,12 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
         }
     }
 
-    private async Task UpsertUserAsync(string userName, string email, string firstName, string lastName, string password)
+    private async Task UpsertUserAsync(string userName, string email, string firstName, string lastName, string password, int userAge = 0)
     {
         var existing = await _userManager.FindByNameAsync(userName);
         if (existing is null)
         {
-            var user = new ApplicationUser { UserName = userName, Email = email, FirstName = firstName, LastName = lastName };
+            var user = new ApplicationUser { UserName = userName, Email = email, FirstName = firstName, LastName = lastName, UserAge = userAge };
             await _userManager.CreateAsync(user, password);
         }
         else
@@ -648,6 +671,7 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
             existing.FirstName = firstName;
             existing.LastName  = lastName;
             existing.Email     = email;
+            existing.UserAge   = userAge;
             await _userManager.UpdateAsync(existing);
         }
     }

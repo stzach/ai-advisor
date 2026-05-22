@@ -9,6 +9,7 @@ public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Applicati
     {
         var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
         optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=AiAdvisorDb;Trusted_Connection=True;MultipleActiveResultSets=true");
+        optionsBuilder.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
         return new ApplicationDbContext(optionsBuilder.Options);
     }
 }
