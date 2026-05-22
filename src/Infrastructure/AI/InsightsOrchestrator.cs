@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AiAdvisor.Application.AiInsights.Queries.GetAiInsights;
@@ -38,7 +40,34 @@ public class InsightsOrchestrator : IInsightsOrchestrator
         _logger.LogInformation("Generating AI insights for user {UserId}", userId);
 
         var financialContext = await _financialDataAgent.BuildUserSystemPromptAsync(userId, from, to, cancellationToken);
+        var (systemPrompt, userMessage) = BuildPrompt(financialContext);
 
+        var response = await _chatService.SendAsync(userMessage, systemPrompt, cancellationToken);
+
+        _logger.LogInformation("Received insights response for user {UserId}", userId);
+
+        return ParseInsights(response);
+    }
+
+    public async IAsyncEnumerable<InsightDto> StreamInsightsAsync(
+        DateTimeOffset from,
+        DateTimeOffset to,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        var userId = _user.Id ?? throw new UnauthorizedAccessException("User not authenticated.");
+
+        _logger.LogInformation("Streaming AI insights for user {UserId}", userId);
+
+        var financialContext = await _financialDataAgent.BuildUserSystemPromptAsync(userId, from, to, cancellationToken);
+        var (systemPrompt, userMessage) = BuildPrompt(financialContext);
+        var tokenStream = _chatService.StreamAsync(userMessage, systemPrompt, cancellationToken);
+
+        await foreach (var insight in ParseStreamingInsightsAsync(tokenStream, cancellationToken))
+            yield return insight;
+    }
+
+    private static (string systemPrompt, string userMessage) BuildPrompt(string financialContext)
+    {
         var systemPrompt = """
             You are a financial advisor AI for a retail bank. Analyse the user's financial data and return exactly 4 personalised, actionable insights.
 
@@ -86,12 +115,62 @@ public class InsightsOrchestrator : IInsightsOrchestrator
             """;
 
         var userMessage = $"Here is my financial data:\n\n{financialContext}\n\nGenerate 4 personalised insights.";
+        return (systemPrompt, userMessage);
+    }
 
-        var response = await _chatService.SendAsync(userMessage, systemPrompt, cancellationToken);
+    private async IAsyncEnumerable<InsightDto> ParseStreamingInsightsAsync(
+        IAsyncEnumerable<string> tokenStream,
+        [EnumeratorCancellation] CancellationToken ct)
+    {
+        var buffer = new StringBuilder();
 
-        _logger.LogInformation("Received insights response for user {UserId}", userId);
+        await foreach (var chunk in tokenStream.WithCancellation(ct))
+        {
+            buffer.Append(chunk);
 
-        return ParseInsights(response);
+            while (TryExtractObject(buffer, out var json))
+            {
+                var insight = TryParseInsight(json);
+                if (insight is not null) yield return insight;
+            }
+        }
+    }
+
+    private static bool TryExtractObject(StringBuilder sb, out string json)
+    {
+        json = "";
+        var text = sb.ToString();
+        var start = text.IndexOf('{');
+        if (start < 0) { sb.Clear(); return false; }
+
+        int depth = 0;
+        bool inString = false, escaped = false;
+
+        for (int i = start; i < text.Length; i++)
+        {
+            var c = text[i];
+            if (escaped)              { escaped = false; continue; }
+            if (c == '\\' && inString){ escaped = true;  continue; }
+            if (c == '"')             { inString = !inString; continue; }
+            if (inString)             continue;
+
+            if      (c == '{') depth++;
+            else if (c == '}' && --depth == 0)
+            {
+                json = text[start..(i + 1)];
+                sb.Remove(0, i + 1);
+                return true;
+            }
+        }
+
+        if (start > 0) sb.Remove(0, start);
+        return false;
+    }
+
+    private InsightDto? TryParseInsight(string json)
+    {
+        try   { return JsonSerializer.Deserialize<InsightDto>(json, JsonOptions); }
+        catch { return null; }
     }
 
     private List<InsightDto> ParseInsights(string response)
@@ -100,7 +179,6 @@ public class InsightsOrchestrator : IInsightsOrchestrator
         {
             var json = response.Trim();
 
-            // Strip markdown code fences if the model wraps the JSON
             if (json.StartsWith("```"))
             {
                 var start = json.IndexOf('\n') + 1;

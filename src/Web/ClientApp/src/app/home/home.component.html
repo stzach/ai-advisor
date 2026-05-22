@@ -8,10 +8,8 @@
     </div>
     <div class="dash-welcome-right">
       <div class="dash-net-worth">
-        <span class="dash-net-worth-label">Net Worth</span>
-        <span class="dash-net-worth-value" [class.negative]="netWorth() < 0">
-          {{ netWorth() >= 0 ? '' : '-' }}€{{ (netWorth() < 0 ? -netWorth() : netWorth()) | number:'1.2-2' }}
-        </span>
+        <span class="dash-net-worth-label">Total Balance</span>
+        <span class="dash-net-worth-value">€{{ netWorth() | number:'1.2-2' }}</span>
       </div>
       <button class="dash-new-tx-btn" (click)="openModal()">+ New Transaction</button>
     </div>
@@ -30,26 +28,54 @@
           <span class="dash-expenses-total-value">€{{ totalExpenses() | number:'1.2-2' }}</span>
         </div>
       </div>
-      <kendo-chart style="height: 280px;">
-        <kendo-chart-series>
-          <kendo-chart-series-item
-            type="donut"
-            [data]="expenses()"
-            field="amount"
-            categoryField="category"
-            colorField="color"
-            [holeSize]="60">
-          </kendo-chart-series-item>
-        </kendo-chart-series>
-        <kendo-chart-legend position="bottom" [visible]="true"></kendo-chart-legend>
-        <kendo-chart-tooltip [visible]="true" format="€{0}"></kendo-chart-tooltip>
-      </kendo-chart>
+      <div class="dash-chart-wrap">
+        <kendo-chart style="height: 400px;">
+          <kendo-chart-series>
+            <kendo-chart-series-item
+              type="donut"
+              [data]="expenses()"
+              field="amount"
+              categoryField="category"
+              colorField="color"
+              [holeSize]="78"
+              [padding]="8">
+            </kendo-chart-series-item>
+          </kendo-chart-series>
+          <kendo-chart-legend [visible]="false"></kendo-chart-legend>
+          <kendo-chart-tooltip [visible]="true" format="€{0:N2}"></kendo-chart-tooltip>
+        </kendo-chart>
+        @if (totalExpenses() > 0) {
+          <div class="dash-chart-center">
+            <span class="dash-chart-center-label">Total</span>
+            <span class="dash-chart-center-value">€{{ totalExpenses() | number:'1.0-0' }}</span>
+          </div>
+        }
+      </div>
+
+      @if (expenses().length) {
+        <div class="dash-expense-breakdown">
+          @for (e of expenses(); track e.category) {
+            <div class="dash-expense-row">
+              <span class="dash-expense-dot" [style.background]="e.color"></span>
+              <span class="dash-expense-cat">{{ e.category }}</span>
+              <span class="dash-expense-bar-wrap">
+                <span class="dash-expense-bar-fill"
+                  [style.width.%]="(e.amount / totalExpenses()) * 100"
+                  [style.background]="e.color">
+                </span>
+              </span>
+              <span class="dash-expense-pct">{{ (e.amount / totalExpenses()) * 100 | number:'1.0-0' }}%</span>
+              <span class="dash-expense-amt">€{{ e.amount | number:'1.0-0' }}</span>
+            </div>
+          }
+        </div>
+      }
     </div>
 
     <div class="dash-side-stack">
 
       <div class="dash-card">
-        <h3 class="dash-card-title">Accounts</h3>
+        <h3 class="dash-card-title"><span class="dash-card-title-icon">🏦</span> Accounts</h3>
         @for (account of accounts(); track account.productId) {
           <div class="dash-account-row">
             <div>
@@ -62,7 +88,7 @@
       </div>
 
       <div class="dash-card">
-        <h3 class="dash-card-title">Cards</h3>
+        <h3 class="dash-card-title"><span class="dash-card-title-icon">💳</span> Cards</h3>
         @for (card of cards(); track card.productId) {
           <div class="dash-card-row">
             <div class="dash-card-info">
@@ -91,7 +117,7 @@
 
       @if (loans().length) {
         <div class="dash-card">
-          <h3 class="dash-card-title">Loans</h3>
+          <h3 class="dash-card-title"><span class="dash-card-title-icon">📋</span> Loans</h3>
           @for (loan of loans(); track loan.productId) {
             <div class="dash-account-row">
               <div>
@@ -108,36 +134,81 @@
   </div>
 
   <div class="dash-card dash-insights">
-    <h3 class="dash-card-title">
-      <span class="dash-insights-icon">🤖</span> AI Advisor Insights · {{ rangeLabel() }}
-    </h3>
-    @if (insightsLoading()) {
-      @for (i of [1,2,3,4]; track i) {
-        <div class="dash-insight-skeleton">
-          <div class="dash-skeleton-icon"></div>
-          <div class="dash-skeleton-lines">
-            <div class="dash-skeleton-line dash-skeleton-line--wide"></div>
-            <div class="dash-skeleton-line dash-skeleton-line--narrow"></div>
-          </div>
-          <div class="dash-skeleton-btn"></div>
-        </div>
+    <div class="dash-insights-header">
+      <h3 class="dash-card-title">
+        <span class="dash-insights-icon">🤖</span> AI Advisor Insights · {{ rangeLabel() }}
+        @if (insightsLoading()) {
+          <span class="dash-insights-live-dot"></span>
+        }
+      </h3>
+      @if (insightsLoading()) {
+        <span class="dash-insights-status">
+          {{ insights().length === 0 ? 'Analysing your finances…' : insights().length + ' of 4 ready' }}
+        </span>
       }
+    </div>
+    @if (insightsLoading()) {
+      <div class="dash-insights-progress-bar">
+        <div class="dash-insights-progress-fill"
+          [style.width.%]="(insights().length / 4) * 100">
+        </div>
+      </div>
+    }
+    @for (insight of insights(); track insight.message; let i = $index) {
+      <div class="dash-insight-row dash-insight-row--appear">
+        <span class="dash-insight-icon">{{ insight.icon }}</span>
+        <div class="dash-insight-body">
+          <button class="dash-insight-toggle" (click)="toggleInsight(i)">
+            <span class="dash-insight-message">{{ insight.message }}</span>
+            <span class="dash-insight-chevron" [class.open]="expandedInsight === i">›</span>
+          </button>
+          @if (expandedInsight === i) {
+            <div class="dash-insight-expanded">
+              <p class="dash-insight-q">{{ insight.prompt }}</p>
+              <button class="dash-insight-cta" (click)="chatHub.openWithPrompt(insight.prompt)">{{ insight.cta }} →</button>
+            </div>
+          }
+        </div>
+      </div>
+    }
+    @for (i of insightSkeletons(); track i) {
+      <div class="dash-insight-skeleton">
+        <div class="dash-skeleton-icon"></div>
+        <div class="dash-skeleton-lines">
+          <div class="dash-skeleton-line dash-skeleton-line--wide"></div>
+          <div class="dash-skeleton-line dash-skeleton-line--narrow"></div>
+        </div>
+        <div class="dash-skeleton-btn"></div>
+      </div>
     }
     @if (!insightsLoading() && !insights().length) {
-      <p class="dash-empty">No insights available.</p>
+      <p class="dash-empty" data-icon="🤖">No insights available.</p>
     }
-    @for (insight of insights(); track insight.message) {
-      <div class="dash-insight-row">
-        <span class="dash-insight-icon">{{ insight.icon }}</span>
-        <span class="dash-insight-message">{{ insight.message }}</span>
-        <button class="dash-insight-cta" (click)="chatHub.openWithPrompt(insight.prompt)">{{ insight.cta }}</button>
+  </div>
+
+  <div class="dash-card dash-recommendations">
+    <h3 class="dash-card-title"><span class="dash-card-title-icon">🎯</span> Recommended Products</h3>
+
+    @if (isLoadingRecommendations) {
+      <p class="dash-empty" data-icon="⏳">Loading recommendations…</p>
+    } @else if (!productRecommendations().length) {
+      <p class="dash-empty" data-icon="🎯">No tailored recommendations are available right now.</p>
+    }
+
+    @for (recommendation of productRecommendations(); track recommendation.productName) {
+      <div class="dash-recommendation-row">
+        <div>
+          <div class="dash-recommendation-name">{{ recommendation.productName }}</div>
+          <div class="dash-recommendation-reason">{{ recommendation.reason }}</div>
+        </div>
+        <a class="dash-recommendation-link" [href]="recommendation.redirectUri">View product</a>
       </div>
     }
   </div>
 
   <div class="dash-card dash-transactions">
     <div class="dash-tx-header">
-      <h3 class="dash-card-title">Transactions · {{ rangeLabel() }}</h3>
+      <h3 class="dash-card-title"><span class="dash-card-title-icon">💸</span> Transactions · {{ rangeLabel() }}</h3>
       <div class="dash-range-tabs">
         <button class="dash-range-tab" [class.active]="selectedRange === 'month'"   (click)="setRange('month')">This Month</button>
         <button class="dash-range-tab" [class.active]="selectedRange === '3months'" (click)="setRange('3months')">3M</button>
@@ -167,7 +238,7 @@
       </div>
     }
     @if (!transactions().length) {
-      <p class="dash-empty">No transactions for this period.</p>
+      <p class="dash-empty" data-icon="💸">No transactions for this period.</p>
     }
   </div>
 <div class="dash-card dash-document-search">
@@ -291,25 +362,6 @@
 
 </div>
 
-  <div class="dash-card dash-recommendations">
-    <h3 class="dash-card-title">Recommended Products</h3>
-
-    @if (isLoadingRecommendations) {
-      <p class="dash-empty">Loading recommendations…</p>
-    } @else if (!productRecommendations().length) {
-      <p class="dash-empty">No tailored recommendations are available right now.</p>
-    }
-
-    @for (recommendation of productRecommendations(); track recommendation.productName) {
-      <div class="dash-recommendation-row">
-        <div>
-          <div class="dash-recommendation-name">{{ recommendation.productName }}</div>
-          <div class="dash-recommendation-reason">{{ recommendation.reason }}</div>
-        </div>
-        <a class="dash-recommendation-link" [href]="recommendation.redirectUri">View product</a>
-      </div>
-    }
-  </div>
 
 </div>
 

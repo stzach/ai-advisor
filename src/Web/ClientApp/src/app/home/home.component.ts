@@ -1,4 +1,4 @@
-import { Component, computed, Signal } from '@angular/core';
+import { Component, computed, Signal, signal, WritableSignal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Subject, of } from 'rxjs';
@@ -48,7 +48,10 @@ export class HomeComponent {
   expenses:        Signal<Expense[]>;
   totalExpenses:   Signal<number>;
   netWorth:        Signal<number>;
+  private _insights: WritableSignal<InsightDto[]> = signal([]);
+  private activeEventSource: EventSource | null = null;
   insights:        Signal<InsightDto[]>;
+  insightSkeletons: Signal<number[]>;
   productRecommendations: Signal<ProductRecommendationDto[]>;
   insightsLoading: Signal<boolean>;
   isLoadingRecommendations = true;
@@ -119,31 +122,20 @@ export class HomeComponent {
 
     this.totalExpenses = computed(() => this.expenses().reduce((s, e) => s + e.amount, 0));
 
-    this.netWorth = computed(() => {
-      const assets      = this.userProducts().filter(p => p.productType === 'Account').reduce((s, p) => s + (p.availableBalance ?? 0), 0);
-      const liabilities = this.userProducts().filter(p => p.productType === 'Loan').reduce((s, p) => s + (p.availableBalance ?? 0), 0);
-      return assets - liabilities;
-    });
+    this.netWorth = computed(() =>
+      this.userProducts()
+        .filter(p => p.productType === 'Account')
+        .reduce((s, p) => s + (p.availableBalance ?? 0), 0)
+    );
 
     this.insightsLoading = toSignal(this.insightsLoading$, { initialValue: true });
 
-    this.insights = toSignal(
-      this.range$.pipe(
-        switchMap(range => {
-          this.insightsLoading$.next(true);
-          const { from, to } = this.toDateRange(range);
-          return this.http.get<InsightDto[]>(`${this.baseUrl}/api/AiInsights`, {
-            params: { from: from.toISOString(), to: to.toISOString() }
-          }).pipe(
-            startWith([] as InsightDto[]),
-            catchError(() => of([] as InsightDto[])),
-            tap({ complete: () => this.insightsLoading$.next(false) })
-          );
-        })
-      ),
-      { initialValue: [] as InsightDto[] }
+    this.insights        = this._insights.asReadonly();
+    this.insightSkeletons = computed(() =>
+      Array.from({ length: Math.max(0, 4 - this._insights().length) }, (_, i) => i)
+    );
 
-    ) as Signal<InsightDto[]>;
+    this.range$.subscribe(range => this.connectInsightStream(range));
  
   
     const recommendations$ = this.http.get<ProductRecommendationDto[]>(`${this.baseUrl}/api/ProductRecommendations`).pipe(
@@ -158,6 +150,12 @@ export class HomeComponent {
       error: () => this.isLoadingRecommendations = false
     });
 }
+
+  expandedInsight: number | null = null;
+
+  toggleInsight(i: number): void {
+    this.expandedInsight = this.expandedInsight === i ? null : i;
+  }
 
   showModal = false;
   modalTab: 'payment' | 'transfer' = 'payment';
@@ -244,6 +242,38 @@ export class HomeComponent {
   }
 
     
+  private connectInsightStream(range: string): void {
+    this.activeEventSource?.close();
+    this._insights.set([]);
+    this.insightsLoading$.next(true);
+
+    const { from, to } = this.toDateRange(range);
+    const url = `${this.baseUrl}/api/AiInsights/stream?from=${encodeURIComponent(from.toISOString())}&to=${encodeURIComponent(to.toISOString())}`;
+
+    const es = new EventSource(url, { withCredentials: true });
+    this.activeEventSource = es;
+
+    es.onmessage = (e) => {
+      try {
+        const insight: InsightDto = JSON.parse(e.data);
+        this._insights.update(list => [...list, insight]);
+        if (this._insights().length >= 4) this.insightsLoading$.next(false);
+      } catch { /* ignore malformed */ }
+    };
+
+    es.addEventListener('done', () => {
+      this.insightsLoading$.next(false);
+      es.close();
+      this.activeEventSource = null;
+    });
+
+    es.onerror = () => {
+      this.insightsLoading$.next(false);
+      es.close();
+      this.activeEventSource = null;
+    };
+  }
+
   submitTransaction() {
     if (!this.modalAmount || this.modalAmount <= 0 || !this.modalFromProductId) return;
 
