@@ -158,7 +158,11 @@ public class DocumentVectorizationService : IDocumentVectorizationService
         var markdownBlobs = new List<(string Name, BlobClient Client)>();
         var prefix = _ingestionOptions.BlobPrefix ?? string.Empty;
 
-        await foreach (var blobItem in containerClient.GetBlobsAsync(prefix: prefix, cancellationToken: cancellationToken))
+        await foreach (var blobItem in containerClient.GetBlobsAsync(
+            Azure.Storage.Blobs.Models.BlobTraits.None,
+            Azure.Storage.Blobs.Models.BlobStates.None,
+            prefix,
+            cancellationToken))
         {
             if (blobItem.Name.EndsWith(".md", StringComparison.OrdinalIgnoreCase))
             {
