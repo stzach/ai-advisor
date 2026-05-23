@@ -373,6 +373,111 @@ app-root > main:has(> app-insights) {
   padding-top: calc(var(--header-height) + 2rem);
 }
 
+// ── Full-page chat route (/chat) ───────────────────────────────────────────────
+app-root > main:has(> app-chat) {
+  background: #f5f7fa;
+  min-height: 100vh;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+app-chat {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+  padding: calc(var(--header-height) + 1.5rem) 1rem 2rem;
+}
+
+.chat-fullpage-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, $bank-navy 0%, #1a2f5e 100%);
+  border-radius: 18px 18px 0 0;
+  flex-shrink: 0;
+  box-shadow: 0 4px 20px rgba(14,29,61,0.2);
+  margin-bottom: 0;
+}
+
+.chat-fullpage-body {
+  flex: 1;
+  min-height: 0;
+  border-radius: 0 0 18px 18px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(14,29,61,0.12);
+
+  kendo-chat {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+
+    .k-chat {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .k-message-group:not(.k-alt) .k-bubble { border-radius: 4px 14px 14px 14px; }
+    .k-message-group.k-alt         .k-bubble { border-radius: 14px 14px 4px 14px; }
+
+    .k-bubble {
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+
+      ul { margin: 0.25rem 0 0 1rem; padding: 0; li { margin-bottom: 0.2rem; } }
+    }
+
+    .k-bubble code {
+      background: rgba(0,0,0,0.08);
+      border-radius: 3px;
+      padding: 0 3px;
+      font-size: 0.85em;
+    }
+
+    .k-message-list {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto !important;
+      background: #f5f7fa;
+    }
+
+    .k-message-list-content { padding: 1.25rem 1rem; }
+    .k-avatar { display: none; }
+
+    .k-message-quick-replies {
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      padding: 0.75rem 1rem;
+      background: #fff;
+      border-top: 1px solid rgba(36,59,115,0.08);
+      flex-shrink: 0;
+    }
+
+    .k-quick-reply {
+      display: inline-flex !important;
+      align-items: center;
+      padding: 0.45rem 1rem;
+      border-radius: 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1.5px solid rgba($bank-navy, 0.25) !important;
+      background: #fff !important;
+      color: $bank-navy !important;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      &:hover { background: $bank-navy !important; color: #fff !important; border-color: $bank-navy !important; }
+    }
+  }
+}
+
 .dashboard {
   max-width: 1200px;
   margin: 0 auto;
@@ -426,6 +531,40 @@ app-root > main:has(> app-insights) {
   color: rgba(255,255,255,0.75) !important;
   margin: 0;
   font-size: 1rem;
+}
+
+// ── AI Insights hero (image left, cards right) ────────────────────────────────
+.dash-insights-hero {
+  display:     flex;
+  align-items: center;
+  gap:         2.5rem;
+  margin-top:  2rem;
+}
+
+.dash-ai-image-col {
+  flex:            0 0 240px;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+}
+
+.dash-ai-illustration {
+  width:      100%;
+  max-width:  240px;
+  height:     auto;
+  // slight drop-shadow so it pops on the dark background
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.25));
+}
+
+.dash-ai-cards-col {
+  flex:      1;
+  min-width: 0;   // allow flex child to shrink below content size (enables scroll)
+}
+
+@media (max-width: 900px) {
+  .dash-insights-hero { flex-direction: column; gap: 1.5rem; }
+  .dash-ai-image-col  { flex: none; }
+  .dash-ai-illustration { max-width: 160px; }
 }
 
 .dash-main-grid {
@@ -1413,20 +1552,35 @@ $shimmer-highlight: rgba(36,59,115,0.14);
 }
 
 .chat-panel {
-  display: none;
-  width: 380px;
-  height: auto;
-  border-radius: 0.75rem;
+  width: 440px;
+  border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  background: #f5f7fa;
+  box-shadow: 0 20px 60px rgba(14,29,61,0.35), 0 4px 16px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(16px) scale(0.97);
+  transform-origin: bottom right;
+  transition: opacity 0.25s ease, transform 0.25s ease;
 
   &.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+    // Use a fixed height so the flex chain can work — flex children need a
+    // concrete ancestor height to resolve min-height:0 and enable scrolling.
+    height: min(600px, calc(100vh - 120px));
+  }
+
+  // ── Wire up the flex chain: panel → app-chat → body → kendo ────────────────
+  app-chat {
+    flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-
-    .chat-voice-wrapper {
-      max-height: 30em;
-    }
+    overflow: hidden;
 
     kendo-chat {
       flex: 1;
@@ -1487,210 +1641,122 @@ $shimmer-highlight: rgba(36,59,115,0.14);
   }
 }
 
-
-.chat-voice-wrapper {
-  position: relative;
-  flex: 1;
-  min-height: 0;
+// ── Chat panel header ──────────────────────────────────────────────────────────
+.chat-panel-header {
   display: flex;
-  flex-direction: column;
-
-  kendo-chat {
-    flex: 1;
-    min-height: 0;
-  }
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem 0.9rem 1.1rem;
+  background: linear-gradient(135deg, $bank-navy 0%, #1a2f5e 100%);
+  flex-shrink: 0;
 }
 
-.chat-mic-btn {
-  position: absolute;
-  bottom: 0.45rem;
-  right: 0.5rem;
-  z-index: 10;
-  width: 1.9rem;
-  height: 1.9rem;
+.chat-panel-avatar {
+  width: 3rem;
+  height: 3rem;
   border-radius: 50%;
+  background: linear-gradient(135deg, $bank-red, rgba($bank-red, 0.7));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba($bank-red, 0.4);
+}
+
+.chat-panel-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.chat-panel-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.chat-panel-status {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.7);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.chat-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2ecc71;
+  box-shadow: 0 0 0 0 rgba(46,204,113,0.5);
+  animation: status-pulse 2.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes status-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(46,204,113,0.5); }
+  50%       { box-shadow: 0 0 0 5px rgba(46,204,113,0); }
+}
+
+.chat-panel-close {
+  background: rgba(255,255,255,0.12);
   border: none;
-  background: transparent;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.8);
+  font-size: 0.85rem;
   cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+  &:hover { background: rgba(255,255,255,0.22); color: #fff; }
+}
+
+.chat-panel {
+}
+
+
+.chat-toggle-btn {
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  background: linear-gradient(135deg, $bank-red, darken($bank-red, 10%));
+  color: #fff;
+  padding: 0;
   font-size: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
-  transition: background 0.15s;
+  box-shadow: 0 4px 20px rgba($bank-red, 0.5), 0 2px 8px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s;
 
-  &:hover { background: rgba(255,255,255,0.15); }
-
-  &.listening {
-    background: rgba(255, 60, 60, 0.2);
-    animation: voice-pulse 1s ease-in-out infinite;
+  &:not(.active) {
+    animation: chat-btn-idle 3s ease-in-out infinite;
   }
-}
 
-.chat-speak-btn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 0.8rem;
-  opacity: 0.45;
-  padding: 0.1rem 0.25rem;
-  border-radius: 4px;
-  display: inline-flex;
-  align-items: center;
-  margin-top: 0.3rem;
-  width: auto;
-  transition: opacity 0.15s, background 0.15s;
+  &.active {
+    background: $bank-navy;
+    box-shadow: 0 4px 20px rgba($bank-navy, 0.4);
+  }
 
   &:hover {
-    opacity: 1;
-    background: rgba(255,255,255,0.12);
+    transform: scale(1.08);
+    box-shadow: 0 6px 24px rgba($bank-red, 0.6);
   }
 }
 
-@keyframes voice-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.6; transform: scale(0.9); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .chat-mic-btn.listening,
-  .insight-speak-btn.speaking {
-    animation: none;
-  }
-}
-
-.chat-toggle-btn {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border: none;
-  background: transparent;
-  padding: 0;
-  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.28));
-  transition: filter 0.2s, transform 0.15s;
-
-  &:hover { filter: drop-shadow(0 6px 14px rgba(0,0,0,0.38)); }
-  &:active { transform: scale(0.93); }
-
-  // ── Face SVG ───────────────────────────────────────────────────────────────
-  .chat-face {
-    width: 3.5rem;
-    height: 3.5rem;
-    animation: face-float 3s ease-in-out infinite;
-  }
-
-  // All mouths hidden by default; expression classes reveal one
-  .mouth    { opacity: 0; transition: opacity 0.25s; }
-  .m-happy  { opacity: 1; }
-
-  // Eyes blink continuously
-  .eye-white {
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: face-blink 4s ease-in-out infinite;
-  }
-
-  // Smooth transitions for brow / pupil moves
-  .brow-l, .brow-r, .pupil-l, .pupil-r, .shine-l, .shine-r {
-    transition: transform 0.3s ease;
-    transform-box: fill-box;
-    transform-origin: center;
-  }
-
-  // ── Expressions ────────────────────────────────────────────────────────────
-
-  &.face-happy {
-    .mouth { opacity: 0; } .m-happy { opacity: 1; }
-    .chat-face { animation: face-float 3s ease-in-out infinite; }
-  }
-
-  &.face-excited {
-    .mouth { opacity: 0; } .m-excited { opacity: 1; }
-    .brow-l { transform: translateY(-4px); }
-    .brow-r { transform: translateY(-4px); }
-    .chat-face { animation: face-bounce 0.55s ease-in-out infinite; }
-  }
-
-  &.face-curious {
-    .mouth { opacity: 0; } .m-curious { opacity: 1; }
-    .brow-l { transform: rotate(-18deg) translateY(-3px); transform-origin: right center; }
-    .pupil-l { transform: translateX(-1.5px); }
-    .pupil-r { transform: translateX(-1.5px); }
-    .shine-l { transform: translateX(-1.5px); }
-    .shine-r { transform: translateX(-1.5px); }
-    .chat-face { animation: face-tilt 3s ease-in-out infinite; }
-  }
-
-  &.face-surprised {
-    .mouth { opacity: 0; } .m-surprised { opacity: 1; }
-    .brow-l { transform: translateY(-5px); }
-    .brow-r { transform: translateY(-5px); }
-    .eye-white { transform: scale(1.25); animation: none; }
-    .chat-face { animation: face-jump 0.5s ease-out forwards, face-float 3s ease-in-out 0.5s infinite; }
-  }
-
-  &.face-winking {
-    .mouth { opacity: 0; } .m-happy { opacity: 1; }
-    .eye-r  { transform: scaleY(0.06); animation: none; }
-    .shine-r { opacity: 0; }
-    .brow-r { transform: translateY(3px); }
-    .chat-face { animation: face-float 3s ease-in-out infinite; }
-  }
-
-  &.face-thinking {
-    .mouth { opacity: 0; } .m-thinking { opacity: 1; }
-    .pupil-l, .shine-l { transform: translate(-2.5px, -2px); }
-    .pupil-r, .shine-r { transform: translate(-2.5px, -2px); }
-    .brow-l { transform: translateY(-2px) rotate(-8deg); transform-origin: right center; }
-    .chat-face { animation: face-think 4s ease-in-out infinite; }
-  }
-}
-
-// ── Keyframes ─────────────────────────────────────────────────────────────────
-
-@keyframes face-float {
-  0%, 100% { transform: translateY(0)    rotate(0deg); }
-  30%       { transform: translateY(-5px) rotate(-3deg); }
-  70%       { transform: translateY(-3px) rotate(3deg); }
-}
-
-@keyframes face-bounce {
-  0%, 100% { transform: translateY(0)     scale(1,    1); }
-  30%       { transform: translateY(-10px) scale(1.06, 0.94); }
-  60%       { transform: translateY(-2px)  scale(0.97, 1.03); }
-}
-
-@keyframes face-tilt {
-  0%, 100% { transform: rotate(0deg); }
-  30%       { transform: rotate(-12deg); }
-  60%       { transform: rotate(-8deg); }
-}
-
-@keyframes face-jump {
-  0%   { transform: translateY(0)     scale(1,    1); }
-  25%  { transform: translateY(-13px) scale(1.08, 0.93); }
-  55%  { transform: translateY(4px)   scale(0.96, 1.05); }
-  75%  { transform: translateY(-5px)  scale(1.02, 0.98); }
-  100% { transform: translateY(0)     scale(1,    1); }
-}
-
-@keyframes face-think {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  40%       { transform: translateY(-3px) rotate(-5deg); }
-  70%       { transform: translateY(-2px) rotate(-3deg); }
-}
-
-@keyframes face-blink {
-  0%, 86%, 100% { transform: scaleY(1); }
-  91%            { transform: scaleY(0.06); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .chat-toggle-btn .chat-face { animation: none !important; }
+@keyframes chat-btn-idle {
+  0%, 100% { box-shadow: 0 4px 20px rgba($bank-red, 0.5), 0 0 0 0 rgba($bank-red, 0.3); }
+  50%       { box-shadow: 0 4px 20px rgba($bank-red, 0.5), 0 0 0 10px rgba($bank-red, 0); }
 }
 
 .dash-section-heading{
@@ -1704,6 +1770,29 @@ $shimmer-highlight: rgba(36,59,115,0.14);
 address, blockquote, dl, ol, p, pre, table, ul {
   color: black !important;
 }
+
+// ── Chat bubble colours (global, !important beats the pico black override) ───
+// Bot / AI — dark navy
+.k-message-group:not(.k-alt) .k-bubble {
+  background: $bank-navy !important;
+  color: #fff !important;
+}
+
+// User — light periwinkle, navy text
+.k-message-group.k-alt .k-bubble {
+  background: #d6e0f5 !important;
+  color: $bank-navy !important;
+}
+
+// All child text inherits the bubble colour regardless of the global reset
+.k-bubble p,
+.k-bubble span,
+.k-bubble div,
+.k-bubble ul,
+.k-bubble li,
+.k-bubble strong,
+.k-bubble em,
+.k-bubble a { color: inherit !important; }
 
 .dashboard address,
 .dashboard blockquote,
@@ -1933,13 +2022,17 @@ address, blockquote, dl, ol, p, pre, table, ul {
 .dash-spotlight-view-all {
   font-size: 0.82rem;
   font-weight: 600;
-  color: #fff;
-  text-decoration: none;
+  color: #fff !important;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
   opacity: 0.85;
   transition: opacity 0.2s;
-  &:hover { opacity: 1; }
+  &:hover:not(:disabled) { opacity: 1; }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
 }
 
 .dash-spotlight-progress-wrap {
@@ -1986,14 +2079,33 @@ address, blockquote, dl, ol, p, pre, table, ul {
 
 .dash-spotlight-row--skeleton { pointer-events: none; }
 
-.dash-spotlight-row-icon { font-size: 1.5rem; flex-shrink: 0; line-height: 1; }
+.dash-spotlight-row-icon-wrap {
+  flex-shrink: 0;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(255,255,255,0.97) 0%, rgba(255,255,255,0.88) 100%);
+  border: 1px solid rgba(255,255,255,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 28px rgba($bank-red, 0.4), 0 2px 8px rgba(0,0,0,0.18);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+
+  .dash-spotlight-row:hover & {
+    transform: scale(1.12) rotate(-3deg);
+    box-shadow: 0 12px 36px rgba($bank-red, 0.55), 0 4px 12px rgba(0,0,0,0.2);
+  }
+}
+
+.dash-spotlight-row-icon { font-size: 2.2rem; line-height: 1; }
 
 .dash-spotlight-row-msg {
   flex: 1;
-  font-size: 0.97rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 700;
   color: #fff !important;
-  line-height: 1.45;
+  line-height: 1.25;
   margin: 0;
 }
 
@@ -2055,8 +2167,11 @@ address, blockquote, dl, ol, p, pre, table, ul {
   font-size: 0.85rem;
   font-weight: 600;
   text-decoration: none;
-  transition: background 0.2s, border-color 0.2s;
-  &:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.6); }
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.2s, border-color 0.2s, opacity 0.2s;
+  &:hover:not(:disabled) { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.6); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 
 .dash-spotlight-empty {
@@ -2216,6 +2331,23 @@ address, blockquote, dl, ol, p, pre, table, ul {
   color: #fff;
 }
 
+.insights-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255,255,255,0.12);
+  border: 1.5px solid rgba(255,255,255,0.25);
+  border-radius: 36px;
+  color: #fff !important;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+  margin-bottom: 1.25rem;
+  transition: background 0.15s, border-color 0.15s;
+  &:hover { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.5); }
+}
+
 .insights-page-header {
   display: flex;
   align-items: flex-start;
@@ -2274,39 +2406,101 @@ address, blockquote, dl, ol, p, pre, table, ul {
 
 .insight-card {
   background: $bank-card;
-  color: $bank-text; // white card — dark text in both themes
-  border-radius: 12px;
-  padding: 1.4rem 1.4rem 1.1rem;
-  box-shadow: 0 4px 20px rgba(36,59,115,0.14);
+  color: $bank-text;
+  border-radius: 16px;
+  padding: 1.5rem 1.4rem 1.2rem;
+  box-shadow: 0 2px 12px rgba(36,59,115,0.08);
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  animation: insight-appear 0.35s ease both;
-  transition: box-shadow 0.2s, transform 0.2s;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+  border: 1.5px solid rgba(36,59,115,0.08);
+  animation: insight-appear 0.4s ease both;
+  transition: box-shadow 0.22s, transform 0.22s, border-color 0.22s;
 
-  &:hover { box-shadow: 0 8px 28px rgba(36,59,115,0.2); transform: translateY(-2px); }
+  &:hover {
+    box-shadow: 0 10px 32px rgba(36,59,115,0.16);
+    border-color: rgba(36,59,115,0.18);
+    transform: translateY(-3px);
+  }
 }
 
-.insight-card--appear { animation: insight-appear 0.35s ease both; }
+.insight-card--appear { animation: insight-appear 0.4s ease both; }
+
+.insight-card--highlighted {
+  background:   linear-gradient(145deg, rgba($bank-navy, 0.06) 0%, rgba($bank-navy, 0.02) 100%);
+  border-color: $bank-navy;
+  border-width: 2px;
+  box-shadow:
+    0 0 0 4px  rgba($bank-navy, 0.14),
+    0 12px 36px rgba($bank-navy, 0.22);
+  transform: scale(1.025);
+  z-index: 1;
+  animation: insight-appear 0.4s ease both, highlighted-pulse 0.7s 0.4s ease both;
+}
+
+@keyframes highlighted-pulse {
+  0%   { box-shadow: 0 0 0 4px rgba($bank-navy, 0.14), 0 12px 36px rgba($bank-navy, 0.22); }
+  50%  { box-shadow: 0 0 0 8px rgba($bank-navy, 0.22), 0 16px 40px rgba($bank-navy, 0.28); }
+  100% { box-shadow: 0 0 0 4px rgba($bank-navy, 0.14), 0 12px 36px rgba($bank-navy, 0.22); }
+}
+
+.insight-card-num {
+  position: absolute;
+  top: 0.9rem;
+  right: 1rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: rgba(36,59,115,0.2);
+  line-height: 1;
+}
 
 .insight-card-top {
   display: flex;
   align-items: flex-start;
-  gap: 0.85rem;
+  gap: 1rem;
 }
 
-.insight-card-icon {
-  font-size: 2rem;
-  line-height: 1;
-  flex-shrink: 0;
+.insight-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+  min-width: 0;
 }
+
+.insight-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $bank-text;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.insight-card-icon-wrap {
+  flex-shrink: 0;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba($bank-navy, 0.10), rgba($bank-navy, 0.05));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.insight-card-icon { font-size: 1.5rem; line-height: 1; }
 
 .insight-card-message {
-  font-size: 0.97rem;
+  font-size: 0.96rem;
   font-weight: 500;
   color: $bank-text;
-  line-height: 1.5;
+  line-height: 1.55;
   margin: 0;
+  padding-top: 0.2rem;
 }
 
 .insight-card-actions {
@@ -2319,9 +2513,9 @@ address, blockquote, dl, ol, p, pre, table, ul {
 
 .insight-card-expand {
   background: transparent;
-  border: 1.5px solid rgba(36,59,115,0.25);
+  border: 1.5px solid rgba(36,59,115,0.2);
   border-radius: 36px;
-  color: $bank-text;
+  color: $bank-text-muted;
   font-size: 0.8rem;
   font-weight: 600;
   padding: 0.35rem 0.85rem;
@@ -2329,14 +2523,14 @@ address, blockquote, dl, ol, p, pre, table, ul {
   width: auto;
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  transition: border-color 0.15s, color 0.15s;
-  &:hover { border-color: $bank-navy; color: $bank-text; }
+  gap: 0.3rem;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  &:hover { border-color: $bank-navy; color: $bank-text; background: rgba(36,59,115,0.04); }
 }
 
 .insight-chevron {
   display: inline-block;
-  transition: transform 0.2s;
+  transition: transform 0.22s ease;
   font-size: 1rem;
   &.open { transform: rotate(90deg); }
 }
@@ -2370,25 +2564,43 @@ address, blockquote, dl, ol, p, pre, table, ul {
 }
 
 .insight-card-cta {
-  background: $bank-red;
-  color: #fff;
-  border: 2px solid $bank-red;
+  background: $bank-navy;
+  color: #fff !important;
+  border: none;
   border-radius: 36px;
-  padding: 0.4rem 1rem;
+  padding: 0.45rem 1.1rem;
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
   width: auto;
   display: inline-flex;
   align-items: center;
-  transition: background 0.2s, border-color 0.2s;
-  &:hover { background: $bank-blue-hover; border-color: $bank-blue-hover; }
+  gap: 0.3rem;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 8px rgba($bank-navy, 0.28);
+  &:hover {
+    background: darken($bank-navy, 8%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba($bank-navy, 0.38);
+  }
 }
 
 .insight-card-detail {
-  background: rgba(36,59,115,0.04);
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, rgba($bank-navy, 0.05), rgba($bank-navy, 0.02));
+  border-radius: 10px;
+  border: 1px solid rgba($bank-navy, 0.08);
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.insight-card-detail-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $bank-navy;
 }
 
 .insight-card-prompt {
@@ -2396,6 +2608,7 @@ address, blockquote, dl, ol, p, pre, table, ul {
   color: $bank-text;
   line-height: 1.5;
   margin: 0;
+  font-style: italic;
 }
 
 // Insight page skeleton cards
@@ -2404,12 +2617,21 @@ address, blockquote, dl, ol, p, pre, table, ul {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  border-left: 4px solid rgba(36,59,115,0.08);
+  &::before { display: none; }
+}
+
+.insight-skeleton-top {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
 }
 
 .insight-skeleton-icon {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 12px;
+  flex-shrink: 0;
   background: $shimmer-base;
   animation: shimmer 1.4s ease-in-out infinite alternate;
 }

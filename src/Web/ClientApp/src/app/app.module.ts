@@ -6,6 +6,7 @@ import { LucideAngularModule, Sun, Moon, Laptop, Plus, Settings, MoreHorizontal 
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { ChatModule } from '@progress/kendo-angular-conversational-ui';
 import { ChartsModule } from '@progress/kendo-angular-charts';
+import { InsightsRowComponent } from './home/insights-row/insights-row.component';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
@@ -59,6 +60,7 @@ export function getApiBaseUrl(): string {
         FormsModule,
         ChatModule,
         ChartsModule,
+        InsightsRowComponent,
         LucideAngularModule.pick({ Sun, Moon, Laptop, Plus, Settings, MoreHorizontal }),
         RouterModule.forRoot([
             { path: '', component: HomeComponent, pathMatch: 'full', canActivate: [AuthGuard] },

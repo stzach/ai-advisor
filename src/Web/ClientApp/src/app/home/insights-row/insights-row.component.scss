@@ -1,0 +1,60 @@
+:host {
+  --ir-gap: 16px;
+  display: block;
+}
+
+// ── Card row ─────────────────────────────────────────────────────────────────
+.ir-card-row {
+  display:                    flex;
+  gap:                        var(--ir-gap);
+  overflow-x:                 auto;
+  scroll-snap-type:           x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width:            none;
+  padding-top:    18px;
+  margin-top:     -18px;
+  padding-bottom: 18px;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+// ── Skeleton cards ────────────────────────────────────────────────────────────
+.ir-skeleton {
+  flex:              0 0 220px;
+  scroll-snap-align: start;
+  display:           flex;
+  flex-direction:    column;
+  align-items:       center;
+  gap:               12px;
+  border-radius:     20px;
+  background:        rgba(255, 255, 255, 0.07);
+  padding:           28px 18px 20px;
+}
+
+@keyframes ir-shimmer {
+  from { background-position: -400px 0; }
+  to   { background-position:  400px 0; }
+}
+
+.ir-skel-orb,
+.ir-skel-line,
+.ir-skel-btn {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.08) 25%,
+    rgba(255,255,255,0.18) 50%,
+    rgba(255,255,255,0.08) 75%
+  );
+  background-size: 400px 100%;
+  animation: ir-shimmer 1.4s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+.ir-skel-orb  { width: 120px; height: 120px; border-radius: 50%; margin-bottom: 8px; }
+.ir-skel-line { height: 12px; &--wide { width: 80%; } &--narrow { width: 55%; } }
+.ir-skel-btn  { width: 100%; height: 36px; margin-top: 6px; border-radius: 10px; }
+
+@media (max-width: 767px) {
+  :host { --ir-gap: 12px; }
+  .ir-card-row app-insight-card { flex: 0 0 calc(100% / 1.2); }
+}

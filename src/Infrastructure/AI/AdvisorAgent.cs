@@ -17,6 +17,9 @@ public interface IAdvisorAgent
 public class AdvisorAgent : IAdvisorAgent
 {
     private readonly IFinancialService _financialDataAgent;
+
+    private readonly IFinancialDocumentsSearchAgent _financialDocumentsSearchAgent;
+
     private readonly IChatService _chatService;
     private readonly IMemoryCache _memoryCache;
     private readonly ILogger<AdvisorAgent> _logger;
@@ -26,11 +29,13 @@ public class AdvisorAgent : IAdvisorAgent
 
     public AdvisorAgent(
         IFinancialService financialDataAgent,
+        IFinancialDocumentsSearchAgent financialDocumentsSearchAgent,
         IChatService chatService,
         IMemoryCache memoryCache,
         ILogger<AdvisorAgent> logger)
     {
         _financialDataAgent = financialDataAgent;
+        _financialDocumentsSearchAgent = financialDocumentsSearchAgent;
         _chatService = chatService;
         _memoryCache = memoryCache;
         _logger = logger;
@@ -47,7 +52,8 @@ public class AdvisorAgent : IAdvisorAgent
         CancellationToken ct)
     {
         var systemPrompt = await GetOrBuildSystemPromptAsync(userId, ct);
-        var advice = await _chatService.SendAsync(message, systemPrompt, conversationHistory, ct);
+        var usefuldocs = await _financialDocumentsSearchAgent.GetSearchResultsAsync(message, ct);
+        var advice = await _chatService.SendAsync($"{message} \n\n Useful Documents that might be helpful: \n {usefuldocs}", systemPrompt, conversationHistory, ct);
         return advice;
     }
 
@@ -62,7 +68,10 @@ public class AdvisorAgent : IAdvisorAgent
         [EnumeratorCancellation] CancellationToken ct)
     {
         var systemPrompt = await GetOrBuildSystemPromptAsync(userId, ct);
-        await foreach (var chunk in _chatService.StreamAsync(message, systemPrompt, conversationHistory, ct))
+        var usefuldocs = await _financialDocumentsSearchAgent.GetSearchResultsAsync(message, ct);
+        var messageforAgent = $"{message} \n\n Useful Documents that might be helpful: \n {usefuldocs}";
+
+        await foreach (var chunk in _chatService.StreamAsync(messageforAgent, systemPrompt, conversationHistory, ct))
         {
             yield return chunk;
         }
@@ -82,9 +91,9 @@ public class AdvisorAgent : IAdvisorAgent
         }
 
         _logger.LogInformation("Building system prompt for user {UserId}", userId);
-        var to  = DateTimeOffset.UtcNow;
+        var to = DateTimeOffset.UtcNow;
         var from = new DateTimeOffset(to.Year, to.Month, 1, 0, 0, 0, TimeSpan.Zero);
-        //    var systemPrompt = await _financialDataAgent.BuildUserSystemPromptAsync(userId, from, to, ct);
+        var financialData = await _financialDataAgent.BuildUserSystemPromptAsync(userId, from, to, ct);
 
         var systemPrompt = $"""
                 You are a concise AI financial advisor for a retail bank customer.
@@ -111,14 +120,18 @@ public class AdvisorAgent : IAdvisorAgent
                 - Never invent figures, products, rates, or transactions that are not in the profile below.
 
                 """;
-                  
+
+        var prompt = $"{systemPrompt}\n\n{financialData}";
+
+        _logger.LogInformation("System prompt built for user {UserId} \n\n SystemPrompt: \n{SystemPrompt}", userId, prompt);
+
         // Cache the system prompt
         _memoryCache.Set(
             cacheKey,
-            systemPrompt,
+            prompt,
             TimeSpan.FromHours(SystemPromptCacheHours));
 
-        return systemPrompt;
+        return prompt;
     }
 
     /// <summary>

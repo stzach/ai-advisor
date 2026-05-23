@@ -1,4 +1,4 @@
-<div class="dashboard">
+﻿<div class="dashboard">
 
   <!-- Welcome -->
   <div class="dash-welcome">
@@ -15,65 +15,14 @@
     </div>
   </div>
 
-  <!-- AI Insights spotlight (hero card — shown before the grid) -->
-  <div class="dash-insights-spotlight">
-    <div class="dash-spotlight-header">
-      <div class="dash-spotlight-title-row">
-        <h3 class="dash-spotlight-title">
-          💡 Financial Advisor
-          @if (insightsService.insightsLoading()) {
-            <span class="dash-insights-live-dot dash-insights-live-dot--light"></span>
-          }
-        </h3>
-        <a class="dash-spotlight-view-all" [routerLink]="['/insights']">View all →</a>
-      </div>
-      <div class="dash-spotlight-progress-wrap">
-        <div class="dash-spotlight-progress-bar">
-          <div class="dash-spotlight-progress-fill"
-            [style.width.%]="insightsService.insightsLoading()
-              ? (insightsService.insights().length / 4) * 100
-              : 100">
-          </div>
-        </div>
-        @if (insightsService.insightsLoading()) {
-          <span class="dash-spotlight-progress-label">
-            {{ insightsService.insights().length === 0 ? 'Analysing your finances…' : insightsService.insights().length + ' of 4 ready' }}
-          </span>
-        }
-      </div>
+  <!-- AI Insights hero: image left, streaming cards right -->
+  <div class="dash-insights-hero">
+    <div class="dash-ai-image-col">
+      <img src="assets/ai-advisor.png" alt="AI Financial Advisor" class="dash-ai-illustration" />
     </div>
-
-    <div class="dash-spotlight-rows">
-      @for (insight of insightsService.insights().slice(0, 2); track insight.message; let i = $index) {
-        <div class="dash-spotlight-row dash-spotlight-row--appear">
-          <span class="dash-spotlight-row-icon">{{ insight.icon }}</span>
-          <p class="dash-spotlight-row-msg">{{ insight.message }}</p>
-          <a class="dash-spotlight-row-cta" [routerLink]="['/insights']">{{ insight.cta }} →</a>
-        </div>
-      }
-
-      @for (i of insightsService.insightSkeletons().slice(0, 2 - insightsService.insights().length > 0 ? insightsService.insights().length : 0); track i) {
-        <div class="dash-spotlight-row dash-spotlight-row--skeleton">
-          <div class="dash-skel-icon"></div>
-          <div class="dash-skel-lines">
-            <div class="dash-skel-line dash-skel-line--wide"></div>
-            <div class="dash-skel-line dash-skel-line--narrow"></div>
-          </div>
-          <div class="dash-skel-btn"></div>
-        </div>
-      }
-
-      @if (!insightsService.insightsLoading() && !insightsService.insights().length) {
-        <p class="dash-spotlight-empty">No insights available for this period.</p>
-      }
+    <div class="dash-ai-cards-col">
+      <app-insights-row />
     </div>
-
-    @if (insightsService.insights().length > 0) {
-      <a class="dash-spotlight-all-btn" [routerLink]="['/insights']">
-        See all {{ insightsService.insights().length }} insights
-        @if (insightsService.insightsLoading()) { (loading…) }
-      </a>
-    }
   </div>
 
   <div class="dash-main-grid">
@@ -441,7 +390,7 @@
 
 @if (showToast()) {
   <div class="dash-toast" role="status" aria-live="polite">
-    <span class="dash-toast-icon">💡</span>
+    <span class="dash-toast-icon">🧠</span>
     <div class="dash-toast-body">
       <strong class="dash-toast-title">Your insights are ready</strong>
       <span class="dash-toast-sub">{{ insightsService.insights().length }} personalised tip{{ insightsService.insights().length !== 1 ? 's' : '' }} from your AI advisor</span>
@@ -498,3 +447,4 @@
     </div>
   </div>
 }
+

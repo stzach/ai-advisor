@@ -3,18 +3,28 @@ import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { API_BASE_URL } from '../web-api-client';
 
-export interface InsightDto { icon: string; message: string; cta: string; prompt: string; }
+export interface InsightDto {
+  title:        string;
+  icon:         string;
+  message:      string;
+  cta:          string;
+  prompt:       string;
+  category:     'earn' | 'optimise' | 'review';
+}
 
 @Injectable({ providedIn: 'root' })
 export class InsightsService {
-  private _insights  = signal<InsightDto[]>([]);
-  private _loading   = signal(false);
-  private _hasUnread = signal(false);
+  private _insights    = signal<InsightDto[]>([]);
+  private _loading     = signal(false);
+  private _hasUnread   = signal(false);
+  private _activeRange = signal<string>('month');
+  private _loadedRange: string | null = null;
   private activeEventSource: EventSource | null = null;
 
   readonly insights         = this._insights.asReadonly();
   readonly insightsLoading  = this._loading.asReadonly();
   readonly hasUnread        = this._hasUnread.asReadonly();
+  readonly activeRange      = this._activeRange.asReadonly();
   readonly insightSkeletons = computed(() =>
     Array.from({ length: Math.max(0, 4 - this._insights().length) }, (_, i) => i)
   );
@@ -30,6 +40,14 @@ export class InsightsService {
         this._hasUnread.set(false);
       }
     });
+  }
+
+  loadForRange(range: string): void {
+    this._activeRange.set(range);
+    if (range === this._loadedRange && (this._insights().length > 0 || this._loading())) return;
+    this._loadedRange = range;
+    const { from, to } = this.toDateRange(range);
+    this.load(from, to);
   }
 
   load(from: Date, to: Date): void {
@@ -66,6 +84,16 @@ export class InsightsService {
       es.close();
       this.activeEventSource = null;
     };
+  }
+
+  applyState(insights: InsightDto[], range: string): void {
+    this.activeEventSource?.close();
+    this.activeEventSource = null;
+    this._insights.set(insights);
+    this._loading.set(false);
+    this._loadedRange = range;
+    this._activeRange.set(range);
+    this._hasUnread.set(false);
   }
 
   markRead(): void { this._hasUnread.set(false); }

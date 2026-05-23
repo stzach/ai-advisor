@@ -29,7 +29,6 @@ public class AgentPipeline
     );
 
     public static readonly AgentPipeline InsightsPipeline = new(
-        AgentType.ProductsRecomendationAgent,
         AgentType.InsightsAgent
     );
 

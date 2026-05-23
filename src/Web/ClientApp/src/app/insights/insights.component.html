@@ -1,9 +1,11 @@
-<div class="insights-page">
+﻿<div class="insights-page">
+
+  <button class="insights-back-btn" (click)="goBack()">← Dashboard</button>
 
   <div class="insights-page-header">
     <div>
       <h2 class="insights-page-title">
-        <span class="insights-page-icon">💡</span> Financial Insights
+        <span class="insights-page-icon">🧠</span> Financial Insights
         @if (insightsService.insightsLoading()) {
           <span class="dash-insights-live-dot"></span>
         }
@@ -11,12 +13,6 @@
       <p class="insights-page-subtitle">
         {{ insightsService.rangeLabel(selectedRange) }} · Personalised financial advice based on your activity
       </p>
-    </div>
-    <div class="dash-range-tabs">
-      <button class="dash-range-tab" [class.active]="selectedRange === 'month'"   (click)="setRange('month')">This Month</button>
-      <button class="dash-range-tab" [class.active]="selectedRange === '3months'" (click)="setRange('3months')">3M</button>
-      <button class="dash-range-tab" [class.active]="selectedRange === '6months'" (click)="setRange('6months')">6M</button>
-      <button class="dash-range-tab" [class.active]="selectedRange === 'year'"    (click)="setRange('year')">1Y</button>
     </div>
   </div>
 
@@ -36,15 +32,24 @@
   <div class="insights-grid">
 
     @for (insight of insightsService.insights(); track insight.message; let i = $index) {
-      <div class="insight-card insight-card--appear" [class.insight-card--expanded]="expandedInsight === i">
+      <div class="insight-card insight-card--appear"
+           [class.insight-card--expanded]="expandedInsight === i"
+           [class.insight-card--highlighted]="highlightedInsight === i"
+           [style.animation-delay.ms]="i * 80">
+        <div class="insight-card-num">{{ (i + 1).toString().padStart(2, '0') }}</div>
         <div class="insight-card-top">
-          <span class="insight-card-icon">{{ insight.icon }}</span>
-          <p class="insight-card-message">{{ insight.message }}</p>
+          <div class="insight-card-icon-wrap">
+            <span class="insight-card-icon">{{ insight.icon }}</span>
+          </div>
+          <div class="insight-card-header">
+            <h4 class="insight-card-title">{{ insight.title }}</h4>
+            <p class="insight-card-message">{{ insight.message }}</p>
+          </div>
         </div>
         <div class="insight-card-actions">
           <button class="insight-card-expand" (click)="toggleInsight(i)">
-            {{ expandedInsight === i ? 'Less' : 'How?' }}
             <span class="insight-chevron" [class.open]="expandedInsight === i">›</span>
+            {{ expandedInsight === i ? 'Hide' : 'How?' }}
           </button>
           @let speaking = (voice.currentSpeakingKey$ | async) === insight.message;
           <button class="insight-speak-btn"
@@ -60,6 +65,7 @@
         </div>
         @if (expandedInsight === i) {
           <div class="insight-card-detail">
+            <span class="insight-card-detail-label">Ask your advisor</span>
             <p class="insight-card-prompt">{{ insight.prompt }}</p>
           </div>
         }
@@ -68,11 +74,13 @@
 
     @for (i of insightsService.insightSkeletons(); track i) {
       <div class="insight-card insight-card--skeleton">
-        <div class="insight-skeleton-icon"></div>
-        <div class="insight-skeleton-lines">
-          <div class="insight-skeleton-line insight-skeleton-line--wide"></div>
-          <div class="insight-skeleton-line insight-skeleton-line--mid"></div>
-          <div class="insight-skeleton-line insight-skeleton-line--narrow"></div>
+        <div class="insight-skeleton-top">
+          <div class="insight-skeleton-icon"></div>
+          <div class="insight-skeleton-lines">
+            <div class="insight-skeleton-line insight-skeleton-line--wide"></div>
+            <div class="insight-skeleton-line insight-skeleton-line--mid"></div>
+            <div class="insight-skeleton-line insight-skeleton-line--narrow"></div>
+          </div>
         </div>
         <div class="insight-skeleton-btn"></div>
       </div>
@@ -81,7 +89,8 @@
   </div>
 
   @if (!insightsService.insightsLoading() && !insightsService.insights().length) {
-    <p class="dash-empty" data-icon="💡">No insights available for this period.</p>
+    <p class="dash-empty" data-icon="🧠">No insights available for this period.</p>
   }
 
 </div>
+

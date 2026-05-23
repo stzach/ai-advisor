@@ -1,4 +1,17 @@
-<div class="chat-voice-wrapper">
+@if (!isWidget) {
+  <div class="chat-fullpage-header">
+    <div class="chat-panel-avatar">🧠</div>
+    <div class="chat-panel-info">
+      <span class="chat-panel-name">Financial Advisor</span>
+      <span class="chat-panel-status">
+        <span class="chat-status-dot"></span> Ready to help
+      </span>
+    </div>
+    <button class="chat-panel-close" (click)="chatHub.clear()" title="Clear conversation">🗑</button>
+  </div>
+}
+
+<div class="chat-fullpage-body" [class.chat-widget-body]="isWidget">
   <kendo-chat
     [messages]="(feed | async) ?? []"
     [authorId]="user.id"
@@ -7,24 +20,6 @@
   >
     <ng-template kendoChatReceiverMessageContentTemplate let-message>
       <div [innerHTML]="message.text | markdown"></div>
-      @let speaking = (voice.currentSpeakingKey$ | async) === ('' + message.id);
-      <button class="chat-speak-btn"
-        [attr.aria-label]="speaking ? 'Stop reading' : 'Read aloud'"
-        [attr.aria-pressed]="speaking"
-        (click)="speak(message.id, message.text)">
-        <span aria-hidden="true">{{ speaking ? '⏹' : '🔊' }}</span>
-      </button>
     </ng-template>
   </kendo-chat>
-
-  @if (voice.supported) {
-    @let listening = !!(voice.isListening$ | async);
-    <button class="chat-mic-btn"
-      [class.listening]="listening"
-      [attr.aria-label]="listening ? 'Stop listening' : 'Speak your message'"
-      [attr.aria-pressed]="listening"
-      (click)="toggleMic()">
-      <span aria-hidden="true">{{ listening ? '⏹' : '🎤' }}</span>
-    </button>
-  }
 </div>

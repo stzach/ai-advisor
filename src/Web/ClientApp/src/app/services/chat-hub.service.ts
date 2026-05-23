@@ -39,8 +39,8 @@ export class ChatHubService {
         this.connection = new signalR.HubConnectionBuilder()
             .withUrl('/ai-chat')
             .withAutomaticReconnect()
+            .configureLogging(signalR.LogLevel.Information)
             .build();
-
         this.connection.on('ReceiveMessage', (msg: string) => {
             console.log('[SignalR] Received AI reply:', msg);
             this.message$.next(msg);

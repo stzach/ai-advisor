@@ -6,37 +6,20 @@
 @if (isAuthenticated && !isChatPage) {
   <div class="chat-widget">
     <div class="chat-panel" [class.open]="chatHub.isOpen$ | async">
-      <app-chat></app-chat>
+      <div class="chat-panel-header">
+        <div class="chat-panel-avatar">🧠</div>
+        <div class="chat-panel-info">
+          <span class="chat-panel-name">Financial Advisor</span>
+          <span class="chat-panel-status">
+            <span class="chat-status-dot"></span> Ready to help
+          </span>
+        </div>
+        <button class="chat-panel-close" (click)="chatHub.close()" aria-label="Close chat">✕</button>
+      </div>
+      <app-chat [isWidget]="true"></app-chat>
     </div>
-    <button class="chat-toggle-btn"
-      [ngClass]="'face-' + faceExpression"
-      aria-label="Open financial advisor chat"
-      (click)="chatHub.toggle()">
-      <svg class="chat-face" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Head -->
-        <circle cx="22" cy="22" r="20" fill="#FFD166" stroke="#F4B942" stroke-width="1.5"/>
-        <!-- Cheeks -->
-        <circle cx="10" cy="28" r="5" fill="#FF9580" opacity="0.35"/>
-        <circle cx="34" cy="28" r="5" fill="#FF9580" opacity="0.35"/>
-        <!-- Left brow -->
-        <path class="brow-l" d="M11 15 Q15 12 19 15" stroke="#5C4033" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-        <!-- Right brow -->
-        <path class="brow-r" d="M25 15 Q29 12 33 15" stroke="#5C4033" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-        <!-- Left eye -->
-        <ellipse class="eye-white eye-l" cx="15" cy="20" rx="4" ry="4.5" fill="white"/>
-        <circle class="pupil pupil-l" cx="15.8" cy="20.5" r="2.8" fill="#2D1B69"/>
-        <circle class="shine shine-l" cx="16.8" cy="19.2" r="1.1" fill="white"/>
-        <!-- Right eye -->
-        <ellipse class="eye-white eye-r" cx="29" cy="20" rx="4" ry="4.5" fill="white"/>
-        <circle class="pupil pupil-r" cx="29.8" cy="20.5" r="2.8" fill="#2D1B69"/>
-        <circle class="shine shine-r" cx="30.8" cy="19.2" r="1.1" fill="white"/>
-        <!-- Mouths — one visible per expression -->
-        <path class="mouth m-happy"     d="M14 29 Q22 35 30 29"  stroke="#5C4033" stroke-width="2" stroke-linecap="round" fill="none"/>
-        <path class="mouth m-excited"   d="M13 28 Q22 37 31 28"  stroke="#5C4033" stroke-width="2" stroke-linecap="round" fill="none"/>
-        <ellipse class="mouth m-surprised" cx="22" cy="30" rx="4" ry="5" fill="#5C4033"/>
-        <path class="mouth m-thinking"  d="M16 30 Q21 27 26 30"  stroke="#5C4033" stroke-width="2" stroke-linecap="round" fill="none"/>
-        <path class="mouth m-curious"   d="M15 29 Q22 32 29 29"  stroke="#5C4033" stroke-width="2" stroke-linecap="round" fill="none"/>
-      </svg>
+    <button class="chat-toggle-btn" [class.active]="chatHub.isOpen$ | async" (click)="chatHub.toggle()" aria-label="Toggle chat">
+      @if (chatHub.isOpen$ | async) { ✕ } @else { 💬 }
     </button>
   </div>
 }
