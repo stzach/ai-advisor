@@ -2814,3 +2814,78 @@ address, blockquote, dl, ol, p, pre, table, ul {
   .insights-page-header { flex-direction: column; }
   .dash-toast { right: 1rem; left: 1rem; max-width: none; bottom: 1rem; }
 }
+
+// ── Escalation CTA buttons (phone + book appointment) ─────────────────────────
+.escalation-text {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  color: inherit;
+}
+
+.escalation-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.escalation-btn {
+  display: block;
+  width: 100%;
+  padding: 0.65rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+
+  &:hover  { opacity: 0.88; transform: translateY(-1px); }
+  &:active { transform: translateY(0); opacity: 1; }
+
+  &--call {
+    background: $bank-red !important;
+    color: #fff !important;
+  }
+
+  &--book {
+    background: $bank-navy !important;
+    color: #fff !important;
+  }
+}
+
+// ── Chat bubble colours (Kendo v13 uses .k-message-group-sender, not .k-alt) ──
+// User / sender messages — dark navy on the right
+.k-message-group-sender .k-bubble {
+  background: $bank-navy !important;
+  border-color: $bank-navy !important;
+  color: #fff !important;
+}
+
+// Bot / AI messages — soft periwinkle on the left
+.k-message-group:not(.k-message-group-sender) .k-bubble {
+  background: #d6e0f5 !important;
+  border-color: #d6e0f5 !important;
+  color: $bank-navy !important;
+}
+
+// Ensure inline elements inside bubbles inherit the bubble text colour
+// (beats the Pico `p, ul { color: black !important }` reset)
+.k-message-group-sender .k-bubble p,
+.k-message-group-sender .k-bubble span,
+.k-message-group-sender .k-bubble div,
+.k-message-group-sender .k-bubble ul,
+.k-message-group-sender .k-bubble li,
+.k-message-group-sender .k-bubble strong,
+.k-message-group-sender .k-bubble em,
+.k-message-group-sender .k-bubble a,
+.k-message-group:not(.k-message-group-sender) .k-bubble p,
+.k-message-group:not(.k-message-group-sender) .k-bubble span,
+.k-message-group:not(.k-message-group-sender) .k-bubble div,
+.k-message-group:not(.k-message-group-sender) .k-bubble ul,
+.k-message-group:not(.k-message-group-sender) .k-bubble li,
+.k-message-group:not(.k-message-group-sender) .k-bubble strong,
+.k-message-group:not(.k-message-group-sender) .k-bubble em,
+.k-message-group:not(.k-message-group-sender) .k-bubble a { color: inherit !important; }

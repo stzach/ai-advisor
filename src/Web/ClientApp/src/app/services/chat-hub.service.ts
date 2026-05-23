@@ -45,17 +45,14 @@ export class ChatHubService {
             console.log('[SignalR] Received AI reply:', msg);
             this.message$.next(msg);
              this.botReplies++;
-            if (this.botReplies === 3) {
+            if (this.botReplies === 2) {
                 this.local$.next({
                     id: ++this.msgId,
                     author: this.bot,
                     text: 'Would you like to speak with someone from our team?',
                     timestamp: new Date(),
-                    suggestedActions: [
-                        { type: 'openUrl', title: 'Book an appointment', value: '/appointments' },
-                        { type: 'reply',   title: 'Call us now',         value: 'I\'d like to call the call center' }
-                    ] as Action[]
-                } as Message);
+                    isEscalation: true
+                } as any);
             }
         });
 
