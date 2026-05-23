@@ -111,12 +111,12 @@ public static class DependencyInjection
             return new SearchIndexClient(endpoint, new AzureKeyCredential(apiKey));
         });
 
-        builder.Services.AddScoped<IInsightsAgent, InsightsAgent>();
+        builder.Services.AddScoped<IInsightsOrchestrator, InsightsOrchestrator>();
 
         builder.Services.AddScoped<IFinancialDocumentsSearchAgent, FinancialDocumentsSearchAgent>();
         builder.Services.AddScoped<IProductRecomendationAgent, ProductRecomendationAgent>();
 
         // Agents Orchestrator - coordinates all agents
-        builder.Services.AddScoped<IAgentsOrchestrator, AgentsOrchestrator>();
+        // builder.Services.AddScoped<IAgentsOrchestrator, AgentsOrchestrator>();
     }
 }

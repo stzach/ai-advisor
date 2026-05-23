@@ -8,12 +8,12 @@ using Microsoft.Extensions.Logging;
 
 namespace AiAdvisor.Infrastructure.AI;
 
-public class InsightsAgent : IInsightsAgent
+public class InsightsOrchestrator : IInsightsOrchestrator
 {
     private readonly IFinancialService _financialDataAgent;
     private readonly IChatService _chatService;
     private readonly IUser _user;
-    private readonly ILogger<InsightsAgent> _logger;
+    private readonly ILogger<InsightsOrchestrator> _logger;
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -21,11 +21,11 @@ public class InsightsAgent : IInsightsAgent
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 
-    public InsightsAgent(
+    public InsightsOrchestrator(
         IFinancialService financialDataAgent,
         IChatService chatService,
         IUser user,
-        ILogger<InsightsAgent> logger)
+        ILogger<InsightsOrchestrator> logger)
     {
         _financialDataAgent = financialDataAgent;
         _chatService        = chatService;

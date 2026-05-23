@@ -4,9 +4,9 @@ namespace AiAdvisor.Application.AiInsights.Queries.GetAiInsights;
 
 public class GetAiInsightsQueryHandler : IRequestHandler<GetAiInsightsQuery, List<InsightDto>>
 {
-    private readonly IInsightsAgent _orchestrator;
+    private readonly IInsightsOrchestrator _orchestrator;
 
-    public GetAiInsightsQueryHandler(IInsightsAgent orchestrator)
+    public GetAiInsightsQueryHandler(IInsightsOrchestrator orchestrator)
     {
         _orchestrator = orchestrator;
     }

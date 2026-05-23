@@ -8,7 +8,7 @@ namespace AiAdvisor.Web.Hubs;
 
 [Authorize]
 public class ChatHub(
-    IAgentsOrchestrator agentsOrchestrator,
+    IAdvisorAgent agentsOrchestrator,
     IMemoryCache memoryCache,
     ILogger<ChatHub> logger) : Hub
 {
@@ -36,11 +36,10 @@ public class ChatHub(
         conversationHistory.Add(ConversationMessage.User(message));
 
         // Execute agent pipeline: AdvisorAgent -> FinancialDocumentsSearchAgent
-        var raw = await agentsOrchestrator.ExecuteAgentPipelineAsync(
+        var raw = await agentsOrchestrator.GetAdviceAsync(
             userId,
             message,
             conversationHistory,
-            DefaultChatPipeline,
             Context.ConnectionAborted);
 
         var response = ThinkBlock.Replace(raw, string.Empty).Trim();
@@ -77,11 +76,10 @@ public class ChatHub(
 
         conversationHistory.Add(ConversationMessage.User(message));
 
-        var raw = await agentsOrchestrator.ExecuteAgentPipelineAsync(
+        var raw = await agentsOrchestrator.GetAdviceAsync(
             userId,
             message,
             conversationHistory,
-            pipeline,
             Context.ConnectionAborted);
 
         var response = ThinkBlock.Replace(raw, string.Empty).Trim();
