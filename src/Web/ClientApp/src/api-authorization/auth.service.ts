@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { tap, catchError, map } from 'rxjs/operators';
 import { LoginRequest, RegisterRequest, UsersClient } from '../app/web-api-client';
-import { NotificationService } from 'src/app/services/notification.service';
+import { ChatHubService } from 'src/app/services/chat-hub.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,7 @@ export class AuthService {
   private _isAuthenticated = new BehaviorSubject<boolean>(false);
   isAuthenticated$ = this._isAuthenticated.asObservable();
 
-  constructor(private usersClient: UsersClient, private notificationService: NotificationService) {}
+  constructor(private usersClient: UsersClient, private chatHubService: ChatHubService) {}
 
   initialize(): Observable<boolean> {
     return this.usersClient.infoGET().pipe(
@@ -19,7 +19,7 @@ export class AuthService {
       catchError(() => of(false)),
       tap(isAuth => {
         this._isAuthenticated.next(isAuth);
-        if (isAuth) this.notificationService.connect();
+        if (isAuth) this.chatHubService.connect();
       })
     );
   }
@@ -27,7 +27,7 @@ export class AuthService {
   login(email: string, password: string): Observable<void> {
     return this.usersClient.login(true, undefined, new LoginRequest({ email, password })).pipe(
       tap(() => this._isAuthenticated.next(true)),
-      tap(() => this.notificationService.connect()),
+      tap(() => this.chatHubService.connect()),
       map(() => void 0)
     );
   }
@@ -39,7 +39,7 @@ export class AuthService {
   logout(): Observable<void> {
     return this.usersClient.logout({}).pipe(
       tap(() => this._isAuthenticated.next(false)),
-      tap(() => this.notificationService.disconnect())
+      tap(() => this.chatHubService.disconnect())
     );
   }
 }
