@@ -51,8 +51,6 @@ public class FinancialService : IFinancialService
             var recentTransactionsSection   = BuildRecentTransactionsSection(userTransactions.Take(10));
 
             var systemPrompt = $"""
-                You are a concise AI financial advisor for a retail bank customer.
-
                 # Profile data
 
                 <accounts_cards_loans_and_net_worth>

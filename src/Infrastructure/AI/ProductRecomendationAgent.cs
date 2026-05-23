@@ -45,7 +45,7 @@ public class ProductRecomendationAgent :IProductRecomendationAgent
         var from = new DateTimeOffset(to.Year, to.Month, 1, 0, 0, 0, TimeSpan.Zero);
         var financialContext = await _financialDataAgent.BuildUserSystemPromptAsync(userId, from, to, cancellationToken);
 
-        var documentSearchResults = await _financialDocumentsSearchAgent.GetSearchResultsAsync(cancellationToken);
+        var documentSearchResults = await _financialDocumentsSearchAgent.GetSearchResultsAsync("Accounts,Cards,Loans,Investments",cancellationToken);
 
         var systemPrompt = """
             You are a financial product recommendation agent working for a bank.

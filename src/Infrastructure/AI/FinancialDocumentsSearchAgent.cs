@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 namespace AiAdvisor.Infrastructure.AI;
 public interface IFinancialDocumentsSearchAgent
 {
-    Task<string> GetSearchResultsAsync(CancellationToken ct);
+    Task<string> GetSearchResultsAsync(string? userMessage, CancellationToken ct);
 }
 public class FinancialDocumentsSearchAgent : IFinancialDocumentsSearchAgent
 {
@@ -31,56 +31,112 @@ public class FinancialDocumentsSearchAgent : IFinancialDocumentsSearchAgent
         _logger             = logger;
     }
 
-    public async Task<string> GetSearchResultsAsync(CancellationToken cancellationToken = default)
+    public async Task<string> GetSearchResultsAsync(string? userMessage, CancellationToken cancellationToken = default)
     {
-        var userId = _user.Id ?? throw new UnauthorizedAccessException("User not authenticated.");
+        // var userId = _user.Id ?? throw new UnauthorizedAccessException("User not authenticated.");
 
-        _logger.LogInformation("Generating search query for user {UserId}", userId);
+        // _logger.LogInformation("Generating search query for user {UserId}", userId);
 
-        var to  = DateTimeOffset.UtcNow;
-        var from = new DateTimeOffset(to.Year, to.Month, 1, 0, 0, 0, TimeSpan.Zero);
-        var financialContext = await _financialDataAgent.BuildUserSystemPromptAsync(userId, from, to, cancellationToken);
+        // var to  = DateTimeOffset.UtcNow;
+        // var from = new DateTimeOffset(to.Year, to.Month, 1, 0, 0, 0, TimeSpan.Zero);
+        // var financialContext = await _financialDataAgent.BuildUserSystemPromptAsync(userId, from, to, cancellationToken);
 
         var systemPrompt = """
         You are a Retrieval Query Builder Agent for a banking assistant system.
 
-        Your job is to convert structured user data (user profile, transaction history, existing bank products, and optional intent signals) into a single optimized semantic search query for a vector database containing financial articles and bank product offers.
+        Your task is to generate a single optimized semantic search query for retrieving the most relevant banking knowledge, policies, FAQs, financial guidance articles, and bank product information needed to answer the user’s latest message.
 
-        This query will be used for embedding-based retrieval, so it must maximize semantic relevance, intent clarity, and financial domain coverage.
+        The query will be used for embedding/vector search, so it must maximize semantic relevance, intent clarity, contextual completeness, and banking domain coverage.
 
-        INSTRUCTIONS
-        - Infer user intent from behavior (spending patterns, income, savings, investments, loans, subscriptions, etc.)
-        - Translate both explicit and inferred needs into a natural language search query
-        - Focus on financial intent such as saving, investing, borrowing, insurance, travel, business banking, budgeting, and wealth management
-        - Combine context + intent + financial concepts into a single coherent query
-        - Prioritize recent behavioral signals over static profile data
-        - Make the query suitable for semantic (vector) search across both articles and bank offers
+        INPUTS
+        You may receive:
+        - Current user message
+        - Conversation history
+        - User profile
+        - Existing bank products
+        - Transaction behavior
+        - Intent signals
+
+        PRIMARY OBJECTIVE
+        Generate a natural language retrieval query that captures:
+        - The user’s immediate intent/question
+        - Relevant banking and financial concepts
+        - Context from prior conversation when useful
+        - Relevant user financial situation when helpful
+        - Possible related intents needed for a complete answer
+
+        RETRIEVAL STRATEGY
+        - Prioritize the latest user message over all other signals
+        - Use conversation history to resolve ambiguity and maintain continuity
+        - Include banking terminology likely to appear in support docs, FAQs, policies, product pages, or financial articles
+        - Expand implicit intent into semantically related concepts
+        - Include likely required knowledge areas, constraints, eligibility rules, fees, limits, risks, rates, or procedures
+        - Infer missing but relevant financial context from behavior when appropriate
+        - Optimize for retrieval breadth without becoming vague
+
+        INCLUDE RELEVANT TOPICS SUCH AS
+        - accounts
+        - cards
+        - transfers
+        - payments
+        - fees
+        - disputes
+        - loans
+        - mortgages
+        - savings
+        - investments
+        - fraud/security
+        - budgeting
+        - insurance
+        - rewards
+        - travel benefits
+        - taxes
+        - KYC/compliance
+        - mobile banking
+        - overdraft
+        - interest rates
+        - repayment options
+        - account eligibility
+        - financial planning
 
         STRICT RULES
-        - Output MUST be a single string only
-        - Do NOT output JSON, markdown, labels, or explanations
-        - Do NOT include user identifiers or sensitive data
-        - Do NOT mention “user profile”, “transactions”, or internal system fields
-        - Do NOT generate multiple queries
-        - Keep it concise (1–3 sentences max)
+        - Output MUST be a single search query string only
+        - Do NOT output JSON, markdown, labels, explanations, or multiple queries
+        - Do NOT mention internal system fields or metadata
+        - Do NOT include sensitive personal information
+        - Do NOT answer the user directly
+        - Do NOT generate conversational text
+        - Keep it concise but information-dense (1–3 sentences max)
 
-        OUTPUT FORMAT
-        Return ONLY the final search query string.
+        GOOD QUERY CHARACTERISTICS
+        - Natural language
+        - Rich in financial semantics
+        - Includes intent + context + banking terminology
+        - Optimized for semantic retrieval
+        - Specific enough for accurate retrieval
+        - Broad enough to retrieve supporting documents
 
         EXAMPLE OUTPUTS
 
-        young professional with moderate income seeking credit card rewards for travel and everyday spending, interested in cashback benefits, low fees, and building credit history
+        customer asking why international card payment was declined while traveling abroad, possible fraud prevention blocks, travel notification requirements, foreign transaction limits, card security checks, and steps to re-enable overseas payments
 
-        user with high savings balance looking for fixed deposit accounts, premium savings options, and low risk investment products with stable returns
+        customer wants to increase credit card limit after salary increase, eligibility criteria, income requirements, credit assessment process, temporary versus permanent limit increases, and impact on credit profile
 
-        small business owner with frequent transactions needing business account, credit line for cash flow management, and expense tracking tools
-        """;
+        customer asking about early loan repayment options, prepayment penalties, interest recalculation, partial repayment process, and ways to reduce total borrowing cost
 
-        var userMessage = $"User financial data:\n\n{financialContext}\n\n Based on this information, generate a single optimized search query for retrieving relevant financial articles and bank product offers from a vector database. Focus on the user's financial intent and needs.";
+        customer with frequent subscription and dining transactions looking for cashback or rewards credit cards with low annual fees, spending categories, and reward optimization benefits     
+   """;
 
-        var response = await _chatService.SendAsync(userMessage, systemPrompt, cancellationToken);
+           _logger.LogInformation("System prompt built for SystemPrompt: \n{SystemPrompt}", systemPrompt);
 
-        _logger.LogInformation("Received financial document search query response for user {UserId} \n\n Response: \n{Response}", userId, response);
+    
+        var searchPrompt = userMessage ?? "";// ?? $"User financial data:\n\n{financialContext}\n\n Based on this information, generate a single optimized search query for retrieving relevant financial articles and bank product offers from a vector database. Focus on the user's financial intent and needs.";
+
+        _logger.LogInformation("Creating querry for \n\n Message: \n{UserMessage}", searchPrompt);
+
+        var response = await _chatService.SendAsync(searchPrompt, systemPrompt, cancellationToken);
+
+        _logger.LogInformation("Received financial document search query response Response: \n{Response}", response);
 
         return Search(response);
     }
