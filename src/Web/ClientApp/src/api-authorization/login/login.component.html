@@ -1,7 +1,7 @@
 <article>
   <h2>Log in</h2>
   <form (ngSubmit)="login()" #loginForm="ngForm">
-    <label for="email">Email</label>
+    <label for="email">Username</label>
     <input type="email" id="email" name="email" [(ngModel)]="email"
       [attr.aria-invalid]="invalid ? true : null"
       aria-describedby="login-error"

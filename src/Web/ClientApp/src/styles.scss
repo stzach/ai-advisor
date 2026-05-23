@@ -1424,10 +1424,13 @@ $shimmer-highlight: rgba(36,59,115,0.14);
     display: flex;
     flex-direction: column;
 
+    .chat-voice-wrapper {
+      max-height: 30em;
+    }
+
     kendo-chat {
       flex: 1;
       min-height: 0;
-      max-height: 30em;
 
       .k-chat {
         height: 100%;
@@ -1485,24 +1488,209 @@ $shimmer-highlight: rgba(36,59,115,0.14);
 }
 
 
-.chat-toggle-btn {
-  width: 3.25rem;
-  height: 3.25rem;
+.chat-voice-wrapper {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+
+  kendo-chat {
+    flex: 1;
+    min-height: 0;
+  }
+}
+
+.chat-mic-btn {
+  position: absolute;
+  bottom: 0.45rem;
+  right: 0.5rem;
+  z-index: 10;
+  width: 1.9rem;
+  height: 1.9rem;
   border-radius: 50%;
-  font-size: 1.4rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  border: none;
-  background: var(--pico-primary);
-  color: var(--pico-primary-inverse);
   padding: 0;
+  transition: background 0.15s;
+
+  &:hover { background: rgba(255,255,255,0.15); }
+
+  &.listening {
+    background: rgba(255, 60, 60, 0.2);
+    animation: voice-pulse 1s ease-in-out infinite;
+  }
+}
+
+.chat-speak-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  opacity: 0.45;
+  padding: 0.1rem 0.25rem;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0.3rem;
+  width: auto;
+  transition: opacity 0.15s, background 0.15s;
 
   &:hover {
-    background: var(--pico-primary-hover);
+    opacity: 1;
+    background: rgba(255,255,255,0.12);
   }
+}
+
+@keyframes voice-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.6; transform: scale(0.9); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-mic-btn.listening,
+  .insight-speak-btn.speaking {
+    animation: none;
+  }
+}
+
+.chat-toggle-btn {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 0;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.28));
+  transition: filter 0.2s, transform 0.15s;
+
+  &:hover { filter: drop-shadow(0 6px 14px rgba(0,0,0,0.38)); }
+  &:active { transform: scale(0.93); }
+
+  // ── Face SVG ───────────────────────────────────────────────────────────────
+  .chat-face {
+    width: 3.5rem;
+    height: 3.5rem;
+    animation: face-float 3s ease-in-out infinite;
+  }
+
+  // All mouths hidden by default; expression classes reveal one
+  .mouth    { opacity: 0; transition: opacity 0.25s; }
+  .m-happy  { opacity: 1; }
+
+  // Eyes blink continuously
+  .eye-white {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: face-blink 4s ease-in-out infinite;
+  }
+
+  // Smooth transitions for brow / pupil moves
+  .brow-l, .brow-r, .pupil-l, .pupil-r, .shine-l, .shine-r {
+    transition: transform 0.3s ease;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  // ── Expressions ────────────────────────────────────────────────────────────
+
+  &.face-happy {
+    .mouth { opacity: 0; } .m-happy { opacity: 1; }
+    .chat-face { animation: face-float 3s ease-in-out infinite; }
+  }
+
+  &.face-excited {
+    .mouth { opacity: 0; } .m-excited { opacity: 1; }
+    .brow-l { transform: translateY(-4px); }
+    .brow-r { transform: translateY(-4px); }
+    .chat-face { animation: face-bounce 0.55s ease-in-out infinite; }
+  }
+
+  &.face-curious {
+    .mouth { opacity: 0; } .m-curious { opacity: 1; }
+    .brow-l { transform: rotate(-18deg) translateY(-3px); transform-origin: right center; }
+    .pupil-l { transform: translateX(-1.5px); }
+    .pupil-r { transform: translateX(-1.5px); }
+    .shine-l { transform: translateX(-1.5px); }
+    .shine-r { transform: translateX(-1.5px); }
+    .chat-face { animation: face-tilt 3s ease-in-out infinite; }
+  }
+
+  &.face-surprised {
+    .mouth { opacity: 0; } .m-surprised { opacity: 1; }
+    .brow-l { transform: translateY(-5px); }
+    .brow-r { transform: translateY(-5px); }
+    .eye-white { transform: scale(1.25); animation: none; }
+    .chat-face { animation: face-jump 0.5s ease-out forwards, face-float 3s ease-in-out 0.5s infinite; }
+  }
+
+  &.face-winking {
+    .mouth { opacity: 0; } .m-happy { opacity: 1; }
+    .eye-r  { transform: scaleY(0.06); animation: none; }
+    .shine-r { opacity: 0; }
+    .brow-r { transform: translateY(3px); }
+    .chat-face { animation: face-float 3s ease-in-out infinite; }
+  }
+
+  &.face-thinking {
+    .mouth { opacity: 0; } .m-thinking { opacity: 1; }
+    .pupil-l, .shine-l { transform: translate(-2.5px, -2px); }
+    .pupil-r, .shine-r { transform: translate(-2.5px, -2px); }
+    .brow-l { transform: translateY(-2px) rotate(-8deg); transform-origin: right center; }
+    .chat-face { animation: face-think 4s ease-in-out infinite; }
+  }
+}
+
+// ── Keyframes ─────────────────────────────────────────────────────────────────
+
+@keyframes face-float {
+  0%, 100% { transform: translateY(0)    rotate(0deg); }
+  30%       { transform: translateY(-5px) rotate(-3deg); }
+  70%       { transform: translateY(-3px) rotate(3deg); }
+}
+
+@keyframes face-bounce {
+  0%, 100% { transform: translateY(0)     scale(1,    1); }
+  30%       { transform: translateY(-10px) scale(1.06, 0.94); }
+  60%       { transform: translateY(-2px)  scale(0.97, 1.03); }
+}
+
+@keyframes face-tilt {
+  0%, 100% { transform: rotate(0deg); }
+  30%       { transform: rotate(-12deg); }
+  60%       { transform: rotate(-8deg); }
+}
+
+@keyframes face-jump {
+  0%   { transform: translateY(0)     scale(1,    1); }
+  25%  { transform: translateY(-13px) scale(1.08, 0.93); }
+  55%  { transform: translateY(4px)   scale(0.96, 1.05); }
+  75%  { transform: translateY(-5px)  scale(1.02, 0.98); }
+  100% { transform: translateY(0)     scale(1,    1); }
+}
+
+@keyframes face-think {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  40%       { transform: translateY(-3px) rotate(-5deg); }
+  70%       { transform: translateY(-2px) rotate(-3deg); }
+}
+
+@keyframes face-blink {
+  0%, 86%, 100% { transform: scaleY(1); }
+  91%            { transform: scaleY(0.06); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-toggle-btn .chat-face { animation: none !important; }
 }
 
 .dash-section-heading{
@@ -2151,6 +2339,34 @@ address, blockquote, dl, ol, p, pre, table, ul {
   transition: transform 0.2s;
   font-size: 1rem;
   &.open { transform: rotate(90deg); }
+}
+
+.insight-speak-btn {
+  background: transparent;
+  border: 1.5px solid rgba(36,59,115,0.25);
+  border-radius: 50%;
+  color: $bank-text;
+  font-size: 0.85rem;
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+  transition: border-color 0.15s, background 0.15s;
+
+  &:hover {
+    border-color: $bank-navy;
+    background: rgba(36,59,115,0.06);
+  }
+
+  &.speaking {
+    border-color: $bank-navy;
+    background: rgba(36,59,115,0.1);
+    animation: voice-pulse 1s ease-in-out infinite;
+  }
 }
 
 .insight-card-cta {

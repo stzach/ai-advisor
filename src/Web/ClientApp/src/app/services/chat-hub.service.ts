@@ -14,7 +14,8 @@ export class ChatHubService {
 
     isOpen$ = new BehaviorSubject<boolean>(false);
 
-    private msgId  = 0;
+    private msgId     = 0;
+    private botReplies = 0;
     private reset$   = new Subject<void>();
     private local$   = new Subject<Message>();
     private message$ = new Subject<string>();
@@ -43,6 +44,19 @@ export class ChatHubService {
         this.connection.on('ReceiveMessage', (msg: string) => {
             console.log('[SignalR] Received AI reply:', msg);
             this.message$.next(msg);
+            this.botReplies++;
+            if (this.botReplies === 3) {
+                this.local$.next({
+                    id: ++this.msgId,
+                    author: this.bot,
+                    text: 'Would you like to speak with someone from our team?',
+                    timestamp: new Date(),
+                    suggestedActions: [
+                        { type: 'openUrl', title: 'Book an appointment', value: '/appointments' },
+                        { type: 'reply',   title: 'Call us now',         value: 'I\'d like to call the call center' }
+                    ] as Action[]
+                } as Message);
+            }
         });
 
         this.feed$ = this.reset$.pipe(
@@ -67,7 +81,7 @@ export class ChatHubService {
     open(): void   { this.isOpen$.next(true); }
     close(): void  { this.isOpen$.next(false); }
     toggle(): void { this.isOpen$.next(!this.isOpen$.value); }
-    clear(): void  { this.isOpen$.next(false); this.reset$.next(); }
+    clear(): void  { this.isOpen$.next(false); this.botReplies = 0; this.reset$.next(); }
 
     openWithPrompt(text: string): void {
         this.isOpen$.next(true);

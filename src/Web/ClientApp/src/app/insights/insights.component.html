@@ -46,6 +46,14 @@
             {{ expandedInsight === i ? 'Less' : 'How?' }}
             <span class="insight-chevron" [class.open]="expandedInsight === i">›</span>
           </button>
+          @let speaking = (voice.currentSpeakingKey$ | async) === insight.message;
+          <button class="insight-speak-btn"
+            [class.speaking]="speaking"
+            [attr.aria-label]="speaking ? 'Stop reading' : 'Read aloud'"
+            [attr.aria-pressed]="speaking"
+            (click)="speakInsight(insight)">
+            <span aria-hidden="true">{{ speaking ? '⏹' : '🔊' }}</span>
+          </button>
           <button class="insight-card-cta" (click)="chatHub.openWithPrompt(insight.prompt)">
             {{ insight.cta }} →
           </button>
