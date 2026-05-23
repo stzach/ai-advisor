@@ -23,7 +23,7 @@ public class AiInsights : IEndpointGroup
     }
 
     [EndpointSummary("Get AI-generated financial insights for the current user")]
-    [EndpointDescription("Calls the insights orchestrator which analyses the user's transactions and products via AI agents and returns a list of personalised insights.")]
+    [EndpointDescription("Calls the insights agent which analyses the user's transactions and products via AI agents and returns a list of personalised insights.")]
     public static async Task<Ok<List<InsightDto>>> GetAiInsights(ISender sender, DateTime from, DateTime to)
     {
         var result = await sender.Send(new GetAiInsightsQuery(
@@ -35,7 +35,7 @@ public class AiInsights : IEndpointGroup
 
     public static async Task StreamAiInsights(
         HttpContext context,
-        IInsightsOrchestrator orchestrator,
+        IInsightsAgent insightsAgent,
         DateTime from,
         DateTime to,
         CancellationToken ct)
@@ -44,7 +44,7 @@ public class AiInsights : IEndpointGroup
         context.Response.Headers["Cache-Control"]     = "no-cache, no-store";
         context.Response.Headers["X-Accel-Buffering"] = "no";
 
-        await foreach (var insight in orchestrator.StreamInsightsAsync(
+        await foreach (var insight in insightsAgent.StreamInsightsAsync(
             new DateTimeOffset(from, TimeSpan.Zero),
             new DateTimeOffset(to,   TimeSpan.Zero),
             ct))
