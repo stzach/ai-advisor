@@ -373,6 +373,111 @@ app-root > main:has(> app-insights) {
   padding-top: calc(var(--header-height) + 2rem);
 }
 
+// ── Full-page chat route (/chat) ───────────────────────────────────────────────
+app-root > main:has(> app-chat) {
+  background: #f5f7fa;
+  min-height: 100vh;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+app-chat {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+  padding: calc(var(--header-height) + 1.5rem) 1rem 2rem;
+}
+
+.chat-fullpage-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, $bank-navy 0%, #1a2f5e 100%);
+  border-radius: 18px 18px 0 0;
+  flex-shrink: 0;
+  box-shadow: 0 4px 20px rgba(14,29,61,0.2);
+  margin-bottom: 0;
+}
+
+.chat-fullpage-body {
+  flex: 1;
+  min-height: 0;
+  border-radius: 0 0 18px 18px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(14,29,61,0.12);
+
+  kendo-chat {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+
+    .k-chat {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .k-message-group:not(.k-alt) .k-bubble { border-radius: 4px 14px 14px 14px; }
+    .k-message-group.k-alt         .k-bubble { border-radius: 14px 14px 4px 14px; }
+
+    .k-bubble {
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+
+      ul { margin: 0.25rem 0 0 1rem; padding: 0; li { margin-bottom: 0.2rem; } }
+    }
+
+    .k-bubble code {
+      background: rgba(0,0,0,0.08);
+      border-radius: 3px;
+      padding: 0 3px;
+      font-size: 0.85em;
+    }
+
+    .k-message-list {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto !important;
+      background: #f5f7fa;
+    }
+
+    .k-message-list-content { padding: 1.25rem 1rem; }
+    .k-avatar { display: none; }
+
+    .k-message-quick-replies {
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      padding: 0.75rem 1rem;
+      background: #fff;
+      border-top: 1px solid rgba(36,59,115,0.08);
+      flex-shrink: 0;
+    }
+
+    .k-quick-reply {
+      display: inline-flex !important;
+      align-items: center;
+      padding: 0.45rem 1rem;
+      border-radius: 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1.5px solid rgba($bank-navy, 0.25) !important;
+      background: #fff !important;
+      color: $bank-navy !important;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      &:hover { background: $bank-navy !important; color: #fff !important; border-color: $bank-navy !important; }
+    }
+  }
+}
+
 .dashboard {
   max-width: 1200px;
   margin: 0 auto;
@@ -426,6 +531,40 @@ app-root > main:has(> app-insights) {
   color: rgba(255,255,255,0.75) !important;
   margin: 0;
   font-size: 1rem;
+}
+
+// ── AI Insights hero (image left, cards right) ────────────────────────────────
+.dash-insights-hero {
+  display:     flex;
+  align-items: center;
+  gap:         2.5rem;
+  margin-top:  2rem;
+}
+
+.dash-ai-image-col {
+  flex:            0 0 240px;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+}
+
+.dash-ai-illustration {
+  width:      100%;
+  max-width:  240px;
+  height:     auto;
+  // slight drop-shadow so it pops on the dark background
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.25));
+}
+
+.dash-ai-cards-col {
+  flex:      1;
+  min-width: 0;   // allow flex child to shrink below content size (enables scroll)
+}
+
+@media (max-width: 900px) {
+  .dash-insights-hero { flex-direction: column; gap: 1.5rem; }
+  .dash-ai-image-col  { flex: none; }
+  .dash-ai-illustration { max-width: 160px; }
 }
 
 .dash-main-grid {
@@ -1413,96 +1552,154 @@ $shimmer-highlight: rgba(36,59,115,0.14);
 }
 
 .chat-panel {
-  display: none;
-  width: 380px;
-  height: auto;
-  border-radius: 0.75rem;
+  width: 440px;
+  border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  background: #f5f7fa;
+  box-shadow: 0 20px 60px rgba(14,29,61,0.35), 0 4px 16px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(16px) scale(0.97);
+  transform-origin: bottom right;
+  transition: opacity 0.25s ease, transform 0.25s ease;
 
   &.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+    // Use a fixed height so the flex chain can work — flex children need a
+    // concrete ancestor height to resolve min-height:0 and enable scrolling.
+    height: min(600px, calc(100vh - 120px));
+  }
+
+  // ── Wire up the flex chain: panel → app-chat → body → kendo ────────────────
+  app-chat {
+    flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-
-    kendo-chat {
-      flex: 1;
-      min-height: 0;
-      max-height: 30em;
-
-      .k-chat {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .k-bubble ul {
-        margin: 0.25rem 0 0 1rem;
-        padding: 0;
-        li { margin-bottom: 0.2rem; }
-      }
-
-      .k-bubble code {
-        background: rgba(0,0,0,0.08);
-        border-radius: 3px;
-        padding: 0 3px;
-        font-size: 0.85em;
-      }
-
-      .k-message-list {
-        flex: 1;
-        min-height: 0;
-        overflow-y: auto;
-      }
-
-      .k-message-quick-replies {
-        flex-wrap: wrap;
-        overflow-x: visible;
-        gap: 0.4rem;
-        padding: 0.5rem 0.75rem;
-      }
-
-      .k-quick-reply {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.35rem 0.85rem;
-        border-radius: 1rem;
-        font-size: 0.82rem;
-        font-weight: 500;
-        white-space: nowrap;
-        cursor: pointer;
-        border: 1px solid rgba(255,255,255,0.25);
-        background: rgba(255,255,255,0.08);
-        color: rgba(255,255,255,0.9);
-        transition: background 0.15s, border-color 0.15s;
-
-        &:hover {
-          background: rgba(255,255,255,0.18);
-          border-color: rgba(255,255,255,0.45);
-        }
-      }
-    }
+    overflow: hidden;
   }
+}
+
+// ── Chat panel header ──────────────────────────────────────────────────────────
+.chat-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem 0.9rem 1.1rem;
+  background: linear-gradient(135deg, $bank-navy 0%, #1a2f5e 100%);
+  flex-shrink: 0;
+}
+
+.chat-panel-avatar {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $bank-red, rgba($bank-red, 0.7));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba($bank-red, 0.4);
+}
+
+.chat-panel-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.chat-panel-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.chat-panel-status {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.7);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.chat-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2ecc71;
+  box-shadow: 0 0 0 0 rgba(46,204,113,0.5);
+  animation: status-pulse 2.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes status-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(46,204,113,0.5); }
+  50%       { box-shadow: 0 0 0 5px rgba(46,204,113,0); }
+}
+
+.chat-panel-close {
+  background: rgba(255,255,255,0.12);
+  border: none;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.8);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+  &:hover { background: rgba(255,255,255,0.22); color: #fff; }
+}
+
+.chat-panel {
 }
 
 
 .chat-toggle-btn {
-  width: 3.25rem;
-  height: 3.25rem;
+  width: 3.4rem;
+  height: 3.4rem;
   border-radius: 50%;
   font-size: 1.4rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   border: none;
-  background: var(--pico-primary);
-  color: var(--pico-primary-inverse);
+  background: linear-gradient(135deg, $bank-red, darken($bank-red, 10%));
+  color: #fff;
   padding: 0;
+  box-shadow: 0 4px 20px rgba($bank-red, 0.5), 0 2px 8px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s;
+
+  &:not(.active) {
+    animation: chat-btn-idle 3s ease-in-out infinite;
+  }
+
+  &.active {
+    background: $bank-navy;
+    box-shadow: 0 4px 20px rgba($bank-navy, 0.4);
+  }
 
   &:hover {
-    background: var(--pico-primary-hover);
+    transform: scale(1.08);
+    box-shadow: 0 6px 24px rgba($bank-red, 0.6);
   }
+}
+
+@keyframes chat-btn-idle {
+  0%, 100% { box-shadow: 0 4px 20px rgba($bank-red, 0.5), 0 0 0 0 rgba($bank-red, 0.3); }
+  50%       { box-shadow: 0 4px 20px rgba($bank-red, 0.5), 0 0 0 10px rgba($bank-red, 0); }
 }
 
 .dash-section-heading{
@@ -1516,6 +1713,29 @@ $shimmer-highlight: rgba(36,59,115,0.14);
 address, blockquote, dl, ol, p, pre, table, ul {
   color: black !important;
 }
+
+// ── Chat bubble colours (global, !important beats the pico black override) ───
+// Bot / AI — dark navy
+.k-message-group:not(.k-alt) .k-bubble {
+  background: $bank-navy !important;
+  color: #fff !important;
+}
+
+// User — light periwinkle, navy text
+.k-message-group.k-alt .k-bubble {
+  background: #d6e0f5 !important;
+  color: $bank-navy !important;
+}
+
+// All child text inherits the bubble colour regardless of the global reset
+.k-bubble p,
+.k-bubble span,
+.k-bubble div,
+.k-bubble ul,
+.k-bubble li,
+.k-bubble strong,
+.k-bubble em,
+.k-bubble a { color: inherit !important; }
 
 .dashboard address,
 .dashboard blockquote,
@@ -1745,13 +1965,17 @@ address, blockquote, dl, ol, p, pre, table, ul {
 .dash-spotlight-view-all {
   font-size: 0.82rem;
   font-weight: 600;
-  color: #fff;
-  text-decoration: none;
+  color: #fff !important;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
   opacity: 0.85;
   transition: opacity 0.2s;
-  &:hover { opacity: 1; }
+  &:hover:not(:disabled) { opacity: 1; }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
 }
 
 .dash-spotlight-progress-wrap {
@@ -1798,14 +2022,33 @@ address, blockquote, dl, ol, p, pre, table, ul {
 
 .dash-spotlight-row--skeleton { pointer-events: none; }
 
-.dash-spotlight-row-icon { font-size: 1.5rem; flex-shrink: 0; line-height: 1; }
+.dash-spotlight-row-icon-wrap {
+  flex-shrink: 0;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(255,255,255,0.97) 0%, rgba(255,255,255,0.88) 100%);
+  border: 1px solid rgba(255,255,255,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 28px rgba($bank-red, 0.4), 0 2px 8px rgba(0,0,0,0.18);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+
+  .dash-spotlight-row:hover & {
+    transform: scale(1.12) rotate(-3deg);
+    box-shadow: 0 12px 36px rgba($bank-red, 0.55), 0 4px 12px rgba(0,0,0,0.2);
+  }
+}
+
+.dash-spotlight-row-icon { font-size: 2.2rem; line-height: 1; }
 
 .dash-spotlight-row-msg {
   flex: 1;
-  font-size: 0.97rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 700;
   color: #fff !important;
-  line-height: 1.45;
+  line-height: 1.25;
   margin: 0;
 }
 
@@ -1867,8 +2110,11 @@ address, blockquote, dl, ol, p, pre, table, ul {
   font-size: 0.85rem;
   font-weight: 600;
   text-decoration: none;
-  transition: background 0.2s, border-color 0.2s;
-  &:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.6); }
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.2s, border-color 0.2s, opacity 0.2s;
+  &:hover:not(:disabled) { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.6); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 
 .dash-spotlight-empty {
@@ -2028,6 +2274,23 @@ address, blockquote, dl, ol, p, pre, table, ul {
   color: #fff;
 }
 
+.insights-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255,255,255,0.12);
+  border: 1.5px solid rgba(255,255,255,0.25);
+  border-radius: 36px;
+  color: #fff !important;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+  margin-bottom: 1.25rem;
+  transition: background 0.15s, border-color 0.15s;
+  &:hover { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.5); }
+}
+
 .insights-page-header {
   display: flex;
   align-items: flex-start;
@@ -2086,39 +2349,101 @@ address, blockquote, dl, ol, p, pre, table, ul {
 
 .insight-card {
   background: $bank-card;
-  color: $bank-text; // white card — dark text in both themes
-  border-radius: 12px;
-  padding: 1.4rem 1.4rem 1.1rem;
-  box-shadow: 0 4px 20px rgba(36,59,115,0.14);
+  color: $bank-text;
+  border-radius: 16px;
+  padding: 1.5rem 1.4rem 1.2rem;
+  box-shadow: 0 2px 12px rgba(36,59,115,0.08);
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  animation: insight-appear 0.35s ease both;
-  transition: box-shadow 0.2s, transform 0.2s;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+  border: 1.5px solid rgba(36,59,115,0.08);
+  animation: insight-appear 0.4s ease both;
+  transition: box-shadow 0.22s, transform 0.22s, border-color 0.22s;
 
-  &:hover { box-shadow: 0 8px 28px rgba(36,59,115,0.2); transform: translateY(-2px); }
+  &:hover {
+    box-shadow: 0 10px 32px rgba(36,59,115,0.16);
+    border-color: rgba(36,59,115,0.18);
+    transform: translateY(-3px);
+  }
 }
 
-.insight-card--appear { animation: insight-appear 0.35s ease both; }
+.insight-card--appear { animation: insight-appear 0.4s ease both; }
+
+.insight-card--highlighted {
+  background:   linear-gradient(145deg, rgba($bank-navy, 0.06) 0%, rgba($bank-navy, 0.02) 100%);
+  border-color: $bank-navy;
+  border-width: 2px;
+  box-shadow:
+    0 0 0 4px  rgba($bank-navy, 0.14),
+    0 12px 36px rgba($bank-navy, 0.22);
+  transform: scale(1.025);
+  z-index: 1;
+  animation: insight-appear 0.4s ease both, highlighted-pulse 0.7s 0.4s ease both;
+}
+
+@keyframes highlighted-pulse {
+  0%   { box-shadow: 0 0 0 4px rgba($bank-navy, 0.14), 0 12px 36px rgba($bank-navy, 0.22); }
+  50%  { box-shadow: 0 0 0 8px rgba($bank-navy, 0.22), 0 16px 40px rgba($bank-navy, 0.28); }
+  100% { box-shadow: 0 0 0 4px rgba($bank-navy, 0.14), 0 12px 36px rgba($bank-navy, 0.22); }
+}
+
+.insight-card-num {
+  position: absolute;
+  top: 0.9rem;
+  right: 1rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: rgba(36,59,115,0.2);
+  line-height: 1;
+}
 
 .insight-card-top {
   display: flex;
   align-items: flex-start;
-  gap: 0.85rem;
+  gap: 1rem;
 }
 
-.insight-card-icon {
-  font-size: 2rem;
-  line-height: 1;
-  flex-shrink: 0;
+.insight-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+  min-width: 0;
 }
+
+.insight-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $bank-text;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.insight-card-icon-wrap {
+  flex-shrink: 0;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba($bank-navy, 0.10), rgba($bank-navy, 0.05));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.insight-card-icon { font-size: 1.5rem; line-height: 1; }
 
 .insight-card-message {
-  font-size: 0.97rem;
+  font-size: 0.96rem;
   font-weight: 500;
   color: $bank-text;
-  line-height: 1.5;
+  line-height: 1.55;
   margin: 0;
+  padding-top: 0.2rem;
 }
 
 .insight-card-actions {
@@ -2131,9 +2456,9 @@ address, blockquote, dl, ol, p, pre, table, ul {
 
 .insight-card-expand {
   background: transparent;
-  border: 1.5px solid rgba(36,59,115,0.25);
+  border: 1.5px solid rgba(36,59,115,0.2);
   border-radius: 36px;
-  color: $bank-text;
+  color: $bank-text-muted;
   font-size: 0.8rem;
   font-weight: 600;
   padding: 0.35rem 0.85rem;
@@ -2141,38 +2466,56 @@ address, blockquote, dl, ol, p, pre, table, ul {
   width: auto;
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  transition: border-color 0.15s, color 0.15s;
-  &:hover { border-color: $bank-navy; color: $bank-text; }
+  gap: 0.3rem;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  &:hover { border-color: $bank-navy; color: $bank-text; background: rgba(36,59,115,0.04); }
 }
 
 .insight-chevron {
   display: inline-block;
-  transition: transform 0.2s;
+  transition: transform 0.22s ease;
   font-size: 1rem;
   &.open { transform: rotate(90deg); }
 }
 
 .insight-card-cta {
-  background: $bank-red;
-  color: #fff;
-  border: 2px solid $bank-red;
+  background: $bank-navy;
+  color: #fff !important;
+  border: none;
   border-radius: 36px;
-  padding: 0.4rem 1rem;
+  padding: 0.45rem 1.1rem;
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
   width: auto;
   display: inline-flex;
   align-items: center;
-  transition: background 0.2s, border-color 0.2s;
-  &:hover { background: $bank-blue-hover; border-color: $bank-blue-hover; }
+  gap: 0.3rem;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 8px rgba($bank-navy, 0.28);
+  &:hover {
+    background: darken($bank-navy, 8%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba($bank-navy, 0.38);
+  }
 }
 
 .insight-card-detail {
-  background: rgba(36,59,115,0.04);
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, rgba($bank-navy, 0.05), rgba($bank-navy, 0.02));
+  border-radius: 10px;
+  border: 1px solid rgba($bank-navy, 0.08);
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.insight-card-detail-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $bank-navy;
 }
 
 .insight-card-prompt {
@@ -2180,6 +2523,7 @@ address, blockquote, dl, ol, p, pre, table, ul {
   color: $bank-text;
   line-height: 1.5;
   margin: 0;
+  font-style: italic;
 }
 
 // Insight page skeleton cards
@@ -2188,12 +2532,21 @@ address, blockquote, dl, ol, p, pre, table, ul {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  border-left: 4px solid rgba(36,59,115,0.08);
+  &::before { display: none; }
+}
+
+.insight-skeleton-top {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
 }
 
 .insight-skeleton-icon {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 12px;
+  flex-shrink: 0;
   background: $shimmer-base;
   animation: shimmer 1.4s ease-in-out infinite alternate;
 }

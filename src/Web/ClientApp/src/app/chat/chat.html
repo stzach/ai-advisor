@@ -1,10 +1,25 @@
-<kendo-chat
-  [messages]="(feed | async) ?? []"
-  [authorId]="user.id"
-  (sendMessage)="sendMessage($event)"
-  (executeAction)="executeAction($event)"
->
-  <ng-template kendoChatReceiverMessageContentTemplate let-message>
-    <div [innerHTML]="message.text | markdown"></div>
-  </ng-template>
-</kendo-chat>
+@if (!isWidget) {
+  <div class="chat-fullpage-header">
+    <div class="chat-panel-avatar">🧠</div>
+    <div class="chat-panel-info">
+      <span class="chat-panel-name">Financial Advisor</span>
+      <span class="chat-panel-status">
+        <span class="chat-status-dot"></span> Ready to help
+      </span>
+    </div>
+    <button class="chat-panel-close" (click)="chatHub.clear()" title="Clear conversation">🗑</button>
+  </div>
+}
+
+<div class="chat-fullpage-body" [class.chat-widget-body]="isWidget">
+  <kendo-chat
+    [messages]="(feed | async) ?? []"
+    [authorId]="user.id"
+    (sendMessage)="sendMessage($event)"
+    (executeAction)="executeAction($event)"
+  >
+    <ng-template kendoChatReceiverMessageContentTemplate let-message>
+      <div [innerHTML]="message.text | markdown"></div>
+    </ng-template>
+  </kendo-chat>
+</div>

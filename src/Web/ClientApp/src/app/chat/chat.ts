@@ -1,4 +1,4 @@
-import { Component, ElementRef } from '@angular/core';
+import { Component, ElementRef, Input } from '@angular/core';
 import { Message, User, SendMessageEvent, ExecuteActionEvent } from '@progress/kendo-angular-conversational-ui';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -10,10 +10,12 @@ import { ChatHubService } from '../services/chat-hub.service';
   templateUrl: './chat.html'
 })
 export class ChatComponent {
+  @Input() isWidget = false;
+
   readonly user: User = { id: 'user', name: 'You' };
   feed: Observable<Message[]>;
 
-  constructor(private chatHub: ChatHubService, private el: ElementRef) {
+  constructor(public chatHub: ChatHubService, private el: ElementRef) {
     this.feed = chatHub.feed$.pipe(
       tap(() => setTimeout(() => this.scrollToBottom()))
     );

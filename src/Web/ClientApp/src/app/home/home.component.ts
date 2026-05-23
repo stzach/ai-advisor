@@ -14,7 +14,7 @@ import { API_BASE_URL } from '../web-api-client';
 interface ProductRecommendationDto { productName: string; redirectUri: string; reason: string; }
 interface Expense { category: string; amount: number; color: string; }
 
-const CHART_COLORS = ['#4a90d9', '#2ecc71', '#f39c12', '#9b59b6', '#7f8c8d', '#1abc9c', '#e67e22'];
+const CHART_COLORS = ['#0ea5e9', '#10b981', '#8b5cf6', '#f59e0b', '#06b6d4', '#64748b', '#a78bfa'];
 
 interface FinancialDocumentSearchResultDto {
   id: string;
@@ -110,7 +110,7 @@ export class HomeComponent {
       const maxCat  = entries.reduce((a, b) => a[1] > b[1] ? a : b)[0];
       return entries.map(([category, amount], i) => ({
         category, amount,
-        color: category === maxCat ? '#c8102e' : CHART_COLORS[i % CHART_COLORS.length],
+        color: category === maxCat ? '#2563eb' : CHART_COLORS[i % CHART_COLORS.length],
       }));
     });
 
@@ -134,8 +134,7 @@ export class HomeComponent {
     // Kick off initial insights load and reload when range changes
     this.range$.subscribe(range => {
       this._toastShownForCurrentLoad = false;
-      const { from, to } = this.toDateRange(range);
-      this.insightsService.load(from, to);
+      this.insightsService.loadForRange(range);
     });
 
     // Toast: fires once per load cycle when insights finish streaming
@@ -162,8 +161,17 @@ export class HomeComponent {
 
   goToInsights(): void {
     this.dismissToast();
-    this.router.navigate(['/insights']);
+    this.router.navigate(['/insights'], {
+      state: { insights: this.insightsService.insights(), range: this.selectedRange }
+    });
   }
+
+  goToInsightDetail(index: number): void {
+    this.router.navigate(['/insights'], {
+      state: { insights: this.insightsService.insights(), range: this.selectedRange, highlightIndex: index }
+    });
+  }
+
 
   // ── Collapsible sections ──────────────────────────────────────────────────
   accountsExpanded = signal(true);

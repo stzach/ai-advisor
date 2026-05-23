@@ -1,4 +1,4 @@
-<app-nav-menu></app-nav-menu>
+﻿<app-nav-menu></app-nav-menu>
 <main>
   <router-outlet></router-outlet>
 </main>
@@ -6,8 +6,21 @@
 @if (isAuthenticated && !isChatPage) {
   <div class="chat-widget">
     <div class="chat-panel" [class.open]="chatHub.isOpen$ | async">
-      <app-chat></app-chat>
+      <div class="chat-panel-header">
+        <div class="chat-panel-avatar">🧠</div>
+        <div class="chat-panel-info">
+          <span class="chat-panel-name">Financial Advisor</span>
+          <span class="chat-panel-status">
+            <span class="chat-status-dot"></span> Ready to help
+          </span>
+        </div>
+        <button class="chat-panel-close" (click)="chatHub.close()" aria-label="Close chat">✕</button>
+      </div>
+      <app-chat [isWidget]="true"></app-chat>
     </div>
-    <button class="chat-toggle-btn" (click)="chatHub.toggle()">💬</button>
+    <button class="chat-toggle-btn" [class.active]="chatHub.isOpen$ | async" (click)="chatHub.toggle()" aria-label="Toggle chat">
+      @if (chatHub.isOpen$ | async) { ✕ } @else { 💬 }
+    </button>
   </div>
 }
+
