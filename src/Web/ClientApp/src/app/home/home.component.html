@@ -15,6 +15,67 @@
     </div>
   </div>
 
+  <!-- AI Insights spotlight (hero card — shown before the grid) -->
+  <div class="dash-insights-spotlight">
+    <div class="dash-spotlight-header">
+      <div class="dash-spotlight-title-row">
+        <h3 class="dash-spotlight-title">
+          💡 Financial Advisor
+          @if (insightsService.insightsLoading()) {
+            <span class="dash-insights-live-dot dash-insights-live-dot--light"></span>
+          }
+        </h3>
+        <a class="dash-spotlight-view-all" [routerLink]="['/insights']">View all →</a>
+      </div>
+      <div class="dash-spotlight-progress-wrap">
+        <div class="dash-spotlight-progress-bar">
+          <div class="dash-spotlight-progress-fill"
+            [style.width.%]="insightsService.insightsLoading()
+              ? (insightsService.insights().length / 4) * 100
+              : 100">
+          </div>
+        </div>
+        @if (insightsService.insightsLoading()) {
+          <span class="dash-spotlight-progress-label">
+            {{ insightsService.insights().length === 0 ? 'Analysing your finances…' : insightsService.insights().length + ' of 4 ready' }}
+          </span>
+        }
+      </div>
+    </div>
+
+    <div class="dash-spotlight-rows">
+      @for (insight of insightsService.insights().slice(0, 2); track insight.message; let i = $index) {
+        <div class="dash-spotlight-row dash-spotlight-row--appear">
+          <span class="dash-spotlight-row-icon">{{ insight.icon }}</span>
+          <p class="dash-spotlight-row-msg">{{ insight.message }}</p>
+          <a class="dash-spotlight-row-cta" [routerLink]="['/insights']">{{ insight.cta }} →</a>
+        </div>
+      }
+
+      @for (i of insightsService.insightSkeletons().slice(0, 2 - insightsService.insights().length > 0 ? insightsService.insights().length : 0); track i) {
+        <div class="dash-spotlight-row dash-spotlight-row--skeleton">
+          <div class="dash-skel-icon"></div>
+          <div class="dash-skel-lines">
+            <div class="dash-skel-line dash-skel-line--wide"></div>
+            <div class="dash-skel-line dash-skel-line--narrow"></div>
+          </div>
+          <div class="dash-skel-btn"></div>
+        </div>
+      }
+
+      @if (!insightsService.insightsLoading() && !insightsService.insights().length) {
+        <p class="dash-spotlight-empty">No insights available for this period.</p>
+      }
+    </div>
+
+    @if (insightsService.insights().length > 0) {
+      <a class="dash-spotlight-all-btn" [routerLink]="['/insights']">
+        See all {{ insightsService.insights().length }} insights
+        @if (insightsService.insightsLoading()) { (loading…) }
+      </a>
+    }
+  </div>
+
   <div class="dash-main-grid">
 
     <div class="dash-card">
@@ -29,7 +90,7 @@
         </div>
       </div>
       <div class="dash-chart-wrap">
-        <kendo-chart style="height: 400px;">
+        <kendo-chart style="height: 220px;">
           <kendo-chart-series>
             <kendo-chart-series-item
               type="donut"
@@ -37,8 +98,8 @@
               field="amount"
               categoryField="category"
               colorField="color"
-              [holeSize]="78"
-              [padding]="8">
+              [holeSize]="55"
+              [padding]="4">
             </kendo-chart-series-item>
           </kendo-chart-series>
           <kendo-chart-legend [visible]="false"></kendo-chart-legend>
@@ -74,116 +135,93 @@
 
     <div class="dash-side-stack">
 
-      <div class="dash-card">
-        <h3 class="dash-card-title"><span class="dash-card-title-icon">🏦</span> Accounts</h3>
-        @for (account of accounts(); track account.productId) {
-          <div class="dash-account-row">
-            <div>
-              <div class="dash-account-name">{{ account.productName }}</div>
-              <div class="dash-account-iban">{{ account.accountNumber }}</div>
-            </div>
-            <div class="dash-account-balance">€{{ account.availableBalance | number:'1.2-2' }}</div>
-          </div>
-        }
-      </div>
-
-      <div class="dash-card">
-        <h3 class="dash-card-title"><span class="dash-card-title-icon">💳</span> Cards</h3>
-        @for (card of cards(); track card.productId) {
-          <div class="dash-card-row">
-            <div class="dash-card-info">
-              <span class="dash-card-name">{{ card.productName }}</span>
-              <span class="dash-card-number">{{ card.cardNumber }}</span>
-              <span class="dash-card-badge">{{ card.productDescription }}</span>
-            </div>
-            <div class="dash-account-balance">€{{ card.availableBalance | number:'1.2-2' }}</div>
-          </div>
-          @if (card.creditLimit) {
-            <div class="dash-credit-bar-wrap">
-              <div class="dash-credit-bar">
-                <div class="dash-credit-bar-fill"
-                  [style.width.%]="(card.creditLimit - (card.availableBalance ?? 0)) / card.creditLimit * 100"
-                  [class.danger]="(card.creditLimit - (card.availableBalance ?? 0)) / card.creditLimit > 0.8">
-                </div>
-              </div>
-              <div class="dash-credit-bar-labels">
-                <span>Used €{{ (card.creditLimit - (card.availableBalance ?? 0)) | number:'1.0-0' }}</span>
-                <span>Limit €{{ card.creditLimit | number:'1.0-0' }}</span>
-              </div>
-            </div>
-          }
-        }
-      </div>
-
-      @if (loans().length) {
-        <div class="dash-card">
-          <h3 class="dash-card-title"><span class="dash-card-title-icon">📋</span> Loans</h3>
-          @for (loan of loans(); track loan.productId) {
+      <!-- Accounts — collapsible -->
+      <div class="dash-card dash-collapsible-card">
+        <button class="dash-collapse-header" (click)="accountsExpanded.set(!accountsExpanded())" aria-expanded="{{ accountsExpanded() }}">
+          <span class="dash-collapse-left">
+            <span class="dash-card-title-icon">🏦</span>
+            <span class="dash-collapse-title">Accounts</span>
+            <span class="dash-collapse-summary">{{ accounts().length }} · €{{ accountsTotal() | number:'1.0-0' }}</span>
+          </span>
+          <span class="dash-collapse-chevron" [class.open]="accountsExpanded()">›</span>
+        </button>
+        @if (accountsExpanded()) {
+          @for (account of accounts(); track account.productId) {
             <div class="dash-account-row">
               <div>
-                <div class="dash-account-name">{{ loan.productName }}</div>
-                <div class="dash-account-iban">{{ loan.accountNumber }}</div>
+                <div class="dash-account-name">{{ account.productName }}</div>
+                <div class="dash-account-iban">{{ account.accountNumber }}</div>
               </div>
-              <div class="dash-loan-balance">€{{ loan.availableBalance | number:'1.2-2' }}</div>
+              <div class="dash-account-balance">€{{ account.availableBalance | number:'1.2-2' }}</div>
             </div>
           }
-        </div>
-      }
-
-    </div>
-  </div>
-
-  <div class="dash-card dash-insights">
-    <div class="dash-insights-header">
-      <h3 class="dash-card-title">
-        <span class="dash-insights-icon">🤖</span> AI Advisor Insights · {{ rangeLabel() }}
-        @if (insightsLoading()) {
-          <span class="dash-insights-live-dot"></span>
         }
-      </h3>
-      @if (insightsLoading()) {
-        <span class="dash-insights-status">
-          {{ insights().length === 0 ? 'Analysing your finances…' : insights().length + ' of 4 ready' }}
-        </span>
-      }
-    </div>
-    @if (insightsLoading()) {
-      <div class="dash-insights-progress-bar">
-        <div class="dash-insights-progress-fill"
-          [style.width.%]="(insights().length / 4) * 100">
-        </div>
       </div>
-    }
-    @for (insight of insights(); track insight.message; let i = $index) {
-      <div class="dash-insight-row dash-insight-row--appear">
-        <span class="dash-insight-icon">{{ insight.icon }}</span>
-        <div class="dash-insight-body">
-          <button class="dash-insight-toggle" (click)="toggleInsight(i)">
-            <span class="dash-insight-message">{{ insight.message }}</span>
-            <span class="dash-insight-chevron" [class.open]="expandedInsight === i">›</span>
-          </button>
-          @if (expandedInsight === i) {
-            <div class="dash-insight-expanded">
-              <p class="dash-insight-q">{{ insight.prompt }}</p>
-              <button class="dash-insight-cta" (click)="chatHub.openWithPrompt(insight.prompt)">{{ insight.cta }} →</button>
+
+      <!-- Cards — collapsible -->
+      <div class="dash-card dash-collapsible-card">
+        <button class="dash-collapse-header" (click)="cardsExpanded.set(!cardsExpanded())" aria-expanded="{{ cardsExpanded() }}">
+          <span class="dash-collapse-left">
+            <span class="dash-card-title-icon">💳</span>
+            <span class="dash-collapse-title">Cards</span>
+            <span class="dash-collapse-summary">{{ cards().length }} · €{{ cardsAvailable() | number:'1.0-0' }} available</span>
+          </span>
+          <span class="dash-collapse-chevron" [class.open]="cardsExpanded()">›</span>
+        </button>
+        @if (cardsExpanded()) {
+          @for (card of cards(); track card.productId) {
+            <div class="dash-card-row">
+              <div class="dash-card-info">
+                <span class="dash-card-name">{{ card.productName }}</span>
+                <span class="dash-card-number">{{ card.cardNumber }}</span>
+                <span class="dash-card-badge">{{ card.productDescription }}</span>
+              </div>
+              <div class="dash-account-balance">€{{ card.availableBalance | number:'1.2-2' }}</div>
             </div>
+            @if (card.creditLimit) {
+              <div class="dash-credit-bar-wrap">
+                <div class="dash-credit-bar">
+                  <div class="dash-credit-bar-fill"
+                    [style.width.%]="(card.creditLimit - (card.availableBalance ?? 0)) / card.creditLimit * 100"
+                    [class.danger]="(card.creditLimit - (card.availableBalance ?? 0)) / card.creditLimit > 0.8">
+                  </div>
+                </div>
+                <div class="dash-credit-bar-labels">
+                  <span>Used €{{ (card.creditLimit - (card.availableBalance ?? 0)) | number:'1.0-0' }}</span>
+                  <span>Limit €{{ card.creditLimit | number:'1.0-0' }}</span>
+                </div>
+              </div>
+            }
+          }
+        }
+      </div>
+
+      <!-- Loans — collapsible, only if present -->
+      @if (loans().length) {
+        <div class="dash-card dash-collapsible-card">
+          <button class="dash-collapse-header" (click)="loansExpanded.set(!loansExpanded())" aria-expanded="{{ loansExpanded() }}">
+            <span class="dash-collapse-left">
+              <span class="dash-card-title-icon">📋</span>
+              <span class="dash-collapse-title">Loans</span>
+              <span class="dash-collapse-summary">{{ loans().length }} · €{{ loansTotal() | number:'1.0-0' }} outstanding</span>
+            </span>
+            <span class="dash-collapse-chevron" [class.open]="loansExpanded()">›</span>
+          </button>
+          @if (loansExpanded()) {
+            @for (loan of loans(); track loan.productId) {
+              <div class="dash-account-row">
+                <div>
+                  <div class="dash-account-name">{{ loan.productName }}</div>
+                  <div class="dash-account-iban">{{ loan.accountNumber }}</div>
+                </div>
+                <div class="dash-loan-balance">€{{ loan.availableBalance | number:'1.2-2' }}</div>
+              </div>
+            }
           }
         </div>
-      </div>
-    }
-    @for (i of insightSkeletons(); track i) {
-      <div class="dash-insight-skeleton">
-        <div class="dash-skeleton-icon"></div>
-        <div class="dash-skeleton-lines">
-          <div class="dash-skeleton-line dash-skeleton-line--wide"></div>
-          <div class="dash-skeleton-line dash-skeleton-line--narrow"></div>
-        </div>
-        <div class="dash-skeleton-btn"></div>
-      </div>
-    }
-    @if (!insightsLoading() && !insights().length) {
-      <p class="dash-empty" data-icon="🤖">No insights available.</p>
-    }
+      }
+
+    </div>
   </div>
 
   <div class="dash-card dash-recommendations">
@@ -400,6 +438,18 @@
 
 
 </div>
+
+@if (showToast()) {
+  <div class="dash-toast" role="status" aria-live="polite">
+    <span class="dash-toast-icon">💡</span>
+    <div class="dash-toast-body">
+      <strong class="dash-toast-title">Your insights are ready</strong>
+      <span class="dash-toast-sub">{{ insightsService.insights().length }} personalised tip{{ insightsService.insights().length !== 1 ? 's' : '' }} from your AI advisor</span>
+    </div>
+    <button class="dash-toast-view" (click)="goToInsights()">View →</button>
+    <button class="dash-toast-dismiss" (click)="dismissToast()" aria-label="Dismiss">✕</button>
+  </div>
+}
 
 @if (showModal) {
   <div class="tx-modal-overlay" (click)="closeModal()">

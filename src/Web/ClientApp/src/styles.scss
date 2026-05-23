@@ -365,7 +365,8 @@ $bank-border:     rgba(36,59,115,0.1);
 $bank-text:       #243b73;
 $bank-text-muted: rgba(36,59,115,0.55);
 
-app-root > main:has(> app-home) {
+app-root > main:has(> app-home),
+app-root > main:has(> app-insights) {
   background: linear-gradient(135deg, #243b73 0%, #3d5490 35%, #6878a8 70%, #8090be 100%);
   background-attachment: fixed;
   min-height: 100vh;
@@ -1523,7 +1524,15 @@ address, blockquote, dl, ol, p, pre, table, ul {
 .dashboard p,
 .dashboard pre,
 .dashboard table,
-.dashboard ul {
+.dashboard ul,
+.insights-page address,
+.insights-page blockquote,
+.insights-page dl,
+.insights-page ol,
+.insights-page p,
+.insights-page pre,
+.insights-page table,
+.insights-page ul {
   color: inherit !important;
 }
 
@@ -1640,7 +1649,8 @@ address, blockquote, dl, ol, p, pre, table, ul {
   // Tighter dashboard padding on small phones
   .dashboard { padding: 0 0.85rem 2.5rem; }
 
-  app-root > main:has(> app-home) {
+  app-root > main:has(> app-home),
+  app-root > main:has(> app-insights) {
     padding-top: calc(var(--header-height) + 1rem);
   }
 
@@ -1671,4 +1681,565 @@ address, blockquote, dl, ol, p, pre, table, ul {
 
   // Chat panel: nearly full-width on phones
   .chat-panel { width: calc(100vw - 2rem); }
+}
+
+// ── Insights spotlight — hero card ────────────────────────────────────────────
+.dash-insights-spotlight {
+  background: linear-gradient(135deg, $bank-navy 0%, #1a2f5e 50%, #0e1d3d 100%);
+  border-radius: 14px;
+  padding: 1.5rem 1.75rem 1.25rem;
+  margin-bottom: 1.25rem;
+  color: #fff;
+  box-shadow: 0 8px 32px rgba(14,29,61,0.45);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 180px; height: 180px;
+    background: radial-gradient(circle, rgba(229,38,41,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+}
+
+// Force white text — Pico's p/span rules can match specificity (0,1,1) so !important is required
+.dash-insights-spotlight p,
+.dash-insights-spotlight h3,
+.dash-insights-spotlight span,
+.dash-insights-spotlight a,
+.dash-insights-spotlight div { color: #fff !important; }
+
+.dash-spotlight-header { margin-bottom: 0.9rem; }
+
+.dash-spotlight-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.dash-spotlight-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff !important;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.dash-insights-live-dot--light {
+  background: rgba(255,255,255,0.85);
+  box-shadow: 0 0 0 0 rgba(255,255,255,0.4);
+  animation: pulse-light 1.8s ease-in-out infinite;
+}
+
+@keyframes pulse-light {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
+  50%       { box-shadow: 0 0 0 5px rgba(255,255,255,0); }
+}
+
+.dash-spotlight-view-all {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  opacity: 0.85;
+  transition: opacity 0.2s;
+  &:hover { opacity: 1; }
+}
+
+.dash-spotlight-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.dash-spotlight-progress-bar {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.dash-spotlight-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255,255,255,0.6), $bank-red);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.dash-spotlight-progress-label {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.88) !important;
+  white-space: nowrap;
+}
+
+.dash-spotlight-rows { display: flex; flex-direction: column; gap: 0.15rem; }
+
+.dash-spotlight-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  animation: insight-appear 0.35s ease both;
+
+  &:last-child { border-bottom: none; }
+}
+
+.dash-spotlight-row--appear { animation: insight-appear 0.35s ease both; }
+
+.dash-spotlight-row--skeleton { pointer-events: none; }
+
+.dash-spotlight-row-icon { font-size: 1.5rem; flex-shrink: 0; line-height: 1; }
+
+.dash-spotlight-row-msg {
+  flex: 1;
+  font-size: 0.97rem;
+  font-weight: 500;
+  color: #fff !important;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.dash-spotlight-row-cta {
+  flex-shrink: 0;
+  background: $bank-red;
+  color: #fff !important;
+  border-radius: 36px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s;
+  &:hover { background: lighten($bank-red, 8%); }
+}
+
+// Skeleton rows inside spotlight
+.dash-skel-icon {
+  width: 1.8rem; height: 1.8rem;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  flex-shrink: 0;
+  animation: shimmer-light 1.4s ease-in-out infinite alternate;
+}
+
+.dash-skel-lines { flex: 1; display: flex; flex-direction: column; gap: 0.4rem; }
+
+.dash-skel-line {
+  height: 12px; border-radius: 6px;
+  background: rgba(255,255,255,0.12);
+  animation: shimmer-light 1.4s ease-in-out infinite alternate;
+  &--wide   { width: 85%; }
+  &--narrow { width: 50%; }
+}
+
+.dash-skel-btn {
+  width: 5.5rem; height: 1.7rem;
+  border-radius: 36px;
+  background: rgba(255,255,255,0.12);
+  flex-shrink: 0;
+  animation: shimmer-light 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes shimmer-light {
+  from { opacity: 0.6; }
+  to   { opacity: 1; }
+}
+
+.dash-spotlight-all-btn {
+  display: block;
+  text-align: center;
+  margin-top: 1rem;
+  padding: 0.6rem;
+  background: rgba(255,255,255,0.1);
+  border: 1.5px solid rgba(255,255,255,0.35);
+  border-radius: 36px;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s;
+  &:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.6); }
+}
+
+.dash-spotlight-empty {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.8) !important;
+  text-align: center;
+  padding: 1rem 0;
+  margin: 0;
+}
+
+// ── Collapsible account/card/loan cards ───────────────────────────────────────
+.dash-collapsible-card { padding: 0; overflow: hidden; }
+
+.dash-collapse-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.25rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: $bank-text;
+  transition: background 0.15s;
+
+  &:hover { background: rgba(36,59,115,0.04); }
+}
+
+.dash-collapse-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dash-collapse-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $bank-text;
+}
+
+.dash-collapse-summary {
+  font-size: 0.82rem;
+  color: $bank-text-muted;
+  font-weight: 400;
+}
+
+.dash-collapse-chevron {
+  font-size: 1.2rem;
+  color: $bank-text-muted;
+  transition: transform 0.2s;
+  display: inline-block;
+  line-height: 1;
+  flex-shrink: 0;
+  &.open { transform: rotate(90deg); }
+}
+
+// Rows inside a collapsible card get side padding
+.dash-collapsible-card .dash-account-row,
+.dash-collapsible-card .dash-card-row,
+.dash-collapsible-card .dash-credit-bar-wrap { padding-left: 1.25rem; padding-right: 1.25rem; }
+
+// ── Toast notification ────────────────────────────────────────────────────────
+.dash-toast {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: $bank-navy;
+  color: #fff;
+  border-radius: 14px;
+  padding: 0.9rem 1rem 0.9rem 1.1rem;
+  box-shadow: 0 8px 32px rgba(36,59,115,0.35);
+  max-width: 340px;
+  animation: toast-slide-in 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+@keyframes toast-slide-in {
+  from { opacity: 0; transform: translateY(24px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+.dash-toast-icon { font-size: 1.5rem; flex-shrink: 0; }
+
+.dash-toast-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.dash-toast-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.dash-toast-sub {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.7);
+}
+
+.dash-toast-view {
+  flex-shrink: 0;
+  background: $bank-red;
+  color: #fff;
+  border: none;
+  border-radius: 36px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+  width: auto;
+  &:hover { background: $bank-blue-hover; }
+}
+
+.dash-toast-dismiss {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.6);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.2rem 0.3rem;
+  line-height: 1;
+  width: auto;
+  &:hover { color: #fff; }
+}
+
+// ── Nav unread badge ──────────────────────────────────────────────────────────
+.nav-insights-link { position: relative; }
+
+.nav-unread-badge {
+  position: absolute;
+  top: -2px;
+  right: -8px;
+  width: 8px;
+  height: 8px;
+  background: $bank-red;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+// ── Insights page (/insights route) ──────────────────────────────────────────
+.insights-page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+  color: #fff;
+}
+
+.insights-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.insights-page-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 0.3rem;
+}
+
+.insights-page-subtitle {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.88);
+  margin: 0;
+}
+
+.insights-loading-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.insights-loading-bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.insights-loading-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fff, $bank-red);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.insights-loading-label {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.9);
+  white-space: nowrap;
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.insight-card {
+  background: $bank-card;
+  color: $bank-text; // white card — dark text in both themes
+  border-radius: 12px;
+  padding: 1.4rem 1.4rem 1.1rem;
+  box-shadow: 0 4px 20px rgba(36,59,115,0.14);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  animation: insight-appear 0.35s ease both;
+  transition: box-shadow 0.2s, transform 0.2s;
+
+  &:hover { box-shadow: 0 8px 28px rgba(36,59,115,0.2); transform: translateY(-2px); }
+}
+
+.insight-card--appear { animation: insight-appear 0.35s ease both; }
+
+.insight-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.insight-card-icon {
+  font-size: 2rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.insight-card-message {
+  font-size: 0.97rem;
+  font-weight: 500;
+  color: $bank-text;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.insight-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.insight-card-expand {
+  background: transparent;
+  border: 1.5px solid rgba(36,59,115,0.25);
+  border-radius: 36px;
+  color: $bank-text;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.35rem 0.85rem;
+  cursor: pointer;
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: border-color 0.15s, color 0.15s;
+  &:hover { border-color: $bank-navy; color: $bank-text; }
+}
+
+.insight-chevron {
+  display: inline-block;
+  transition: transform 0.2s;
+  font-size: 1rem;
+  &.open { transform: rotate(90deg); }
+}
+
+.insight-card-cta {
+  background: $bank-red;
+  color: #fff;
+  border: 2px solid $bank-red;
+  border-radius: 36px;
+  padding: 0.4rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  transition: background 0.2s, border-color 0.2s;
+  &:hover { background: $bank-blue-hover; border-color: $bank-blue-hover; }
+}
+
+.insight-card-detail {
+  background: rgba(36,59,115,0.04);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
+
+.insight-card-prompt {
+  font-size: 0.88rem;
+  color: $bank-text;
+  line-height: 1.5;
+  margin: 0;
+}
+
+// Insight page skeleton cards
+.insight-card--skeleton {
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.insight-skeleton-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: $shimmer-base;
+  animation: shimmer 1.4s ease-in-out infinite alternate;
+}
+
+.insight-skeleton-lines { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
+
+.insight-skeleton-line {
+  height: 14px;
+  border-radius: 6px;
+  background: $shimmer-base;
+  animation: shimmer 1.4s ease-in-out infinite alternate;
+  &--wide    { width: 100%; }
+  &--mid     { width: 75%; }
+  &--narrow  { width: 45%; }
+}
+
+.insight-skeleton-btn {
+  width: 7rem;
+  height: 2rem;
+  border-radius: 36px;
+  background: $shimmer-base;
+  animation: shimmer 1.4s ease-in-out infinite alternate;
+  align-self: flex-end;
+}
+
+// Range tabs on the insights page live on a dark background — override to white palette
+.insights-page .dash-range-tab {
+  border-color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.85);
+  background: transparent;
+
+  &:hover {
+    border-color: rgba(255,255,255,0.7);
+    color: #fff;
+    background: rgba(255,255,255,0.08);
+  }
+
+  &.active {
+    background: #fff;
+    border-color: #fff;
+    color: $bank-navy;
+  }
+}
+
+@media (max-width: 640px) {
+  .insights-grid { grid-template-columns: 1fr; }
+  .insights-page-header { flex-direction: column; }
+  .dash-toast { right: 1rem; left: 1rem; max-width: none; bottom: 1rem; }
 }
