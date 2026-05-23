@@ -8,12 +8,17 @@ namespace AiAdvisor.Web.Hubs;
 
 [Authorize]
 public class ChatHub(
-    IAdvisorAgent advisorAgent,
+    IAgentsOrchestrator agentsOrchestrator,
     IMemoryCache memoryCache,
     ILogger<ChatHub> logger) : Hub
 {
     private static readonly Regex ThinkBlock = new(@"<think>[\s\S]*?</think>", RegexOptions.Compiled);
-    private const int MaxConversationHistory = 50; // Max messages to keep per user
+    private const int MaxConversationHistory = 50;
+
+    /// <summary>
+    /// Define which agents to use for chat - can be customized per message
+    /// </summary>
+    private static readonly AgentPipeline DefaultChatPipeline = AgentPipeline.ChatPipeline;
 
     public async Task SendMessage(string message)
     {
@@ -22,32 +27,72 @@ public class ChatHub(
         var userId = Context.UserIdentifier ?? "anonymous";
         var cacheKey = $"chat_history_{userId}";
 
-        // Get or create conversation history for this user
         if (!memoryCache.TryGetValue(cacheKey, out List<ConversationMessage>? conversationHistory))
         {
             conversationHistory = [];
             memoryCache.Set(cacheKey, conversationHistory, TimeSpan.FromHours(1));
         }
 
-        // Add user message to history
         conversationHistory.Add(ConversationMessage.User(message));
 
-        // Get AI response with full conversation context using both agents
-        // Agent 1 (Financial Data): Builds personalized system prompt
-        // Agent 2 (Advisor): Uses system prompt + chat service to provide advice
-        var raw = await advisorAgent.GetAdviceAsync(userId, message, conversationHistory, Context.ConnectionAborted);
+        // Execute agent pipeline: AdvisorAgent -> FinancialDocumentsSearchAgent
+        var raw = await agentsOrchestrator.ExecuteAgentPipelineAsync(
+            userId,
+            message,
+            conversationHistory,
+            DefaultChatPipeline,
+            Context.ConnectionAborted);
+
         var response = ThinkBlock.Replace(raw, string.Empty).Trim();
 
-        // Add AI response to history
         conversationHistory.Add(ConversationMessage.Assistant(response));
 
-        // Trim history if it gets too long
         if (conversationHistory.Count > MaxConversationHistory)
         {
             conversationHistory.RemoveRange(0, conversationHistory.Count - MaxConversationHistory);
         }
 
-        // Update cache with new conversation history
+        memoryCache.Set(cacheKey, conversationHistory, TimeSpan.FromHours(1));
+
+        await Clients.Caller.SendAsync("ReceiveMessage", response);
+    }
+
+    /// <summary>
+    /// Optional: Allow custom agent pipeline selection from client
+    /// </summary>
+    public async Task SendMessageWithPipeline(string message, AgentType[] agentTypes)
+    {
+        var pipeline = new AgentPipeline(agentTypes);
+        
+        logger.LogInformation("User {UserId} sent message with custom pipeline: {Agents}", Context.UserIdentifier, string.Join(",", agentTypes));
+
+        var userId = Context.UserIdentifier ?? "anonymous";
+        var cacheKey = $"chat_history_{userId}";
+
+        if (!memoryCache.TryGetValue(cacheKey, out List<ConversationMessage>? conversationHistory))
+        {
+            conversationHistory = [];
+            memoryCache.Set(cacheKey, conversationHistory, TimeSpan.FromHours(1));
+        }
+
+        conversationHistory.Add(ConversationMessage.User(message));
+
+        var raw = await agentsOrchestrator.ExecuteAgentPipelineAsync(
+            userId,
+            message,
+            conversationHistory,
+            pipeline,
+            Context.ConnectionAborted);
+
+        var response = ThinkBlock.Replace(raw, string.Empty).Trim();
+
+        conversationHistory.Add(ConversationMessage.Assistant(response));
+
+        if (conversationHistory.Count > MaxConversationHistory)
+        {
+            conversationHistory.RemoveRange(0, conversationHistory.Count - MaxConversationHistory);
+        }
+
         memoryCache.Set(cacheKey, conversationHistory, TimeSpan.FromHours(1));
 
         await Clients.Caller.SendAsync("ReceiveMessage", response);
@@ -55,7 +100,6 @@ public class ChatHub(
 
     public override Task OnDisconnectedAsync(Exception? exception)
     {
-        // Optional: Clean up conversation history on disconnect
         var userId = Context.UserIdentifier ?? "anonymous";
         var cacheKey = $"chat_history_{userId}";
         memoryCache.Remove(cacheKey);

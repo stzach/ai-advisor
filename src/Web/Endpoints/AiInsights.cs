@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AiAdvisor.Application.AiInsights.Queries.GetAiInsights;
-using AiAdvisor.Application.Common.Interfaces;
+using AiAdvisor.Infrastructure.AI;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace AiAdvisor.Web.Endpoints;
@@ -11,6 +11,7 @@ public class AiInsights : IEndpointGroup
     private static readonly JsonSerializerOptions CamelCase = new()
     {
         PropertyNamingPolicy        = JsonNamingPolicy.CamelCase,
+        PropertyNameCaseInsensitive = true,
         DefaultIgnoreCondition      = JsonIgnoreCondition.WhenWritingNull
     };
 
@@ -23,19 +24,25 @@ public class AiInsights : IEndpointGroup
     }
 
     [EndpointSummary("Get AI-generated financial insights for the current user")]
-    [EndpointDescription("Calls the insights agent which analyses the user's transactions and products via AI agents and returns a list of personalised insights.")]
-    public static async Task<Ok<List<InsightDto>>> GetAiInsights(ISender sender, DateTime from, DateTime to)
+    [EndpointDescription("Runs the insights AgentPipeline (InsightsAgent) and returns the parsed insights list.")]
+    public static async Task<Ok<List<InsightDto>>> GetAiInsights(IAgentsOrchestrator agentsOrchestrator, DateTime from, DateTime to, CancellationToken ct)
     {
-        var result = await sender.Send(new GetAiInsightsQuery(
-            new DateTimeOffset(from, TimeSpan.Zero),
-            new DateTimeOffset(to,   TimeSpan.Zero)
-        ));
-        return TypedResults.Ok(result);
+        var json = await agentsOrchestrator.ExecuteAgentPipelineAsync(
+            userId: string.Empty,
+            message: string.Empty,
+            conversationHistory: [],
+            pipeline: new AgentPipeline(AgentType.InsightsAgent),
+            ct: ct,
+            from: new DateTimeOffset(from, TimeSpan.Zero),
+            to:   new DateTimeOffset(to,   TimeSpan.Zero));
+
+        var insights = JsonSerializer.Deserialize<List<InsightDto>>(json, CamelCase) ?? [];
+        return TypedResults.Ok(insights);
     }
 
     public static async Task StreamAiInsights(
         HttpContext context,
-        IInsightsAgent insightsAgent,
+        IAgentsOrchestrator agentsOrchestrator,
         DateTime from,
         DateTime to,
         CancellationToken ct)
@@ -44,11 +51,18 @@ public class AiInsights : IEndpointGroup
         context.Response.Headers["Cache-Control"]     = "no-cache, no-store";
         context.Response.Headers["X-Accel-Buffering"] = "no";
 
-        await foreach (var insight in insightsAgent.StreamInsightsAsync(
-            new DateTimeOffset(from, TimeSpan.Zero),
-            new DateTimeOffset(to,   TimeSpan.Zero),
-            ct))
+        await foreach (var chunk in agentsOrchestrator.StreamAgentPipelineAsync(
+            userId: string.Empty,
+            message: string.Empty,
+            conversationHistory: [],
+            pipeline: AgentPipeline.InsightsPipeline,
+            ct: ct,
+            from: new DateTimeOffset(from, TimeSpan.Zero),
+            to:   new DateTimeOffset(to,   TimeSpan.Zero)))
         {
+            var insight = JsonSerializer.Deserialize<InsightDto>(chunk, CamelCase);
+            if (insight is null) continue;
+
             var data = JsonSerializer.Serialize(insight, CamelCase);
             await context.Response.WriteAsync($"data: {data}\n\n", ct);
             await context.Response.Body.FlushAsync(ct);
