@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/api-authorization/auth.service';
+import { InsightsService } from '../services/insights.service';
 
 @Component({
   standalone: false,
@@ -11,7 +12,11 @@ import { AuthService } from 'src/api-authorization/auth.service';
 export class NavMenuComponent {
   isAuthenticated$ = this.authService.isAuthenticated$;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    public insightsService: InsightsService
+  ) {}
 
   logout(event: Event): void {
     event.preventDefault();

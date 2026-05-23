@@ -10,6 +10,7 @@ import { ChartsModule } from '@progress/kendo-angular-charts';
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
+import { InsightsComponent } from './insights/insights.component';
 import { CounterComponent } from './counter/counter.component';
 import { WeatherComponent } from './weather/weather.component';
 import { TasksComponent } from './todo/todo.component';
@@ -42,6 +43,7 @@ export function getApiBaseUrl(): string {
         AppComponent,
         NavMenuComponent,
         HomeComponent,
+        InsightsComponent,
         CounterComponent,
         WeatherComponent,
         TasksComponent,
@@ -60,6 +62,7 @@ export function getApiBaseUrl(): string {
         LucideAngularModule.pick({ Sun, Moon, Laptop, Plus, Settings, MoreHorizontal }),
         RouterModule.forRoot([
             { path: '', component: HomeComponent, pathMatch: 'full', canActivate: [AuthGuard] },
+            { path: 'insights', component: InsightsComponent, canActivate: [AuthGuard] },
             { path: 'counter', component: CounterComponent },
             { path: 'weather', component: WeatherComponent, canActivate: [AuthGuard] },
             { path: 'todo', component: TasksComponent, canActivate: [AuthGuard] },

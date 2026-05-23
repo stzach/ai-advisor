@@ -1,0 +1,79 @@
+<div class="insights-page">
+
+  <div class="insights-page-header">
+    <div>
+      <h2 class="insights-page-title">
+        <span class="insights-page-icon">💡</span> Financial Insights
+        @if (insightsService.insightsLoading()) {
+          <span class="dash-insights-live-dot"></span>
+        }
+      </h2>
+      <p class="insights-page-subtitle">
+        {{ insightsService.rangeLabel(selectedRange) }} · Personalised financial advice based on your activity
+      </p>
+    </div>
+    <div class="dash-range-tabs">
+      <button class="dash-range-tab" [class.active]="selectedRange === 'month'"   (click)="setRange('month')">This Month</button>
+      <button class="dash-range-tab" [class.active]="selectedRange === '3months'" (click)="setRange('3months')">3M</button>
+      <button class="dash-range-tab" [class.active]="selectedRange === '6months'" (click)="setRange('6months')">6M</button>
+      <button class="dash-range-tab" [class.active]="selectedRange === 'year'"    (click)="setRange('year')">1Y</button>
+    </div>
+  </div>
+
+  @if (insightsService.insightsLoading()) {
+    <div class="insights-loading-bar-wrap">
+      <div class="insights-loading-bar">
+        <div class="insights-loading-bar-fill"
+          [style.width.%]="(insightsService.insights().length / 4) * 100">
+        </div>
+      </div>
+      <span class="insights-loading-label">
+        {{ insightsService.insights().length === 0 ? 'Analysing your finances…' : insightsService.insights().length + ' of 4 ready' }}
+      </span>
+    </div>
+  }
+
+  <div class="insights-grid">
+
+    @for (insight of insightsService.insights(); track insight.message; let i = $index) {
+      <div class="insight-card insight-card--appear" [class.insight-card--expanded]="expandedInsight === i">
+        <div class="insight-card-top">
+          <span class="insight-card-icon">{{ insight.icon }}</span>
+          <p class="insight-card-message">{{ insight.message }}</p>
+        </div>
+        <div class="insight-card-actions">
+          <button class="insight-card-expand" (click)="toggleInsight(i)">
+            {{ expandedInsight === i ? 'Less' : 'How?' }}
+            <span class="insight-chevron" [class.open]="expandedInsight === i">›</span>
+          </button>
+          <button class="insight-card-cta" (click)="chatHub.openWithPrompt(insight.prompt)">
+            {{ insight.cta }} →
+          </button>
+        </div>
+        @if (expandedInsight === i) {
+          <div class="insight-card-detail">
+            <p class="insight-card-prompt">{{ insight.prompt }}</p>
+          </div>
+        }
+      </div>
+    }
+
+    @for (i of insightsService.insightSkeletons(); track i) {
+      <div class="insight-card insight-card--skeleton">
+        <div class="insight-skeleton-icon"></div>
+        <div class="insight-skeleton-lines">
+          <div class="insight-skeleton-line insight-skeleton-line--wide"></div>
+          <div class="insight-skeleton-line insight-skeleton-line--mid"></div>
+          <div class="insight-skeleton-line insight-skeleton-line--narrow"></div>
+        </div>
+        <div class="insight-skeleton-btn"></div>
+      </div>
+    }
+
+  </div>
+
+  @if (!insightsService.insightsLoading() && !insightsService.insights().length) {
+    <p class="dash-empty" data-icon="💡">No insights available for this period.</p>
+  }
+
+</div>
