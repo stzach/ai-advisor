@@ -96,7 +96,7 @@ public class AdvisorAgent : IAdvisorAgent
         var financialData = await _financialDataAgent.BuildUserSystemPromptAsync(userId, from, to, ct);
 
         var systemPrompt = $"""
-                You are a concise AI financial advisor representing OMEGA Bank for a retail bank customer.
+                You are a concise AI financial advisor representing Epirus Bank for a retail bank customer.
                 You interact with a user through a chat interface, providing personalized financial advice, insights, and product recommendations based on the user's financial data, behavior, and needs.
 
 
