@@ -2459,3 +2459,37 @@ address, blockquote, dl, ol, p, pre, table, ul {
   .insights-page-header { flex-direction: column; }
   .dash-toast { right: 1rem; left: 1rem; max-width: none; bottom: 1rem; }
 }
+
+// ── Chat bubble colours (Kendo v13 uses .k-message-group-sender, not .k-alt) ──
+// User / sender messages — dark navy on the right
+.k-message-group-sender .k-bubble {
+  background: $bank-navy !important;
+  border-color: $bank-navy !important;
+  color: #fff !important;
+}
+
+// Bot / AI messages — soft periwinkle on the left
+.k-message-group:not(.k-message-group-sender) .k-bubble {
+  background: #d6e0f5 !important;
+  border-color: #d6e0f5 !important;
+  color: $bank-navy !important;
+}
+
+// Ensure inline elements inside bubbles inherit the bubble text colour
+// (beats the Pico `p, ul { color: black !important }` reset)
+.k-message-group-sender .k-bubble p,
+.k-message-group-sender .k-bubble span,
+.k-message-group-sender .k-bubble div,
+.k-message-group-sender .k-bubble ul,
+.k-message-group-sender .k-bubble li,
+.k-message-group-sender .k-bubble strong,
+.k-message-group-sender .k-bubble em,
+.k-message-group-sender .k-bubble a,
+.k-message-group:not(.k-message-group-sender) .k-bubble p,
+.k-message-group:not(.k-message-group-sender) .k-bubble span,
+.k-message-group:not(.k-message-group-sender) .k-bubble div,
+.k-message-group:not(.k-message-group-sender) .k-bubble ul,
+.k-message-group:not(.k-message-group-sender) .k-bubble li,
+.k-message-group:not(.k-message-group-sender) .k-bubble strong,
+.k-message-group:not(.k-message-group-sender) .k-bubble em,
+.k-message-group:not(.k-message-group-sender) .k-bubble a { color: inherit !important; }
