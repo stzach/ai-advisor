@@ -80,7 +80,7 @@ public class FinancialDocumentsSearchAgent : IFinancialDocumentsSearchAgent
 
         var response = await _chatService.SendAsync(userMessage, systemPrompt, cancellationToken);
 
-        _logger.LogInformation("Received insights response for user {UserId} \n\n Response: \n{Response}", userId, response);
+        _logger.LogInformation("Received financial document search query response for user {UserId} \n\n Response: \n{Response}", userId, response);
 
         return Search(response);
     }

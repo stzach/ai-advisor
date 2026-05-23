@@ -44,7 +44,7 @@ public class InsightsAgent : IInsightsAgent
 
         var response = await _chatService.SendAsync(userMessage, systemPrompt, cancellationToken);
 
-        _logger.LogInformation("Received insights response for user {UserId}", userId);
+        _logger.LogInformation("Received insights response \n\n Response: \n{Response}", response);
 
         return ParseInsights(response);
     }

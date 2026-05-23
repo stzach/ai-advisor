@@ -104,7 +104,7 @@ public class ProductRecomendationAgent :IProductRecomendationAgent
 
         var response = await _chatService.SendAsync(userMessage, systemPrompt, cancellationToken);
 
-        _logger.LogInformation("Received insights response for user {UserId} \n\n Response: \n{Response}", userId, response);
+        _logger.LogInformation("Received product recommendation response for user {UserId} \n\n Response: \n{Response}", userId, response);
 
         return ParseResult(response);
     }
