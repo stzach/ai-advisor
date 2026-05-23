@@ -5,6 +5,14 @@
     </ul>
     <ul>
       @if (isAuthenticated$ | async) {
+        <li>
+          <a [routerLink]="['/insights']" [routerLinkActive]="['pico-active']" class="nav-insights-link">
+            Insights
+            @if (insightsService.hasUnread()) {
+              <span class="nav-unread-badge"></span>
+            }
+          </a>
+        </li>
         <li><a [routerLink]="['/chat']" [routerLinkActive]="['pico-active']">Chat</a></li>
       }
     </ul>
