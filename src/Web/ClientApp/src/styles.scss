@@ -533,44 +533,262 @@ app-chat {
   font-size: 1rem;
 }
 
+// ── Advisor collapsible card ──────────────────────────────────────────────────
+.dash-advisor-card {
+  background:    #ffffff;
+  border:        1.5px solid rgba(36, 59, 115, 0.14);
+  border-radius: 1rem;
+  margin-top:    0;
+  overflow:      hidden;
+  box-shadow:    0 4px 20px rgba(26, 50, 96, 0.12);
+  transition:    box-shadow 0.2s ease;
+
+  &.expanded {
+    box-shadow: 0 8px 32px rgba(26, 50, 96, 0.16);
+  }
+}
+
+.dash-advisor-header {
+  display:         flex !important;
+  align-items:     center;
+  justify-content: space-between;
+  width:           100%;
+  padding:         0.9rem 1.25rem !important;
+  background:      transparent !important;
+  border:          none !important;
+  border-radius:   0 !important;
+  box-shadow:      none !important;
+  cursor:          pointer;
+  gap:             1rem;
+  margin:          0 !important;
+  transition:      background 0.15s ease;
+
+  &:hover { background: rgba(26, 50, 96, 0.04) !important; }
+}
+
+.dash-advisor-header-left {
+  display:     flex;
+  align-items: center;
+  gap:         0.65rem;
+}
+
+.dash-advisor-icon {
+  font-size:   1.4rem;
+  line-height: 1;
+}
+
+.dash-advisor-title {
+  font-family: "Outfit", sans-serif;
+  font-size:   1.05rem;
+  font-weight: 700;
+  color:       $bank-navy;
+}
+
+.dash-advisor-loading-text {
+  font-size:  0.82rem;
+  color:      $bank-text-muted;
+  font-style: italic;
+}
+
+.dash-advisor-ready-text {
+  font-size:        0.8rem;
+  color:            $bank-navy;
+  background:       rgba(26, 50, 96, 0.08);
+  border-radius:    2rem;
+  padding:          0.15rem 0.6rem;
+  font-weight:      600;
+}
+
+.dash-advisor-chevron {
+  font-size:        1.4rem;
+  color:            $bank-text-muted;
+  transition:       transform 0.25s ease;
+  display:          inline-block;
+  line-height:      1;
+
+  &.open { transform: rotate(90deg); }
+}
+
+.dash-advisor-body {
+  background: linear-gradient(160deg, #e8eeff 0%, #dce6ff 100%);
+  padding:    1rem 1.25rem 1.25rem;
+  border-top: 1px solid rgba(36, 59, 115, 0.1);
+  display:    flex;
+  flex-direction: column;
+}
+
+// ── Insight detail modal ──────────────────────────────────────────────────────
+// Fully self-contained — overrides the tx-modal dark-navy base completely
+.insight-detail-modal {
+  max-width:     640px !important;
+  background:    #ffffff !important;
+  padding:       0 !important;
+  gap:           0 !important;
+  overflow:      hidden;
+  border-radius: 18px !important;
+  box-shadow:    0 24px 60px rgba(0, 0, 0, 0.4) !important;
+
+  // Navy header bar
+  .tx-modal-header {
+    background:     $bank-navy !important;
+    padding:        1.25rem 1.5rem !important;
+    border-bottom:  none;
+    border-radius:  0 !important;
+  }
+
+  .tx-modal-title {
+    font-size:   1.05rem !important;
+    font-weight: 600 !important;
+    color:       #ffffff !important;
+  }
+
+  .tx-modal-close {
+    color:   rgba(255, 255, 255, 0.65) !important;
+    font-size: 1.2rem !important;
+    &:hover { color: #ffffff !important; }
+  }
+}
+
+.insight-modal-orb {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  width:           80px;
+  height:          80px;
+  border-radius:   50%;
+  font-size:       2.5rem;
+  line-height:     1;
+  flex-shrink:     0;
+
+  &[data-cat='earn']     { background: radial-gradient(circle at 38% 32%, #E8F5E9, #A5D6A7); }
+  &[data-cat='optimise'] { background: radial-gradient(circle at 38% 32%, #EEF2FF, #A5B4FC); }
+  &[data-cat='review']   { background: radial-gradient(circle at 38% 32%, #FFFBEB, #FCD34D); }
+}
+
+.insight-modal-body {
+  padding:        1.75rem;
+  display:        flex;
+  flex-direction: column;
+  gap:            1.4rem;
+  background:     #ffffff;
+}
+
+.insight-modal-hero {
+  display:     flex;
+  align-items: flex-start;
+  gap:         1.25rem;
+}
+
+.insight-modal-hero-text {
+  display:        flex;
+  flex-direction: column;
+  gap:            0.5rem;
+  flex:           1;
+}
+
+.insight-modal-title {
+  font-family:  "Outfit", sans-serif;
+  font-size:    1.3rem !important;
+  font-weight:  700 !important;
+  color:        $bank-navy !important;
+  margin:       0 !important;
+  line-height:  1.25;
+}
+
+.insight-modal-message {
+  font-size:   1rem !important;
+  color:       #374151 !important;
+  line-height: 1.65 !important;
+  margin:      0 !important;
+}
+
+.insight-modal-prompt-block {
+  background:    #eef2ff;
+  border-left:   4px solid $bank-navy;
+  border-radius: 0 10px 10px 0;
+  padding:       1rem 1.25rem;
+}
+
+.insight-modal-prompt-label {
+  display:        block;
+  font-size:      0.68rem !important;
+  font-weight:    800 !important;
+  color:          $bank-navy !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom:  0.4rem;
+}
+
+.insight-modal-prompt {
+  font-size:   0.95rem !important;
+  color:       #1e293b !important;
+  margin:      0 !important;
+  line-height: 1.6 !important;
+  font-style:  italic;
+}
+
+.insight-modal-cta {
+  display:        block;
+  width:          100%;
+  padding:        1rem 1.5rem;
+  background:     $bank-navy;
+  color:          #ffffff !important;
+  border:         none;
+  border-radius:  10px;
+  font-size:      1rem;
+  font-weight:    700;
+  cursor:         pointer;
+  transition:     background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  text-align:     center;
+  letter-spacing: 0.03em;
+
+  &:hover {
+    background: darken($bank-navy, 10%);
+    transform:  translateY(-2px);
+    box-shadow: 0 8px 24px rgba(36, 59, 115, 0.38);
+  }
+}
+
 // ── AI Insights hero (image left, cards right) ────────────────────────────────
 .dash-insights-hero {
   display:     flex;
-  align-items: center;
-  gap:         2.5rem;
-  margin-top:  2rem;
+  align-items: stretch;
+  gap:         1.25rem;
+  margin-top:  0;
 }
 
 .dash-ai-image-col {
-  flex:            0 0 240px;
+  flex:            0 0 140px;
   display:         flex;
   align-items:     center;
   justify-content: center;
 }
 
 .dash-ai-illustration {
-  width:      100%;
-  max-width:  240px;
-  height:     auto;
-  // slight drop-shadow so it pops on the dark background
-  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.25));
+  width:      140px;
+  height:     140px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.2));
 }
 
 .dash-ai-cards-col {
   flex:      1;
-  min-width: 0;   // allow flex child to shrink below content size (enables scroll)
+  min-width: 0;
+  display:   flex;
+  align-items: stretch;
 }
 
 @media (max-width: 900px) {
-  .dash-insights-hero { flex-direction: column; gap: 1.5rem; }
+  .dash-insights-hero { flex-direction: column; gap: 1rem; align-items: center; }
   .dash-ai-image-col  { flex: none; }
-  .dash-ai-illustration { max-width: 160px; }
+  .dash-ai-illustration { width: 100px; height: 100px; }
 }
 
 .dash-main-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
+  margin-top: 1.25rem;
   margin-bottom: 1.25rem;
 
   @media (max-width: 768px) { grid-template-columns: 1fr; }
@@ -2349,7 +2567,7 @@ address, blockquote, dl, ol, p, pre, table, ul {
 
 .insight-card {
   background: $bank-card;
-  color: $bank-text;
+  color: $bank-navy !important;
   border-radius: 16px;
   padding: 1.5rem 1.4rem 1.2rem;
   box-shadow: 0 2px 12px rgba(36,59,115,0.08);
@@ -2417,7 +2635,7 @@ address, blockquote, dl, ol, p, pre, table, ul {
 .insight-card-title {
   font-size: 1rem;
   font-weight: 700;
-  color: $bank-text;
+  color: $bank-navy !important;
   margin: 0;
   line-height: 1.25;
 }
@@ -2440,7 +2658,7 @@ address, blockquote, dl, ol, p, pre, table, ul {
 .insight-card-message {
   font-size: 0.96rem;
   font-weight: 500;
-  color: $bank-text;
+  color: #374151 !important;
   line-height: 1.55;
   margin: 0;
   padding-top: 0.2rem;
@@ -2458,7 +2676,7 @@ address, blockquote, dl, ol, p, pre, table, ul {
   background: transparent;
   border: 1.5px solid rgba(36,59,115,0.2);
   border-radius: 36px;
-  color: $bank-text-muted;
+  color: $bank-text-muted !important;
   font-size: 0.8rem;
   font-weight: 600;
   padding: 0.35rem 0.85rem;
@@ -2515,12 +2733,12 @@ address, blockquote, dl, ol, p, pre, table, ul {
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: $bank-navy;
+  color: $bank-navy !important;
 }
 
 .insight-card-prompt {
   font-size: 0.88rem;
-  color: $bank-text;
+  color: #374151 !important;
   line-height: 1.5;
   margin: 0;
   font-style: italic;

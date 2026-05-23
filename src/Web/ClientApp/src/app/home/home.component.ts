@@ -7,7 +7,7 @@ import { map, startWith, switchMap, catchError, shareReplay } from 'rxjs/operato
 import { Inject } from '@angular/core';
 
 import { ChatHubService } from '../services/chat-hub.service';
-import { InsightsService } from '../services/insights.service';
+import { InsightsService, InsightDto } from '../services/insights.service';
 import { UserProductsClient, UserProductDto, UserTransactionsClient, UserTransactionDto, UsersClient } from '../web-api-client';
 import { API_BASE_URL } from '../web-api-client';
 
@@ -47,6 +47,20 @@ export class HomeComponent {
   netWorth:        Signal<number>;
   productRecommendations: Signal<ProductRecommendationDto[]>;
   isLoadingRecommendations = true;
+
+  // ── Advisor collapsible card ──────────────────────────────────────────────
+  advisorExpanded = signal(false);
+
+  // ── Insight detail modal ──────────────────────────────────────────────────
+  selectedInsight = signal<InsightDto | null>(null);
+
+  openInsightModal(insight: InsightDto): void {
+    this.selectedInsight.set(insight);
+  }
+
+  closeInsightModal(): void {
+    this.selectedInsight.set(null);
+  }
 
   // ── Toast ──────────────────────────────────────────────────────────────────
   showToast = signal(false);
@@ -150,6 +164,15 @@ export class HomeComponent {
         this.showToast.set(true);
         if (this._toastTimer) clearTimeout(this._toastTimer);
         this._toastTimer = setTimeout(() => this.showToast.set(false), 5000);
+      }
+    });
+
+    // Auto-expand advisor card when insights finish loading
+    effect(() => {
+      const loading = this.insightsService.insightsLoading();
+      const count   = this.insightsService.insights().length;
+      if (!loading && count > 0) {
+        this.advisorExpanded.set(true);
       }
     });
   }
