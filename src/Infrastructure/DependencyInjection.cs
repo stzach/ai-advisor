@@ -115,5 +115,8 @@ public static class DependencyInjection
 
         builder.Services.AddScoped<IFinancialDocumentsSearchAgent, FinancialDocumentsSearchAgent>();
         builder.Services.AddScoped<IProductRecomendationAgent, ProductRecomendationAgent>();
+
+        // Agents Orchestrator - coordinates all agents
+        builder.Services.AddScoped<IAgentsOrchestrator, AgentsOrchestrator>();
     }
 }
