@@ -99,6 +99,7 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
         await UpsertUserAsync("billGates",    "plousios@gmail.com",          "Bill",         "Gates",       "Asdf135!");
         await UpsertUserAsync("demouser1",   "demouser1@demo.com",           "Demo",         "User",        "Asdf135!", userAge: 55);
         await UpsertUserAsync("demouser2",   "demouser2@demo.com",           "Demo",         "User 2",      "Asdf135!", userAge: 28);
+        await UpsertUserAsync("demouser3",   "demouser3@gmail.com",          "Demo",         "User3",       "Asdf135!", userAge: 45);
 
 
 
@@ -263,6 +264,19 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
             {
                 new() { UserId = demouser2.Id, ProductId = CurrentAccId, AvailableBalance = 2238.64m, AccountNumber = "GR13 9900 1122 3344 5566 7788 003", IsActive = true },
                 new() { UserId = demouser2.Id, ProductId = VisaDebitId,  AvailableBalance =    0.00m, CardNumber    = "4111 2233 4455 6688",                IsActive = true },
+            });
+        }
+
+        var demouser3 = await _userManager.FindByNameAsync("demouser3");
+        if (demouser3 is not null)
+        {
+            await UpsertUserProductsAsync(demouser3.Id, new List<UserProduct>
+            {
+                new() { UserId = demouser3.Id, ProductId = CurrentAccId,   AvailableBalance =   5672.00m, AccountNumber = "GR13 9900 1122 3344 5566 7788 004", IsActive = true },
+                new() { UserId = demouser3.Id, ProductId = SavingAccId,    AvailableBalance =  20000.00m, AccountNumber = "GR13 9900 1122 3344 5566 7788 005", IsActive = true },
+                new() { UserId = demouser3.Id, ProductId = MastercardId,   AvailableBalance =   2400.00m, CardNumber    = "4111 2233 4455 6699",                IsActive = true, CreditLimit = 5000m },
+                new() { UserId = demouser3.Id, ProductId = MortgageLoanId, AvailableBalance = 146782.00m, AccountNumber = "GR13 9900 1122 3344 5566 7788 006", IsActive = true },
+                new() { UserId = demouser3.Id, ProductId = PersonalLoanId, AvailableBalance =   6580.00m, AccountNumber = "GR13 9900 1122 3344 5566 7788 007", IsActive = true },
             });
         }
 
@@ -674,6 +688,39 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
                 (CurrentAccId, "GR13 9900 1122 3344 5566 7788 003", "Spotify",                            TransactionType.Payment,  TransactionCategory.Entertainment, TransactionDirection.Outgoing,    -9.99m, 28),
             };
             var r = GenerateMonthlyTransactions(demouser2Txn.Id, "txn-d2", tpl);
+            await UpsertTransactionsAsync(r.Transactions);
+            foreach (var kv in r.Dates) allGeneratedDates[kv.Key] = kv.Value;
+        }
+
+        var demouser3Txn = await _userManager.FindByNameAsync("demouser3");
+        if (demouser3Txn is not null)
+        {
+            var tpl = new (Guid, string?, string?, TransactionType, TransactionCategory, TransactionDirection, decimal, int)[]
+            {
+                // Day  1 — monthly salary
+                (CurrentAccId,    "Employer GR",                        "GR13 9900 1122 3344 5566 7788 004", TransactionType.Transfer, TransactionCategory.Other,         TransactionDirection.Incoming,  3800.00m,  1),
+                // Day  5 — mortgage repayment
+                (MortgageLoanId,  "GR13 9900 1122 3344 5566 7788 004", "Mortgage Servicer",                  TransactionType.Loan,     TransactionCategory.Housing,       TransactionDirection.Outgoing,  -870.00m,  5),
+                // Day  5 — personal loan repayment
+                (PersonalLoanId,  "GR13 9900 1122 3344 5566 7788 004", "Personal Finance",                   TransactionType.Loan,     TransactionCategory.Other,         TransactionDirection.Outgoing,  -200.00m,  5),
+                // Day  8 — weekly grocery shop
+                (MastercardId,    "4111 2233 4455 6699",                "Sklavenitis",                        TransactionType.Payment,  TransactionCategory.Food,          TransactionDirection.Outgoing,  -220.00m,  8),
+                // Day 10 — electricity bill
+                (CurrentAccId,    "GR13 9900 1122 3344 5566 7788 004", "DEI Electric",                       TransactionType.Payment,  TransactionCategory.Utilities,     TransactionDirection.Outgoing,   -95.00m, 10),
+                // Day 15 — phone & internet
+                (CurrentAccId,    "GR13 9900 1122 3344 5566 7788 004", "COSMOTE",                            TransactionType.Payment,  TransactionCategory.Utilities,     TransactionDirection.Outgoing,   -45.00m, 15),
+                // Day 17 — petrol
+                (MastercardId,    "4111 2233 4455 6699",                "BP Petrol",                          TransactionType.Payment,  TransactionCategory.Transport,     TransactionDirection.Outgoing,   -80.00m, 17),
+                // Day 20 — streaming subscription
+                (MastercardId,    "4111 2233 4455 6699",                "Netflix",                            TransactionType.Payment,  TransactionCategory.Entertainment, TransactionDirection.Outgoing,   -15.99m, 20),
+                // Day 22 — transfer to savings (outgoing leg)
+                (CurrentAccId,    "GR13 9900 1122 3344 5566 7788 004", "GR13 9900 1122 3344 5566 7788 005", TransactionType.Transfer, TransactionCategory.Other,         TransactionDirection.Outgoing,  -300.00m, 22),
+                // Day 22 — transfer to savings (incoming leg)
+                (SavingAccId,     "GR13 9900 1122 3344 5566 7788 004", "GR13 9900 1122 3344 5566 7788 005", TransactionType.Transfer, TransactionCategory.Other,         TransactionDirection.Incoming,   300.00m, 22),
+                // Day 25 — dining out
+                (MastercardId,    "4111 2233 4455 6699",                "Restaurant",                         TransactionType.Payment,  TransactionCategory.Food,          TransactionDirection.Outgoing,   -65.00m, 25),
+            };
+            var r = GenerateMonthlyTransactions(demouser3Txn.Id, "txn-d3", tpl);
             await UpsertTransactionsAsync(r.Transactions);
             foreach (var kv in r.Dates) allGeneratedDates[kv.Key] = kv.Value;
         }
