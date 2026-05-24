@@ -1,7 +1,7 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, output } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { InsightCardComponent } from './insight-card.component';
-import { InsightsService } from '../../services/insights.service';
+import { InsightsService, InsightDto } from '../../services/insights.service';
 import { DashboardInsight } from './insights-row.types';
 
 @Component({
@@ -18,6 +18,8 @@ export class InsightsRowComponent {
   loading   = this.svc.insightsLoading;
   skeletons = this.svc.insightSkeletons;
 
+  insightSelected = output<InsightDto>();
+
   cards = computed<DashboardInsight[]>(() =>
     this.svc.insights().map(ins => ({
       id:       ins.title.toLowerCase().replace(/\s+/g, '-'),
@@ -29,12 +31,6 @@ export class InsightsRowComponent {
   );
 
   onCtaClick(index: number): void {
-    this.router.navigate(['/insights'], {
-      state: {
-        insights:       this.svc.insights(),
-        range:          this.svc.activeRange(),
-        highlightIndex: index,
-      },
-    });
+    this.insightSelected.emit(this.svc.insights()[index]);
   }
 }

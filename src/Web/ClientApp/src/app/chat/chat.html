@@ -19,7 +19,19 @@
     (executeAction)="executeAction($event)"
   >
     <ng-template kendoChatReceiverMessageContentTemplate let-message>
-      <div [innerHTML]="message.text | markdown"></div>
+      @if (message.isEscalation) {
+        <p class="escalation-text">{{ message.text }}</p>
+        <div class="escalation-actions">
+          <a href="tel:+302111049960" class="escalation-btn escalation-btn--call">
+            📞 Call us now
+          </a>
+          <a href="https://www.epirusbank.com/network" target="_blank" rel="noopener noreferrer" class="escalation-btn escalation-btn--book">
+            📅 Book an appointment
+          </a>
+        </div>
+      } @else {
+        <div [innerHTML]="message.text | markdown"></div>
+      }
     </ng-template>
   </kendo-chat>
 </div>

@@ -14,7 +14,7 @@ export class ChatHubService {
 
     isOpen$ = new BehaviorSubject<boolean>(false);
 
-    private msgId     = 0;
+    private msgId  = 0;
     private botReplies = 0;
     private reset$   = new Subject<void>();
     private local$   = new Subject<Message>();
@@ -51,11 +51,8 @@ export class ChatHubService {
                     author: this.bot,
                     text: 'Would you like to speak with someone from our team?',
                     timestamp: new Date(),
-                    suggestedActions: [
-                        { type: 'openUrl', title: 'Book an appointment', value: '/appointments' },
-                        { type: 'reply',   title: 'Call us now',         value: 'I\'d like to call the call center' }
-                    ] as Action[]
-                } as Message);
+                    isEscalation: true
+                } as any);
             }
         });
 

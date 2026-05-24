@@ -1,11 +1,9 @@
 <div class="card-wrapper" role="listitem" [style.--orb-delay.ms]="animDelay()">
-  <div class="card">
+  <div class="card" (click)="ctaClick.emit()" role="button" tabindex="0" (keyup.enter)="ctaClick.emit()">
     <div class="card-orb-wrap">
       <app-insight-orb [category]="insight().category" [icon]="insight().icon" />
     </div>
     <span class="card-tag">{{ insight().tag }}</span>
-    <button class="card-cta" (click)="ctaClick.emit()">
-      {{ insight().cta }}
-    </button>
+    <span class="card-cta">{{ insight().cta }}</span>
   </div>
 </div>

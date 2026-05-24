@@ -11,18 +11,37 @@
         <span class="dash-net-worth-label">Total Balance</span>
         <span class="dash-net-worth-value">€{{ netWorth() | number:'1.2-2' }}</span>
       </div>
-      <button class="dash-new-tx-btn" (click)="openModal()">+ New Transaction</button>
+      <button type="button" class="dash-new-tx-btn" (click)="openModal()">+ New Transaction</button>
     </div>
   </div>
 
-  <!-- AI Insights hero: image left, streaming cards right -->
-  <div class="dash-insights-hero">
-    <div class="dash-ai-image-col">
-      <img src="assets/ai-advisor.png" alt="AI Financial Advisor" class="dash-ai-illustration" />
-    </div>
-    <div class="dash-ai-cards-col">
-      <app-insights-row />
-    </div>
+  <!-- AI Advisor collapsible card -->
+  <div class="dash-advisor-card" [class.expanded]="advisorExpanded()">
+    <button type="button" class="dash-advisor-header" (click)="advisorExpanded.set(!advisorExpanded())" aria-expanded="{{ advisorExpanded() }}">
+      <span class="dash-advisor-header-left">
+        <span class="dash-advisor-icon">🧠</span>
+        <span class="dash-advisor-title">Financial Advisor</span>
+        @if (insightsService.insightsLoading()) {
+          <span class="dash-advisor-loading-text">Analysing your finances…</span>
+          <span class="dash-insights-live-dot"></span>
+        } @else if (insightsService.insights().length > 0) {
+          <span class="dash-advisor-ready-text">{{ insightsService.insights().length }} insights ready</span>
+        }
+      </span>
+      <span class="dash-advisor-chevron" [class.open]="advisorExpanded()">›</span>
+    </button>
+    @if (advisorExpanded()) {
+      <div class="dash-advisor-body">
+        <div class="dash-insights-hero">
+          <div class="dash-ai-image-col">
+            <img src="assets/ai-advisor.png" alt="AI Financial Advisor" class="dash-ai-illustration" />
+          </div>
+          <div class="dash-ai-cards-col">
+            <app-insights-row (insightSelected)="openInsightModal($event)" />
+          </div>
+        </div>
+      </div>
+    }
   </div>
 
   <div class="dash-main-grid">
@@ -86,7 +105,7 @@
 
       <!-- Accounts — collapsible -->
       <div class="dash-card dash-collapsible-card">
-        <button class="dash-collapse-header" (click)="accountsExpanded.set(!accountsExpanded())" aria-expanded="{{ accountsExpanded() }}">
+        <button type="button" class="dash-collapse-header" (click)="accountsExpanded.set(!accountsExpanded())" aria-expanded="{{ accountsExpanded() }}">
           <span class="dash-collapse-left">
             <span class="dash-card-title-icon">🏦</span>
             <span class="dash-collapse-title">Accounts</span>
@@ -109,7 +128,7 @@
 
       <!-- Cards — collapsible -->
       <div class="dash-card dash-collapsible-card">
-        <button class="dash-collapse-header" (click)="cardsExpanded.set(!cardsExpanded())" aria-expanded="{{ cardsExpanded() }}">
+        <button type="button" class="dash-collapse-header" (click)="cardsExpanded.set(!cardsExpanded())" aria-expanded="{{ cardsExpanded() }}">
           <span class="dash-collapse-left">
             <span class="dash-card-title-icon">💳</span>
             <span class="dash-collapse-title">Cards</span>
@@ -148,7 +167,7 @@
       <!-- Loans — collapsible, only if present -->
       @if (loans().length) {
         <div class="dash-card dash-collapsible-card">
-          <button class="dash-collapse-header" (click)="loansExpanded.set(!loansExpanded())" aria-expanded="{{ loansExpanded() }}">
+          <button type="button" class="dash-collapse-header" (click)="loansExpanded.set(!loansExpanded())" aria-expanded="{{ loansExpanded() }}">
             <span class="dash-collapse-left">
               <span class="dash-card-title-icon">📋</span>
               <span class="dash-collapse-title">Loans</span>
@@ -197,10 +216,10 @@
     <div class="dash-tx-header">
       <h3 class="dash-card-title"><span class="dash-card-title-icon">💸</span> Transactions · {{ rangeLabel() }}</h3>
       <div class="dash-range-tabs">
-        <button class="dash-range-tab" [class.active]="selectedRange === 'month'"   (click)="setRange('month')">This Month</button>
-        <button class="dash-range-tab" [class.active]="selectedRange === '3months'" (click)="setRange('3months')">3M</button>
-        <button class="dash-range-tab" [class.active]="selectedRange === '6months'" (click)="setRange('6months')">6M</button>
-        <button class="dash-range-tab" [class.active]="selectedRange === 'year'"    (click)="setRange('year')">1Y</button>
+        <button type="button" class="dash-range-tab" [class.active]="selectedRange === 'month'"   (click)="setRange('month')">This Month</button>
+        <button type="button" class="dash-range-tab" [class.active]="selectedRange === '3months'" (click)="setRange('3months')">3M</button>
+        <button type="button" class="dash-range-tab" [class.active]="selectedRange === '6months'" (click)="setRange('6months')">6M</button>
+        <button type="button" class="dash-range-tab" [class.active]="selectedRange === 'year'"    (click)="setRange('year')">1Y</button>
       </div>
     </div>
 
@@ -216,10 +235,10 @@
         />
       </div>
       <div class="dash-tx-filter-tabs">
-        <button class="dash-tx-filter-tab" [class.active]="txTypeFilter() === 'all'"      (click)="setTxFilter('all')">All</button>
-        <button class="dash-tx-filter-tab" [class.active]="txTypeFilter() === 'Payment'"  (click)="setTxFilter('Payment')">Payments</button>
-        <button class="dash-tx-filter-tab" [class.active]="txTypeFilter() === 'Transfer'" (click)="setTxFilter('Transfer')">Transfers</button>
-        <button class="dash-tx-filter-tab" [class.active]="txTypeFilter() === 'Loan'"     (click)="setTxFilter('Loan')">Loans</button>
+        <button type="button" class="dash-tx-filter-tab" [class.active]="txTypeFilter() === 'all'"      (click)="setTxFilter('all')">All</button>
+        <button type="button" class="dash-tx-filter-tab" [class.active]="txTypeFilter() === 'Payment'"  (click)="setTxFilter('Payment')">Payments</button>
+        <button type="button" class="dash-tx-filter-tab" [class.active]="txTypeFilter() === 'Transfer'" (click)="setTxFilter('Transfer')">Transfers</button>
+        <button type="button" class="dash-tx-filter-tab" [class.active]="txTypeFilter() === 'Loan'"     (click)="setTxFilter('Loan')">Loans</button>
       </div>
     </div>
 
@@ -252,7 +271,7 @@
     }
 
     @if (hasMoreTransactions()) {
-      <button class="dash-load-more-btn" (click)="loadMoreTransactions()">
+      <button type="button" class="dash-load-more-btn" (click)="loadMoreTransactions()">
         Load {{ nextBatchSize() }} more
       </button>
     }
@@ -395,8 +414,42 @@
       <strong class="dash-toast-title">Your insights are ready</strong>
       <span class="dash-toast-sub">{{ insightsService.insights().length }} personalised tip{{ insightsService.insights().length !== 1 ? 's' : '' }} from your AI advisor</span>
     </div>
-    <button class="dash-toast-view" (click)="goToInsights()">View →</button>
-    <button class="dash-toast-dismiss" (click)="dismissToast()" aria-label="Dismiss">✕</button>
+    <button type="button" class="dash-toast-view" (click)="goToInsights()">View →</button>
+    <button type="button" class="dash-toast-dismiss" (click)="dismissToast()" aria-label="Dismiss">✕</button>
+  </div>
+}
+
+@if (selectedInsight()) {
+  <div class="tx-modal-overlay" (click)="closeInsightModal()">
+    <div class="tx-modal insight-detail-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+
+      <div class="tx-modal-header">
+        <span class="tx-modal-title">Financial Insight</span>
+        <button type="button" class="tx-modal-close" (click)="closeInsightModal()" aria-label="Close">✕</button>
+      </div>
+
+      <div class="insight-modal-body">
+        <div class="insight-modal-hero">
+          <div class="insight-modal-orb" [attr.data-cat]="selectedInsight()!.category">
+            {{ selectedInsight()!.icon }}
+          </div>
+          <div class="insight-modal-hero-text">
+            <p class="insight-modal-title">{{ selectedInsight()!.title }}</p>
+            <p class="insight-modal-message">{{ selectedInsight()!.message }}</p>
+          </div>
+        </div>
+
+        <div class="insight-modal-prompt-block">
+          <span class="insight-modal-prompt-label">Suggested question for your advisor</span>
+          <p class="insight-modal-prompt">"{{ selectedInsight()!.prompt }}"</p>
+        </div>
+
+        <button type="button" class="insight-modal-cta" (click)="chatHub.openWithPrompt(selectedInsight()!.prompt); closeInsightModal()">
+          {{ selectedInsight()!.cta }} →
+        </button>
+      </div>
+
+    </div>
   </div>
 }
 
@@ -406,12 +459,12 @@
 
       <div class="tx-modal-header">
         <span class="tx-modal-title">New Transaction</span>
-        <button class="tx-modal-close" (click)="closeModal()" aria-label="Close">✕</button>
+        <button type="button" class="tx-modal-close" (click)="closeModal()" aria-label="Close">✕</button>
       </div>
 
       <div class="tx-tabs">
-        <button class="tx-tab" [class.active]="modalTab === 'payment'"  (click)="modalTab = 'payment'">Payment</button>
-        <button class="tx-tab" [class.active]="modalTab === 'transfer'" (click)="modalTab = 'transfer'">Transfer</button>
+        <button type="button" class="tx-tab" [class.active]="modalTab === 'payment'"  (click)="modalTab = 'payment'">Payment</button>
+        <button type="button" class="tx-tab" [class.active]="modalTab === 'transfer'" (click)="modalTab = 'transfer'">Transfer</button>
       </div>
 
       <div class="tx-fields-row">

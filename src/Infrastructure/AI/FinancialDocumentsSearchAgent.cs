@@ -74,30 +74,6 @@ public class FinancialDocumentsSearchAgent : IFinancialDocumentsSearchAgent
         - Infer missing but relevant financial context from behavior when appropriate
         - Optimize for retrieval breadth without becoming vague
 
-        INCLUDE RELEVANT TOPICS SUCH AS
-        - accounts
-        - cards
-        - transfers
-        - payments
-        - fees
-        - disputes
-        - loans
-        - mortgages
-        - savings
-        - investments
-        - fraud/security
-        - budgeting
-        - insurance
-        - rewards
-        - travel benefits
-        - taxes
-        - KYC/compliance
-        - mobile banking
-        - overdraft
-        - interest rates
-        - repayment options
-        - account eligibility
-        - financial planning
 
         STRICT RULES
         - Output MUST be a single search query string only
@@ -130,15 +106,15 @@ public class FinancialDocumentsSearchAgent : IFinancialDocumentsSearchAgent
            _logger.LogInformation("System prompt built for SystemPrompt: \n{SystemPrompt}", systemPrompt);
 
     
-        var searchPrompt = userMessage ?? "";// ?? $"User financial data:\n\n{financialContext}\n\n Based on this information, generate a single optimized search query for retrieving relevant financial articles and bank product offers from a vector database. Focus on the user's financial intent and needs.";
+        // var searchPrompt = userMessage ?? "";// ?? $"User financial data:\n\n{financialContext}\n\n Based on this information, generate a single optimized search query for retrieving relevant financial articles and bank product offers from a vector database. Focus on the user's financial intent and needs.";
 
-        _logger.LogInformation("Creating querry for \n\n Message: \n{UserMessage}", searchPrompt);
+        // _logger.LogInformation("Creating querry for \n\n Message: \n{UserMessage}", searchPrompt);
 
-        var response = await _chatService.SendAsync(searchPrompt, systemPrompt, cancellationToken);
+        // var response = await _chatService.SendAsync(searchPrompt, systemPrompt, cancellationToken);
 
-        _logger.LogInformation("Received financial document search query response Response: \n{Response}", response);
+        // _logger.LogInformation("Received financial document search query response Response: \n{Response}", response);
 
-        return Search(response);
+        return Search(userMessage ?? "");
     }
 
     private string Search(string response)
