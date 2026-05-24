@@ -18,6 +18,20 @@
       </div>
       <app-chat [isWidget]="true"></app-chat>
     </div>
+    @if (!(chatHub.isOpen$ | async)) {
+      <div class="chat-prompts-strip">
+        <p class="chat-prompts-label">Try asking</p>
+        <button type="button" class="chat-prompt-chip" (click)="chatHub.openWithPrompt('How much did I spend this month and where can I cut back?')">
+          How much did I spend this month?
+        </button>
+        <button type="button" class="chat-prompt-chip" (click)="chatHub.openWithPrompt('How do I open a savings account and start saving automatically?')">
+          How do I start saving automatically?
+        </button>
+        <button type="button" class="chat-prompt-chip" (click)="chatHub.openWithPrompt('What is my biggest expense category and what can I do about it?')">
+          What's my biggest expense?
+        </button>
+      </div>
+    }
     <button class="chat-toggle-btn" [class.active]="chatHub.isOpen$ | async" (click)="chatHub.toggle()" aria-label="Toggle chat">
       @if (chatHub.isOpen$ | async) { ✕ } @else { 💬 }
     </button>

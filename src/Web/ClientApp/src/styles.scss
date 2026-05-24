@@ -727,6 +727,38 @@ app-chat {
   margin:      0 !important;
 }
 
+// ── Insight modal meta bar ────────────────────────────────────────────────────
+.insight-modal-meta {
+  display:     flex;
+  align-items: center;
+  gap:         0.5rem;
+  font-size:   0.75rem !important;
+  color:       #6b7280 !important;
+  margin-bottom: 1rem;
+}
+
+.insight-modal-meta-dot {
+  width:         6px;
+  height:        6px;
+  border-radius: 50%;
+  background:    #10b981;
+  flex-shrink:   0;
+}
+
+.insight-modal-category-badge {
+  margin-left:    auto;
+  padding:        2px 10px;
+  border-radius:  20px;
+  font-size:      0.68rem !important;
+  font-weight:    700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+
+  &[data-cat="earn"]     { background: #dcfce7; color: #15803d !important; }
+  &[data-cat="review"]   { background: #fef3c7; color: #b45309 !important; }
+  &[data-cat="optimise"] { background: #dbeafe; color: #1d4ed8 !important; }
+}
+
 .insight-modal-prompt-block {
   background:    #eef2ff;
   border-left:   4px solid $bank-navy;
@@ -1908,6 +1940,7 @@ $shimmer-highlight: rgba(36,59,115,0.14);
   &:hover { background: rgba(255,255,255,0.22); color: #fff; }
 }
 
+
 .chat-panel {
 }
 
@@ -1947,6 +1980,53 @@ $shimmer-highlight: rgba(36,59,115,0.14);
 @keyframes chat-btn-idle {
   0%, 100% { box-shadow: 0 4px 20px rgba($bank-red, 0.5), 0 0 0 0 rgba($bank-red, 0.3); }
   50%       { box-shadow: 0 4px 20px rgba($bank-red, 0.5), 0 0 0 10px rgba($bank-red, 0); }
+}
+
+// ── Chat "Try asking" prompt strip ────────────────────────────────────────────
+.chat-prompts-strip {
+  display:        flex;
+  flex-direction: column;
+  align-items:    flex-end;
+  gap:            0.4rem;
+  pointer-events: auto;
+  animation:      chat-btn-prompt-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes chat-btn-prompt-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+.chat-prompts-label {
+  font-size:      0.68rem !important;
+  font-weight:    700 !important;
+  color:          rgba(255,255,255,0.7) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin:         0 0.25rem 0 0;
+}
+
+.chat-prompt-chip {
+  background:     rgba(255, 255, 255, 0.95);
+  color:          $bank-navy !important;
+  border:         none;
+  border-radius:  20px;
+  padding:        0.45rem 0.9rem;
+  font-size:      0.78rem;
+  font-weight:    600;
+  cursor:         pointer;
+  box-shadow:     0 2px 12px rgba(0,0,0,0.18);
+  transition:     transform 0.15s ease, box-shadow 0.15s ease, background 0.15s;
+  text-align:     right;
+  max-width:      220px;
+  line-height:    1.3;
+
+  &:hover {
+    background:  #ffffff;
+    transform:   translateY(-1px) translateX(-2px);
+    box-shadow:  0 4px 16px rgba(0,0,0,0.22);
+    color:       $bank-navy !important;
+  }
 }
 
 .dash-section-heading{

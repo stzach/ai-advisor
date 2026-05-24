@@ -5,6 +5,7 @@ export interface DashboardInsight {
   category: InsightCategory;
   icon:     string;
   tag:      string;
+  message:  string;
   cta:      string;
 }
 

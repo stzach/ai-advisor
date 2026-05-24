@@ -26,6 +26,7 @@ export class InsightsRowComponent {
       category: ins.category,
       icon:     ins.icon,
       tag:      ins.title,
+      message:  ins.message,
       cta:      ins.cta,
     }))
   );

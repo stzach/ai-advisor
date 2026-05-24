@@ -51,6 +51,17 @@ export class HomeComponent {
   // ── Advisor collapsible card ──────────────────────────────────────────────
   advisorExpanded = signal(false);
 
+  // ── Rotating loading status phrases ──────────────────────────────────────
+  private readonly _loadingPhrases = [
+    'Reading your transactions…',
+    'Spotting patterns…',
+    'Ranking opportunities…',
+    'Personalising insights…',
+  ];
+  loadingPhraseIndex = signal(0);
+  loadingPhrase = computed(() => this._loadingPhrases[this.loadingPhraseIndex()]);
+  private _phraseTimer: ReturnType<typeof setInterval> | null = null;
+
   // ── Insight detail modal ──────────────────────────────────────────────────
   selectedInsight = signal<InsightDto | null>(null);
 
@@ -167,12 +178,23 @@ export class HomeComponent {
       }
     });
 
-    // Auto-expand advisor card when insights finish loading
+    // Expand advisor card immediately when loading starts, keep expanded when done
     effect(() => {
       const loading = this.insightsService.insightsLoading();
       const count   = this.insightsService.insights().length;
-      if (!loading && count > 0) {
+      if (loading || count > 0) {
         this.advisorExpanded.set(true);
+      }
+      // Start / stop rotating phrases
+      if (loading) {
+        this.loadingPhraseIndex.set(0);
+        if (!this._phraseTimer) {
+          this._phraseTimer = setInterval(() => {
+            this.loadingPhraseIndex.update(i => (i + 1) % this._loadingPhrases.length);
+          }, 1500);
+        }
+      } else {
+        if (this._phraseTimer) { clearInterval(this._phraseTimer); this._phraseTimer = null; }
       }
     });
   }

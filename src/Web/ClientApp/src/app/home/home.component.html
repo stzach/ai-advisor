@@ -22,10 +22,10 @@
         <span class="dash-advisor-icon">🧠</span>
         <span class="dash-advisor-title">Financial Advisor</span>
         @if (insightsService.insightsLoading()) {
-          <span class="dash-advisor-loading-text">Analysing your finances…</span>
+          <span class="dash-advisor-loading-text">{{ loadingPhrase() }}</span>
           <span class="dash-insights-live-dot"></span>
         } @else if (insightsService.insights().length > 0) {
-          <span class="dash-advisor-ready-text">{{ insightsService.insights().length }} personalized insights ready</span>
+          <span class="dash-advisor-ready-text">{{ insightsService.insights().length }} personalised insights</span>
         }
       </span>
       <span class="dash-advisor-chevron" [class.open]="advisorExpanded()">›</span>
@@ -439,8 +439,16 @@
           </div>
         </div>
 
+        <div class="insight-modal-meta">
+          <span class="insight-modal-meta-dot"></span>
+          Based on your last 30 days
+          <span class="insight-modal-category-badge" [attr.data-cat]="selectedInsight()!.category">
+            {{ selectedInsight()!.category }}
+          </span>
+        </div>
+
         <div class="insight-modal-prompt-block">
-          <span class="insight-modal-prompt-label">Suggested question for your advisor</span>
+          <span class="insight-modal-prompt-label">💬 Ask your advisor</span>
           <p class="insight-modal-prompt">"{{ selectedInsight()!.prompt }}"</p>
         </div>
 
