@@ -97,8 +97,8 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
         await UpsertUserAsync("kotrotsos",    "kotrotsos@gmail.com",         "Konstantinos", "Kotrotsos",   "Asdf135!");
         await UpsertUserAsync("komliki",      "christinakomliki@gmail.com",  "Christina",    "Komliki",     "Asdf135!");
         await UpsertUserAsync("billGates",    "plousios@gmail.com",          "Bill",         "Gates",       "Asdf135!");
-        await UpsertUserAsync("demouser1",   "demouser1@demo.com",           "Demo",         "User",        "Asdf135!", userAge: 55);
-        await UpsertUserAsync("demouser2",   "demouser2@demo.com",           "Demo",         "User 2",      "Asdf135!", userAge: 28);
+        await UpsertUserAsync("demouser1",   "demouser1@demo.com",           "Dimitris",         "User",        "Asdf135!", userAge: 55);
+        await UpsertUserAsync("demouser2",   "demouser2@demo.com",           "Despoina",         "User 2",      "Asdf135!", userAge: 28);
         await UpsertUserAsync("demouser3",   "demouser3@gmail.com",          "Demo",         "User3",       "Asdf135!", userAge: 45);
 
 
