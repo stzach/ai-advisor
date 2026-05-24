@@ -1,4 +1,4 @@
-<div class="card-wrapper" role="listitem" [style.--orb-delay.ms]="animDelay()">
+<div class="card-wrapper" [style.--card-delay.ms]="animDelay()" [style.--orb-delay.ms]="animDelay()">
   <div class="card" (click)="ctaClick.emit()" role="button" tabindex="0" (keyup.enter)="ctaClick.emit()">
     <div class="card-orb-wrap">
       <app-insight-orb [category]="insight().category" [icon]="insight().icon" />

@@ -1,80 +1,142 @@
 :host {
-  --ir-card-width:  150px;
-  --ir-card-radius: 14px;
-  --ir-orb-size:    72px;
-  --ir-icon-size:   38px;
+  --ir-card-radius: 16px;
+  --ir-orb-size:    80px;
+  --ir-icon-size:   42px;
   --ir-card-bg:     #ffffff;
   --ir-text:        #1a2f5a;
   --ir-navy:        #1a2f5a;
 
-  display:           flex;
-  flex-direction:    column;
-  flex:              0 0 var(--ir-card-width);
+  display:        flex;
+  flex-direction: column;
+  flex:           1 1 0;        // grow equally, no fixed width
+  min-width:      140px;        // never collapse below this
   scroll-snap-align: start;
 }
 
 .card-wrapper {
-  display:         flex;
-  flex-direction:  column;
-  flex:            1;
-  border-radius:   var(--ir-card-radius);
-  padding-top:     12px;
-  margin-top:      -12px;
+  display:        flex;
+  flex-direction: column;
+  flex:           1;
+  border-radius:  var(--ir-card-radius);
+  padding-top:    16px;
+  margin-top:     -16px;
+}
+
+// ── Entrance animation ────────────────────────────────────────────────────────
+@keyframes card-rise {
+  from {
+    opacity:   0;
+    transform: translateY(20px) scale(0.96);
+  }
+  to {
+    opacity:   1;
+    transform: translateY(0)    scale(1);
+  }
 }
 
 .card {
-  display:         flex;
-  flex-direction:  column;
-  align-items:     center;
-  flex:            1;
-  width:           var(--ir-card-width);
-  border-radius:   var(--ir-card-radius);
-  background:      var(--ir-card-bg);
-  box-shadow:      0 2px 12px rgba(26, 47, 90, 0.12);
-  padding:         16px 12px 14px;
-  cursor:          pointer;
-  position:        relative;
-  // NO overflow:hidden — it breaks click hit-testing after CSS transform
-  border:          1.5px solid rgba(26, 47, 90, 0.08);
-  will-change:     transform;
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  flex:           1;
+  width:          100%;
+  border-radius:  var(--ir-card-radius);
+  background:     var(--ir-card-bg);
+  box-shadow:     0 2px 10px rgba(26, 47, 90, 0.10);
+  padding:        20px 16px 16px;
+  cursor:         pointer;
+  position:       relative;
+  border:         1.5px solid rgba(26, 47, 90, 0.08);
+  will-change:    transform, box-shadow;
+  overflow:       hidden; // clip the pseudo-element gradients to the card shape
+
+  // staggered entrance — delay set via [style.--card-delay] on the card-wrapper
+  animation: card-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) var(--card-delay, 0ms) both;
+
   transition:
-    transform      0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow     0.3s ease,
-    border-color   0.3s ease;
+    transform    0.38s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow   0.28s ease,
+    border-color 0.28s ease;
+
+  // Bottom-half tint gradient — sits behind content via z-index
+  // Positioned to start below the orb so the icon is never tinted
+  &::before {
+    content:    '';
+    position:   absolute;
+    // start at 50% from top — well below the orb — and cover the lower half
+    top:        50%;
+    left:       0;
+    right:      0;
+    bottom:     0;
+    background: linear-gradient(180deg, transparent 0%, rgba(36, 59, 115, 0.045) 100%);
+    border-radius: 0 0 var(--ir-card-radius) var(--ir-card-radius);
+    opacity:    0;
+    transition: opacity 0.28s ease;
+    pointer-events: none;
+    z-index:    0;
+  }
+
+  // Shine sweep — also a pseudo-element, runs across full card on hover
+  &::after {
+    content:    '';
+    position:   absolute;
+    inset:      0;
+    background: linear-gradient(
+      120deg,
+      transparent 25%,
+      rgba(255, 255, 255, 0.40) 50%,
+      transparent 75%
+    );
+    transform:      translateX(-130%) skewX(-8deg);
+    transition:     transform 0.55s ease;
+    pointer-events: none;
+    z-index:        0;
+  }
+
+  // All direct children sit above the pseudo-elements
+  > * { position: relative; z-index: 1; }
 
   &:hover {
-    transform:    translateY(-10px) scale(1.03);
-    border-color: rgba(26, 47, 90, 0.18);
+    transform:    translateY(-12px) scale(1.04);
+    border-color: rgba(36, 59, 115, 0.22);
     box-shadow:
-      0 20px 48px rgba(26, 47, 90, 0.22),
-      0  6px 18px rgba(26, 47, 90, 0.12),
-      0  0  36px rgba(67, 120, 210, 0.12);
+      0 24px 52px rgba(26, 47, 90, 0.20),
+      0  8px 20px rgba(26, 47, 90, 0.10),
+      0  0   40px rgba(67, 120, 210, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+    &::before { opacity: 1; }
+    &::after  { transform: translateX(130%) skewX(-8deg); }
 
     .card-orb-wrap {
-      transform: scale(1.1) rotate(-5deg) translateY(-2px);
+      transform: scale(1.15) rotate(-8deg) translateY(-4px);
+      filter:    drop-shadow(0 8px 16px rgba(36, 59, 115, 0.20));
     }
 
     .card-cta {
       background:     #0a2244;
-      letter-spacing: 0.09em;
+      letter-spacing: 0.10em;
+      box-shadow:     0 4px 14px rgba(10, 34, 68, 0.40);
     }
   }
 }
 
 // ── Orb ──────────────────────────────────────────────────────────────────────
 .card-orb-wrap {
-  margin-bottom: 12px;
-  transition:    transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin-bottom: 14px;
+  transition:
+    transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1),
+    filter    0.28s ease;
 }
 
 // ── Title ────────────────────────────────────────────────────────────────────
 .card-tag {
-  font-size:      0.78rem;
+  font-size:      0.82rem;
   font-weight:    700;
   color:          #1a2f5a !important;
   text-align:     center;
   line-height:    1.3;
-  margin-bottom:  12px;
+  margin-bottom:  14px;
   flex:           1;
   letter-spacing: -0.01em;
 }
@@ -83,19 +145,20 @@
 .card-cta {
   display:        block;
   width:          100%;
-  padding:        8px 6px;
-  border-radius:  8px;
+  padding:        9px 8px;
+  border-radius:  9px;
   background:     var(--ir-navy);
   color:          #ffffff !important;
-  font-size:      0.62rem;
+  font-size:      0.65rem;
   font-weight:    800;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   text-align:     center;
   pointer-events: none;
   transition:
-    background     0.2s ease,
-    letter-spacing 0.2s ease;
+    background     0.22s ease,
+    letter-spacing 0.22s ease,
+    box-shadow     0.22s ease;
 }
 
 .card:focus-visible {
@@ -104,6 +167,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card, .card-orb-wrap, .card-cta { transition: none; }
+  .card { animation: none; transition: none; }
+  .card-orb-wrap, .card-cta { transition: none; }
   .card:hover { transform: none; }
 }

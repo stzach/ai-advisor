@@ -389,7 +389,6 @@ app-chat {
   max-width: 720px;
   width: 100%;
   margin: 0 auto;
-  padding: calc(var(--header-height) + 1.5rem) 1rem 2rem;
 }
 
 .chat-fullpage-header {
@@ -407,6 +406,7 @@ app-chat {
 .chat-fullpage-body {
   flex: 1;
   min-height: 0;
+  height: 0;           // forces flex child to shrink-to-fit, not natural height
   border-radius: 0 0 18px 18px;
   overflow: hidden;
   display: flex;
@@ -416,14 +416,18 @@ app-chat {
   kendo-chat {
     flex: 1;
     min-height: 0;
+    height: 100%;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 
     .k-chat {
       flex: 1;
       min-height: 0;
-      display: flex;
-      flex-direction: column;
+      height: 100%;
+      display: flex !important;
+      flex-direction: column !important;
+      background: #f5f7fa !important;
     }
 
     .k-message-group:not(.k-alt) .k-bubble { border-radius: 4px 14px 14px 14px; }
@@ -442,15 +446,36 @@ app-chat {
       font-size: 0.85em;
     }
 
+    // Suppress any Kendo toolbar/header strip that appears above messages
+    .k-toolbar,
+    .k-chat-toolbar,
+    .k-toolbar-group {
+      display: none !important;
+    }
+
     .k-message-list {
-      flex: 1;
-      min-height: 0;
+      flex: 1 !important;
+      min-height: 0 !important;
+      height: 0 !important;    // critical: flex child needs explicit 0 height to grow via flex-grow
       overflow-y: auto !important;
       background: #f5f7fa;
+      border-top: none !important;
     }
 
     .k-message-list-content { padding: 1.25rem 1rem; }
     .k-avatar { display: none; }
+
+    // Input area icons — ensure they stay dark/visible on white background
+    .k-chat-footer,
+    .k-message-box {
+      background: #ffffff !important;
+
+      .k-icon,
+      .k-svg-icon,
+      .k-button-icon,
+      button svg,
+      button .k-icon { color: $bank-navy !important; fill: $bank-navy !important; }
+    }
 
     .k-message-quick-replies {
       flex-wrap: wrap;
@@ -1767,6 +1792,7 @@ $shimmer-highlight: rgba(36,59,115,0.14);
   flex-direction: column;
   align-items: flex-end;
   gap: 0.75rem;
+  pointer-events: none; // container itself never intercepts clicks
 }
 
 .chat-panel {
@@ -1774,6 +1800,7 @@ $shimmer-highlight: rgba(36,59,115,0.14);
   border-radius: 18px;
   overflow: hidden;
   background: #f5f7fa;
+  pointer-events: auto;
   box-shadow: 0 20px 60px rgba(14,29,61,0.35), 0 4px 16px rgba(0,0,0,0.15);
   display: flex;
   flex-direction: column;
@@ -1789,13 +1816,14 @@ $shimmer-highlight: rgba(36,59,115,0.14);
     transform: translateY(0) scale(1);
     // Use a fixed height so the flex chain can work — flex children need a
     // concrete ancestor height to resolve min-height:0 and enable scrolling.
-    height: min(600px, calc(100vh - 120px));
+    height: min(720px, calc(100vh - 80px));
   }
 
   // ── Wire up the flex chain: panel → app-chat → body → kendo ────────────────
   app-chat {
     flex: 1;
     min-height: 0;
+    height: 0;           // flex child must have explicit 0 to grow correctly
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -1893,6 +1921,7 @@ $shimmer-highlight: rgba(36,59,115,0.14);
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  pointer-events: auto;
   border: none;
   background: linear-gradient(135deg, $bank-red, darken($bank-red, 10%));
   color: #fff;
@@ -1975,6 +2004,7 @@ address, blockquote, dl, ol, p, pre, table, ul {
 }
 
 .dash-document-search {
+  margin-top: 1.25rem;
 }
 
 
@@ -2818,8 +2848,10 @@ address, blockquote, dl, ol, p, pre, table, ul {
 // ── Escalation CTA buttons (phone + book appointment) ─────────────────────────
 .escalation-text {
   margin: 0 0 0.75rem;
-  font-size: 1rem;
-  color: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: $bank-navy !important;
+  line-height: 1.4;
 }
 
 .escalation-actions {
@@ -2829,31 +2861,55 @@ address, blockquote, dl, ol, p, pre, table, ul {
   margin-top: 0.25rem;
 }
 
+.escalation-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+  color: inherit;
+  fill: currentColor;
+}
+
 .escalation-btn {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   width: 100%;
-  padding: 0.65rem 1rem;
+  padding: 0.7rem 1rem;
   border-radius: 0.5rem;
-  font-size: 1rem;
+  font-size: 0.92rem;
   font-weight: 700;
   text-align: center;
   text-decoration: none !important;
   cursor: pointer;
   transition: opacity 0.15s, transform 0.1s;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  letter-spacing: 0.01em;
 
-  &:hover  { opacity: 0.88; transform: translateY(-1px); }
+  &:hover  { opacity: 0.88; transform: translateY(-1px); text-decoration: none !important; }
   &:active { transform: translateY(0); opacity: 1; }
 
   &--call {
-    background: $bank-red !important;
-    color: #fff !important;
+    background: #c0392b !important;
+    border: 2px solid #a93226 !important;
   }
 
   &--book {
-    background: $bank-navy !important;
-    color: #fff !important;
+    background: #1a2f5a !important;
+    border: 2px solid #0f1d3a !important;
   }
+}
+
+// Beat .k-bubble a { color: inherit !important } — escalation buttons always white text
+.k-bubble .escalation-btn--call,
+.k-bubble .escalation-btn--call:hover,
+.k-bubble .escalation-btn--call:visited {
+  color: #ffffff !important;
+}
+.k-bubble .escalation-btn--book,
+.k-bubble .escalation-btn--book:hover,
+.k-bubble .escalation-btn--book:visited {
+  color: #ffffff !important;
 }
 
 // ── Chat bubble colours (Kendo v13 uses .k-message-group-sender, not .k-alt) ──
@@ -2888,4 +2944,4 @@ address, blockquote, dl, ol, p, pre, table, ul {
 .k-message-group:not(.k-message-group-sender) .k-bubble li,
 .k-message-group:not(.k-message-group-sender) .k-bubble strong,
 .k-message-group:not(.k-message-group-sender) .k-bubble em,
-.k-message-group:not(.k-message-group-sender) .k-bubble a { color: inherit !important; }
+.k-message-group:not(.k-message-group-sender) .k-bubble a { color: inherit; }
