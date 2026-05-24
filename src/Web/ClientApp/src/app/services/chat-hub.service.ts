@@ -41,10 +41,31 @@ export class ChatHubService {
             .withAutomaticReconnect()
             .configureLogging(signalR.LogLevel.Information)
             .build();
-        this.connection.on('ReceiveMessage', (msg: string) => {
-            console.log('[SignalR] Received AI reply:', msg);
-            this.message$.next(msg);
-             this.botReplies++;
+
+        // Streaming: accumulate chunks into a live bot message
+        let streamingId: number | null = null;
+        let streamingText = '';
+
+        this.connection.on('ReceiveChunk', (chunk: string) => {
+            streamingText += chunk;
+            if (streamingId === null) {
+                // First chunk — replace typing indicator with live message
+                streamingId = ++this.msgId;
+                this.message$.next({ id: streamingId, text: streamingText, _streaming: true } as any);
+            } else {
+                // Subsequent chunks — update in place
+                this.message$.next({ id: streamingId, text: streamingText, _streaming: true } as any);
+            }
+        });
+
+        this.connection.on('ReceiveChunkDone', (fullText: string) => {
+            // Finalise: emit the clean full response, bump reply counter
+            const finalId = streamingId ?? ++this.msgId;
+            this.message$.next({ id: finalId, text: fullText, _streaming: false } as any);
+            streamingId = null;
+            streamingText = '';
+
+            this.botReplies++;
             if (this.botReplies === 2) {
                 this.local$.next({
                     id: ++this.msgId,
@@ -62,12 +83,26 @@ export class ChatHubService {
                 of(this.welcome),
                 this.local$,
                 this.message$.pipe(
-                    map(text => ({ id: ++this.msgId, author: this.bot, text, timestamp: new Date() } as Message))
+                    map((raw: any) => ({
+                        id: raw.id ?? ++this.msgId,
+                        author: this.bot,
+                        text: raw.text ?? raw,
+                        timestamp: new Date(),
+                        _streaming: raw._streaming ?? false,
+                    } as Message & { _streaming: boolean }))
                 )
             ).pipe(
-                scan((acc: Message[], msg: Message) => {
-                    const base = msg.typing ? acc : acc.filter(m => !m.typing);
-                    return [...base, msg];
+                scan((acc: Message[], msg: any) => {
+                    // Remove typing indicators unless this is a typing message
+                    let base = msg.typing ? acc : acc.filter((m: any) => !m.typing);
+                    // If same id exists (streaming update), replace in place
+                    const existingIdx = base.findIndex(m => m.id === msg.id);
+                    if (existingIdx >= 0) {
+                        base = [...base.slice(0, existingIdx), msg, ...base.slice(existingIdx + 1)];
+                    } else {
+                        base = [...base, msg];
+                    }
+                    return base;
                 }, [])
             )),
             observeOn(asyncScheduler),

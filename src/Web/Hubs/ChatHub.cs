@@ -35,25 +35,26 @@ public class ChatHub(
 
         conversationHistory.Add(ConversationMessage.User(message));
 
-        // Execute agent pipeline: AdvisorAgent -> FinancialDocumentsSearchAgent
-        var raw = await agentsOrchestrator.GetAdviceAsync(
-            userId,
-            message,
-            conversationHistory,
-            Context.ConnectionAborted);
+        // Stream tokens to client as they arrive
+        var rawBuffer = new System.Text.StringBuilder();
+        await foreach (var chunk in agentsOrchestrator.StreamAdviceAsync(
+            userId, message, conversationHistory, Context.ConnectionAborted))
+        {
+            rawBuffer.Append(chunk);
+            await Clients.Caller.SendAsync("ReceiveChunk", chunk, Context.ConnectionAborted);
+        }
 
-        var response = ThinkBlock.Replace(raw, string.Empty).Trim();
+        var response = ThinkBlock.Replace(rawBuffer.ToString(), string.Empty).Trim();
+
+        // Signal end of stream so client can finalise the message
+        await Clients.Caller.SendAsync("ReceiveChunkDone", response, Context.ConnectionAborted);
 
         conversationHistory.Add(ConversationMessage.Assistant(response));
 
         if (conversationHistory.Count > MaxConversationHistory)
-        {
             conversationHistory.RemoveRange(0, conversationHistory.Count - MaxConversationHistory);
-        }
 
         memoryCache.Set(cacheKey, conversationHistory, TimeSpan.FromHours(1));
-
-        await Clients.Caller.SendAsync("ReceiveMessage", response);
     }
 
     /// <summary>
