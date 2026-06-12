@@ -1,412 +1,294 @@
-﻿<div class="dashboard">
+<div class="ab-layout">
 
-  <!-- Welcome -->
-  <div class="dash-welcome">
-    <div>
-      <h2 class="dash-greeting">Welcome back, <span class="dash-name">{{ username() }}</span></h2>
-      <div class="dash-subtitle">Here's your financial overview</div>
-    </div>
-    <div class="dash-welcome-right">
-      <div class="dash-net-worth">
-        <span class="dash-net-worth-label">Total Balance</span>
-        <span class="dash-net-worth-value">€{{ netWorth() | number:'1.2-2' }}</span>
+  <!-- ── Left Sidebar ─────────────────────────────────────────────────────── -->
+  <nav class="ab-sidebar">
+    <button type="button" class="ab-nav-item ab-nav-item--active">
+      <div class="ab-nav-orb ab-nav-orb--active">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
       </div>
-      <button type="button" class="dash-new-tx-btn" (click)="openModal()">+ New Transaction</button>
-    </div>
-  </div>
-
-  <!-- AI Advisor collapsible card -->
-  <div class="dash-advisor-card" [class.expanded]="advisorExpanded()">
-    <button type="button" class="dash-advisor-header" (click)="advisorExpanded.set(!advisorExpanded())" aria-expanded="{{ advisorExpanded() }}">
-      <span class="dash-advisor-header-left">
-        <span class="dash-advisor-icon">🧠</span>
-        <span class="dash-advisor-title">Financial Advisor</span>
-        @if (insightsService.insightsLoading()) {
-          <span class="dash-advisor-loading-text">{{ loadingPhrase() }}</span>
-          <span class="dash-insights-live-dot"></span>
-        } @else if (insightsService.insights().length > 0) {
-          <span class="dash-advisor-ready-text">{{ insightsService.insights().length }} personalised insights</span>
-        }
-      </span>
-      <span class="dash-advisor-chevron" [class.open]="advisorExpanded()">›</span>
+      <span class="ab-nav-label">Επισκόπηση</span>
     </button>
-    @if (advisorExpanded()) {
-      <div class="dash-advisor-body">
-        <div class="dash-insights-hero">
-          <div class="dash-ai-image-col">
-            <img src="assets/ai-advisor.png" alt="AI Financial Advisor" class="dash-ai-illustration" />
-          </div>
-          <div class="dash-ai-cards-col">
-            <app-insights-row (insightSelected)="openInsightModal($event)" />
-          </div>
+
+    <button type="button" class="ab-nav-item">
+      <div class="ab-nav-orb">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+      </div>
+      <span class="ab-nav-label">Μεταφορές &amp;<br>Πληρωμές</span>
+    </button>
+
+    <button type="button" class="ab-nav-item">
+      <div class="ab-nav-orb">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <span class="ab-nav-label">Ιστορικό</span>
+    </button>
+
+    <button type="button" class="ab-nav-item">
+      <div class="ab-nav-orb">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="15" x2="12" y2="19"/><line x1="10" y1="17" x2="14" y2="17"/></svg>
+      </div>
+      <span class="ab-nav-label">Νέο Ιστορικό</span>
+    </button>
+
+    <button type="button" class="ab-nav-item">
+      <div class="ab-nav-orb">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+      </div>
+      <span class="ab-nav-label">Νέα προϊόντα</span>
+    </button>
+
+    <button type="button" class="ab-nav-item">
+      <div class="ab-nav-orb">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </div>
+      <span class="ab-nav-label">Έγγραφα &amp;<br>Αιτήματα</span>
+    </button>
+  </nav>
+
+  <!-- ── Main Content ──────────────────────────────────────────────────────── -->
+  <div class="ab-content">
+
+    <!-- Topbar -->
+    <div class="ab-topbar">
+      <div class="ab-topbar-left">
+        <span class="ab-topbar-here">Βρίσκεστε εδώ</span>
+        <span class="ab-topbar-page">Επισκόπηση</span>
+      </div>
+      <button type="button" class="ab-want-btn">
+        Θέλω να
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
+
+    <!-- Promo Banner -->
+    <div class="ab-promo">
+      <div class="ab-promo-body">
+        <h2 class="ab-promo-title">Ξέρετε ότι μπορείτε να αλλάξετε τους κωδικούς σας όποτε θέλετε;</h2>
+        <p class="ab-promo-sub">Αλλάξτε το password σας ακόμα και πριν λήξει, αλλά και το username σας όποτε θέλετε.</p>
+        <a href="#" class="ab-promo-link">Αλλάζω κωδικούς e-Banking →</a>
+      </div>
+      <div class="ab-promo-image">
+        <img src="assets/ai-advisor.png" alt="" class="ab-promo-img" />
+      </div>
+      <button type="button" class="ab-promo-collapse-btn">∧</button>
+      <div class="ab-promo-dots">
+        <span class="ab-promo-dot ab-promo-dot--active"></span>
+        <span class="ab-promo-dot"></span>
+        <span class="ab-promo-dot"></span>
+      </div>
+    </div>
+
+    <!-- ── AI Financial Advisor (redesigned) ────────────────────────────── -->
+    <div class="ab-advisor-section">
+      <div class="ab-advisor-hdr">
+        <div class="ab-advisor-hdr-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+        </div>
+        <div class="ab-advisor-hdr-text">
+          <span class="ab-advisor-hdr-title">Financial Advisor</span>
+          <span class="ab-advisor-hdr-sub">Εξατομικευμένες προτάσεις για εσάς</span>
+        </div>
+        <div class="ab-advisor-hdr-right">
+          @if (insightsService.insightsLoading()) {
+            <span class="ab-advisor-hdr-loading">{{ loadingPhrase() }}</span>
+            <span class="ab-advisor-hdr-dot"></span>
+          } @else if (insightsService.insights().length > 0) {
+            <span class="ab-advisor-hdr-badge">{{ insightsService.insights().length }} insights</span>
+          }
         </div>
       </div>
-    }
-  </div>
-
-  <div class="dash-main-grid">
-
-    <div class="dash-card">
-      <div class="dash-expenses-header">
-        <div>
-          <h3 class="dash-card-title">Expenses by Category</h3>
-          <span class="dash-expenses-range">{{ rangeLabel() }}</span>
-        </div>
-        <div class="dash-expenses-total">
-          <span class="dash-expenses-total-label">Total Spent</span>
-          <span class="dash-expenses-total-value">€{{ totalExpenses() | number:'1.2-2' }}</span>
-        </div>
+      <div class="ab-advisor-cards-body">
+        <app-insights-row (insightSelected)="openInsightModal($event)" />
       </div>
-      <div class="dash-chart-wrap">
-        <kendo-chart style="height: 220px;">
-          <kendo-chart-series>
-            <kendo-chart-series-item
-              type="donut"
-              [data]="expenses()"
-              field="amount"
-              categoryField="category"
-              colorField="color"
-              [holeSize]="55"
-              [padding]="4">
-            </kendo-chart-series-item>
-          </kendo-chart-series>
-          <kendo-chart-legend [visible]="false"></kendo-chart-legend>
-          <kendo-chart-tooltip [visible]="true" format="€{0:N2}"></kendo-chart-tooltip>
-        </kendo-chart>
-        @if (totalExpenses() > 0) {
-          <div class="dash-chart-center">
-            <span class="dash-chart-center-label">Total</span>
-            <span class="dash-chart-center-value">€{{ totalExpenses() | number:'1.0-0' }}</span>
-          </div>
-        }
-      </div>
+    </div>
 
-      @if (expenses().length) {
-        <div class="dash-expense-breakdown">
-          @for (e of expenses(); track e.category) {
-            <div class="dash-expense-row">
-              <span class="dash-expense-dot" [style.background]="e.color"></span>
-              <span class="dash-expense-cat">{{ e.category }}</span>
-              <span class="dash-expense-bar-wrap">
-                <span class="dash-expense-bar-fill"
-                  [style.width.%]="(e.amount / totalExpenses()) * 100"
-                  [style.background]="e.color">
-                </span>
-              </span>
-              <span class="dash-expense-pct">{{ (e.amount / totalExpenses()) * 100 | number:'1.0-0' }}%</span>
-              <span class="dash-expense-amt">€{{ e.amount | number:'1.0-0' }}</span>
+    <!-- ── Accounts Section ───────────────────────────────────────────────── -->
+    <div class="ab-section-card">
+      <button type="button" class="ab-section-header" (click)="accountsExpanded.set(!accountsExpanded())">
+        <div class="ab-section-header-left">
+          <span class="ab-section-title">Λογαριασμοί</span>
+          <span class="ab-section-underline"></span>
+        </div>
+        <span class="ab-section-meta">Συνολικό διαθέσιμο υπόλοιπο <strong>€{{ accountsTotal() | number:'1.2-2' }}</strong></span>
+        <span class="ab-section-chevron" [class.open]="accountsExpanded()">›</span>
+      </button>
+      @if (accountsExpanded()) {
+        <div class="ab-section-body">
+          @for (account of accounts(); track account.productId) {
+            <div class="ab-product-row">
+              <div class="ab-product-icon ab-product-icon--account">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              </div>
+              <div class="ab-product-info">
+                <span class="ab-product-name">{{ account.productName }}</span>
+                <span class="ab-product-sub">{{ account.accountNumber }}</span>
+              </div>
+              <span class="ab-product-balance">€{{ account.availableBalance | number:'1.2-2' }}</span>
             </div>
           }
         </div>
       }
     </div>
 
-    <div class="dash-side-stack">
-
-      <!-- Accounts — collapsible -->
-      <div class="dash-card dash-collapsible-card">
-        <button type="button" class="dash-collapse-header" (click)="accountsExpanded.set(!accountsExpanded())" aria-expanded="{{ accountsExpanded() }}">
-          <span class="dash-collapse-left">
-            <span class="dash-card-title-icon">🏦</span>
-            <span class="dash-collapse-title">Accounts</span>
-            <span class="dash-collapse-summary">{{ accounts().length }} · €{{ accountsTotal() | number:'1.0-0' }}</span>
-          </span>
-          <span class="dash-collapse-chevron" [class.open]="accountsExpanded()">›</span>
-        </button>
-        @if (accountsExpanded()) {
-          @for (account of accounts(); track account.productId) {
-            <div class="dash-account-row">
-              <div>
-                <div class="dash-account-name">{{ account.productName }}</div>
-                <div class="dash-account-iban">{{ account.accountNumber }}</div>
-              </div>
-              <div class="dash-account-balance">€{{ account.availableBalance | number:'1.2-2' }}</div>
-            </div>
-          }
-        }
-      </div>
-
-      <!-- Cards — collapsible -->
-      <div class="dash-card dash-collapsible-card">
-        <button type="button" class="dash-collapse-header" (click)="cardsExpanded.set(!cardsExpanded())" aria-expanded="{{ cardsExpanded() }}">
-          <span class="dash-collapse-left">
-            <span class="dash-card-title-icon">💳</span>
-            <span class="dash-collapse-title">Cards</span>
-            <span class="dash-collapse-summary">{{ cards().length }} · €{{ cardsAvailable() | number:'1.0-0' }} available</span>
-          </span>
-          <span class="dash-collapse-chevron" [class.open]="cardsExpanded()">›</span>
-        </button>
-        @if (cardsExpanded()) {
+    <!-- ── Cards Section ─────────────────────────────────────────────────── -->
+    <div class="ab-section-card">
+      <button type="button" class="ab-section-header" (click)="cardsExpanded.set(!cardsExpanded())">
+        <div class="ab-section-header-left">
+          <span class="ab-section-title">Πιστωτικές και προπληρωμένες κάρτες</span>
+          <span class="ab-section-underline"></span>
+        </div>
+        <span class="ab-section-chevron" [class.open]="cardsExpanded()">›</span>
+      </button>
+      @if (cardsExpanded()) {
+        <div class="ab-section-body">
           @for (card of cards(); track card.productId) {
-            <div class="dash-card-row">
-              <div class="dash-card-info">
-                <span class="dash-card-name">{{ card.productName }}</span>
-                <span class="dash-card-number">{{ card.cardNumber }}</span>
-                <span class="dash-card-badge">{{ card.productDescription }}</span>
+            <div class="ab-product-row">
+              <div class="ab-product-icon ab-product-icon--card">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
               </div>
-              <div class="dash-account-balance">€{{ card.availableBalance | number:'1.2-2' }}</div>
+              <div class="ab-product-info">
+                <span class="ab-product-name">{{ card.productName }}</span>
+                <span class="ab-product-sub">{{ card.cardNumber }}</span>
+              </div>
+              <span class="ab-product-balance">€{{ card.availableBalance | number:'1.2-2' }}</span>
             </div>
             @if (card.creditLimit) {
-              <div class="dash-credit-bar-wrap">
-                <div class="dash-credit-bar">
-                  <div class="dash-credit-bar-fill"
+              <div class="ab-credit-bar-wrap">
+                <div class="ab-credit-bar">
+                  <div class="ab-credit-bar-fill"
                     [style.width.%]="(card.creditLimit - (card.availableBalance ?? 0)) / card.creditLimit * 100"
-                    [class.danger]="(card.creditLimit - (card.availableBalance ?? 0)) / card.creditLimit > 0.8">
+                    [class.ab-credit-bar-fill--danger]="(card.creditLimit - (card.availableBalance ?? 0)) / card.creditLimit > 0.8">
                   </div>
                 </div>
-                <div class="dash-credit-bar-labels">
-                  <span>Used €{{ (card.creditLimit - (card.availableBalance ?? 0)) | number:'1.0-0' }}</span>
-                  <span>Limit €{{ card.creditLimit | number:'1.0-0' }}</span>
+                <div class="ab-credit-bar-labels">
+                  <span>Χρησιμοποιήθηκε €{{ (card.creditLimit - (card.availableBalance ?? 0)) | number:'1.0-0' }}</span>
+                  <span>Όριο €{{ card.creditLimit | number:'1.0-0' }}</span>
                 </div>
               </div>
             }
           }
-        }
-      </div>
+        </div>
+      }
+    </div>
 
-      <!-- Loans — collapsible, only if present -->
-      @if (loans().length) {
-        <div class="dash-card dash-collapsible-card">
-          <button type="button" class="dash-collapse-header" (click)="loansExpanded.set(!loansExpanded())" aria-expanded="{{ loansExpanded() }}">
-            <span class="dash-collapse-left">
-              <span class="dash-card-title-icon">📋</span>
-              <span class="dash-collapse-title">Loans</span>
-              <span class="dash-collapse-summary">{{ loans().length }} · €{{ loansTotal() | number:'1.0-0' }} outstanding</span>
-            </span>
-            <span class="dash-collapse-chevron" [class.open]="loansExpanded()">›</span>
-          </button>
-          @if (loansExpanded()) {
+    <!-- ── Loyalty Section (static) ──────────────────────────────────────── -->
+    <div class="ab-section-card">
+      <button type="button" class="ab-section-header">
+        <div class="ab-section-header-left">
+          <span class="ab-section-title">Πρόγραμμα επιβράευσης</span>
+          <span class="ab-section-underline"></span>
+        </div>
+        <span class="ab-section-chevron">›</span>
+      </button>
+    </div>
+
+    <!-- ── Loans Section ──────────────────────────────────────────────────── -->
+    @if (loans().length) {
+      <div class="ab-section-card">
+        <button type="button" class="ab-section-header" (click)="loansExpanded.set(!loansExpanded())">
+          <div class="ab-section-header-left">
+            <span class="ab-section-title">Δάνεια</span>
+            <span class="ab-section-underline"></span>
+          </div>
+          <span class="ab-section-chevron" [class.open]="loansExpanded()">›</span>
+        </button>
+        @if (loansExpanded()) {
+          <div class="ab-section-body">
             @for (loan of loans(); track loan.productId) {
-              <div class="dash-account-row">
-                <div>
-                  <div class="dash-account-name">{{ loan.productName }}</div>
-                  <div class="dash-account-iban">{{ loan.accountNumber }}</div>
+              <div class="ab-product-row">
+                <div class="ab-product-icon ab-product-icon--loan">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
                 </div>
-                <div class="dash-loan-balance">€{{ loan.availableBalance | number:'1.2-2' }}</div>
+                <div class="ab-product-info">
+                  <span class="ab-product-name">{{ loan.productName }}</span>
+                  <span class="ab-product-sub">{{ loan.accountNumber }}</span>
+                </div>
+                <span class="ab-product-balance ab-product-balance--loan">€{{ loan.availableBalance | number:'1.2-2' }}</span>
               </div>
             }
-          }
-        </div>
-      }
-
-    </div>
-  </div>
-
-  <div class="dash-card dash-recommendations">
-    <h3 class="dash-card-title"><span class="dash-card-title-icon">🎯</span> Recommended Products</h3>
-
-    @if (isLoadingRecommendations) {
-      <p class="dash-empty" data-icon="⏳">Loading recommendations…</p>
-    } @else if (!productRecommendations().length) {
-      <p class="dash-empty" data-icon="🎯">No tailored recommendations are available right now.</p>
-    }
-
-    @for (recommendation of productRecommendations(); track recommendation.productName) {
-      <div class="dash-recommendation-row">
-        <div>
-          <div class="dash-recommendation-name">{{ recommendation.productName }}</div>
-          <div class="dash-recommendation-reason">{{ recommendation.reason }}</div>
-        </div>
-        <a class="dash-recommendation-link" [href]="recommendation.redirectUri">View product</a>
-      </div>
-    }
-  </div>
-
-  <div class="dash-card dash-transactions">
-    <div class="dash-tx-header">
-      <h3 class="dash-card-title"><span class="dash-card-title-icon">💸</span> Transactions · {{ rangeLabel() }}</h3>
-      <div class="dash-range-tabs">
-        <button type="button" class="dash-range-tab" [class.active]="selectedRange === 'month'"   (click)="setRange('month')">This Month</button>
-        <button type="button" class="dash-range-tab" [class.active]="selectedRange === '3months'" (click)="setRange('3months')">3M</button>
-        <button type="button" class="dash-range-tab" [class.active]="selectedRange === '6months'" (click)="setRange('6months')">6M</button>
-        <button type="button" class="dash-range-tab" [class.active]="selectedRange === 'year'"    (click)="setRange('year')">1Y</button>
-      </div>
-    </div>
-
-    <div class="dash-tx-controls">
-      <div class="dash-tx-search-wrap">
-        <span class="dash-tx-search-icon">🔍</span>
-        <input
-          class="dash-tx-search"
-          type="search"
-          placeholder="Search by merchant, category…"
-          [value]="txSearchQuery()"
-          (input)="setTxSearch($any($event.target).value)"
-        />
-      </div>
-      <div class="dash-tx-filter-tabs">
-        <button type="button" class="dash-tx-filter-tab" [class.active]="txTypeFilter() === 'all'"      (click)="setTxFilter('all')">All</button>
-        <button type="button" class="dash-tx-filter-tab" [class.active]="txTypeFilter() === 'Payment'"  (click)="setTxFilter('Payment')">Payments</button>
-        <button type="button" class="dash-tx-filter-tab" [class.active]="txTypeFilter() === 'Transfer'" (click)="setTxFilter('Transfer')">Transfers</button>
-        <button type="button" class="dash-tx-filter-tab" [class.active]="txTypeFilter() === 'Loan'"     (click)="setTxFilter('Loan')">Loans</button>
-      </div>
-    </div>
-
-    @if (transactions().length) {
-      <div class="dash-tx-count">
-        Showing <strong>{{ displayedTransactions().length }}</strong> of <strong>{{ filteredTransactions().length }}</strong> transactions
-      </div>
-    }
-
-    @for (tx of displayedTransactions(); track tx.transactionId) {
-      <div class="dash-tx-row">
-        <div class="dash-tx-icon" [class]="tx.transactionType === 'Transfer' ? 'dash-tx-icon--transfer' : tx.transactionType === 'Loan' ? 'dash-tx-icon--loan' : tx.transactionDirection === 'Incoming' ? 'dash-tx-icon--incoming' : 'dash-tx-icon--payment'">
-          {{ tx.transactionType === 'Transfer' ? '↔' : tx.transactionType === 'Loan' ? '⬆' : tx.transactionDirection === 'Incoming' ? '↓' : '↑' }}
-        </div>
-        <div class="dash-tx-info">
-          <span class="dash-tx-desc">{{ tx.productName }}</span>
-          <span class="dash-tx-meta">
-            {{ tx.from }}
-            @if (tx.transactionType !== 'Loan') { <span>→ {{ tx.to }}</span> }
-            @if (tx.transactionCategory) { · <span class="dash-tx-cat">{{ tx.transactionCategory }}</span> }
-          </span>
-        </div>
-        <div class="dash-tx-right">
-          <span class="dash-tx-amount" [class.positive]="tx.amount > 0" [class.negative]="tx.amount < 0">
-            {{ tx.amount > 0 ? '+' : '' }}€{{ tx.amount | number:'1.2-2' }}
-          </span>
-          <span class="dash-tx-date">{{ tx.created | date:'dd MMM' }}</span>
-        </div>
-      </div>
-    }
-
-    @if (hasMoreTransactions()) {
-      <button type="button" class="dash-load-more-btn" (click)="loadMoreTransactions()">
-        Load {{ nextBatchSize() }} more
-      </button>
-    }
-
-    @if (!filteredTransactions().length && transactions().length) {
-      <p class="dash-empty" data-icon="🔍">No transactions match your search.</p>
-    }
-    @if (!transactions().length) {
-      <p class="dash-empty" data-icon="💸">No transactions for this period.</p>
-    }
-  </div>
-<div class="dash-card dash-document-search">
-
-  <div class="dash-card-header">
-    <div>
-      <h3 class="dash-card-title">Document Search</h3>
-      <p class="dash-card-subtitle">
-        Search across your indexed financial documents and reports.
-      </p>
-    </div>
-  </div>
-
-  <div class="dash-search-form">
-
-    <label for="documentSearchQuery" class="dash-search-label">
-      Search financial documents
-    </label>
-
-    <div class="dash-search-input-group">
-
-      <input
-        id="documentSearchQuery"
-        type="search"
-        placeholder="Try: revenue growth, EBITDA, Q4 guidance..."
-        [(ngModel)]="searchQuery"
-        (keyup.enter)="searchDocuments()"
-      />
-
-      <button
-        class="contrast dash-search-btn"
-        type="button"
-        (click)="searchDocuments()"
-        [disabled]="isSearching || !searchQuery.trim()"
-      >
-        @if (!isSearching) {
-          <span>Search</span>
-        } @else {
-          <span class="dash-spinner"></span>
-          <span>Searching...</span>
+          </div>
         }
-      </button>
+      </div>
+    }
 
-    </div>
-  </div>
+    <!-- Add product -->
+    <button type="button" class="ab-add-product-btn">+ Προσθέστε άλλο προϊόν</button>
 
-  @if (isSearching) {
-    <div class="dash-loading-state">
-      <div class="dash-loading-card"></div>
-      <div class="dash-loading-card"></div>
-      <div class="dash-loading-card"></div>
-    </div>
-  }
-
-  @if (!isSearching && searchResults.length > 0) {
-
-    <div class="dash-results-header">
-      <div>
-        <strong>{{ searchResults.length }}</strong>
-        results found
+    <!-- Tax section (static) -->
+    <div class="ab-section-card ab-tax-card">
+      <div class="ab-section-header" style="cursor:default">
+        <div class="ab-section-header-left">
+          <span class="ab-section-title">Το αφορολόγητό μου</span>
+          <span class="ab-section-underline"></span>
+        </div>
+      </div>
+      <div class="ab-tax-body">
+        <p class="ab-tax-empty">Δεν έχετε κάνει συναλλαγές με κάρτες ή e-Banking της Alpha Bank που χτίζουν το αφορολόγητό σας.</p>
       </div>
     </div>
 
-    <div class="dash-search-results">
+  </div>
 
-      @for (result of searchResults; track result.id) {
+  <!-- ── Right Panel ───────────────────────────────────────────────────────── -->
+  <aside class="ab-right-panel">
 
-        <article class="dash-search-result">
+    <!-- Appointments -->
+    <div class="ab-right-card">
+      <h4 class="ab-right-card-title">Τα ραντεβού μου</h4>
+      <a href="#" class="ab-right-link">Νέο ραντεβού <span class="ab-right-arrow">›</span></a>
+      <a href="#" class="ab-right-link">Όλα τα ραντεβού <span class="ab-right-arrow">›</span></a>
+    </div>
 
-          <div class="dash-search-result-top">
+    <!-- Notifications -->
+    <div class="ab-right-card">
+      <h4 class="ab-right-card-title">Ειδοποιήσεις</h4>
+      <a href="#" class="ab-right-link">Μηνύματα <span class="ab-right-arrow">›</span></a>
+      <a href="#" class="ab-right-link">Αιτήματα σε εκκρεμότητα <span class="ab-right-arrow">›</span></a>
+    </div>
 
-            <div>
-              <h4>{{ result.sourceFileName }}</h4>
-
-              @if (result.sectionHeading) {
-                <p class="dash-section-heading">
-                  {{ result.sectionHeading }}
-                </p>
+    <!-- My Transactions -->
+    <div class="ab-right-card">
+      <h4 class="ab-right-card-title">Οι συναλλαγές μου</h4>
+      @for (tx of displayedTransactions().slice(0, 7); track tx.transactionId) {
+        <div class="ab-right-tx">
+          <div class="ab-right-tx-icon"
+            [class.ab-right-tx-icon--transfer]="tx.transactionType === 'Transfer'"
+            [class.ab-right-tx-icon--loan]="tx.transactionType === 'Loan'"
+            [class.ab-right-tx-icon--incoming]="tx.transactionType !== 'Transfer' && tx.transactionType !== 'Loan' && tx.transactionDirection === 'Incoming'"
+            [class.ab-right-tx-icon--payment]="tx.transactionType !== 'Transfer' && tx.transactionType !== 'Loan' && tx.transactionDirection !== 'Incoming'">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              @if (tx.transactionType === 'Transfer') {
+                <path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/>
+              } @else if (tx.transactionDirection === 'Incoming') {
+                <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>
+              } @else {
+                <line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>
               }
-            </div>
-
-            <div
-              class="dash-search-score"
-              [class.high-score]="result.relevanceScore >= 0.85"
-              [class.medium-score]="result.relevanceScore >= 0.65 && result.relevanceScore < 0.85"
-              [class.low-score]="result.relevanceScore < 0.65"
-            >
-              {{ result.relevanceScore | percent:'1.0-0' }} Match
-            </div>
-
+            </svg>
           </div>
-
-          <div class="dash-result-content">
-            <p>{{ result.content }}</p>
-          </div>
-
-          <div class="dash-result-footer">
-            <span>
-              Chunk {{ result.chunkIndex + 1 }} / {{ result.totalChunks }}
+          <div class="ab-right-tx-info">
+            <span class="ab-right-tx-name">{{ tx.productName }}</span>
+            <span class="ab-right-tx-amount"
+              [class.ab-right-tx-amount--pos]="tx.amount > 0"
+              [class.ab-right-tx-amount--neg]="tx.amount < 0">
+              {{ tx.amount | number:'1.2-2' }} EUR
             </span>
           </div>
-
-        </article>
+        </div>
       }
-
+      @if (!transactions().length) {
+        <p class="ab-right-empty">Δεν υπάρχουν συναλλαγές.</p>
+      }
+      <a href="#" class="ab-right-more">Περισσότερα</a>
     </div>
-  }
 
-  @if (!isSearching && searchQuery.trim() && searchResults.length === 0) {
-
-    <div class="dash-empty-state">
-      <div class="dash-empty-icon">🔍</div>
-
-      <h4>No matching documents found</h4>
-
-      <p>
-        Try broader keywords or different financial terminology.
-      </p>
-    </div>
-  }
+  </aside>
 
 </div>
 
-
-</div>
-
+<!-- ── Toast ─────────────────────────────────────────────────────────────────── -->
 @if (showToast()) {
   <div class="dash-toast" role="status" aria-live="polite">
     <span class="dash-toast-icon">🧠</span>
@@ -419,6 +301,7 @@
   </div>
 }
 
+<!-- ── Insight Detail Modal ───────────────────────────────────────────────────── -->
 @if (selectedInsight()) {
   <div class="tx-modal-overlay" (click)="closeInsightModal()">
     <div class="tx-modal insight-detail-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
@@ -461,6 +344,7 @@
   </div>
 }
 
+<!-- ── New Transaction Modal ──────────────────────────────────────────────────── -->
 @if (showModal) {
   <div class="tx-modal-overlay" (click)="closeModal()">
     <div class="tx-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
@@ -508,4 +392,3 @@
     </div>
   </div>
 }
-

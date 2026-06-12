@@ -1,26 +1,55 @@
 <header>
   <nav>
+    <!-- Brand -->
     <ul>
-      <li><a class="nav-brand" [routerLink]="['/']">Epirus Hackathon</a></li>
+      <li>
+        <a class="nav-brand ab-brand" [routerLink]="['/']">
+          <span class="ab-brand-shield">
+            <svg viewBox="0 0 32 32" width="28" height="28" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="16" cy="16" r="15" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.45)" stroke-width="1"/>
+              <path d="M16 5 L7 9.5 L7 17.5 C7 22.2 11 26.2 16 28 C21 26.2 25 22.2 25 17.5 L25 9.5 Z" fill="white"/>
+            </svg>
+          </span>
+          ALPHA BANK
+        </a>
+      </li>
     </ul>
-    <ul>
+
+    <!-- Center icon buttons (decorative, shown when authenticated) -->
+    <ul class="ab-header-icons-list">
       @if (isAuthenticated$ | async) {
         <li>
-          <a [routerLink]="['/insights']" [routerLinkActive]="['pico-active']" class="nav-insights-link">
-            Insights
-            @if (insightsService.hasUnread()) {
-              <span class="nav-unread-badge"></span>
-            }
-          </a>
+          <button type="button" class="ab-header-icon-btn" title="Refresh">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"/>
+              <polyline points="1 20 1 14 7 14"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+          </button>
         </li>
-        <li><a [routerLink]="['/chat']" [routerLinkActive]="['pico-active']">Chat</a></li>
+        <li>
+          <button type="button" class="ab-header-icon-btn" title="View">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </li>
+        <li aria-hidden="true" class="nav-separator"></li>
       }
     </ul>
+
+    <!-- Right: user menu / auth links -->
     <ul>
       @if (isAuthenticated$ | async) {
-        <li><a href="#" (click)="logout($event)">Log out</a></li>
+        <li class="ab-user-menu-item">
+          <div class="ab-user-initials">{{ userInitials$ | async }}</div>
+          <a href="#" class="ab-user-name-link" (click)="logout($event)">
+            Log out <span class="ab-user-chevron">∨</span>
+          </a>
+        </li>
       } @else {
-        <li><a [routerLink]="['/login']" [routerLinkActive]="['pico-active']">Log in</a></li>
+        <li><a [routerLink]="['/login']"    [routerLinkActive]="['pico-active']">Log in</a></li>
         <li><a [routerLink]="['/register']" [routerLinkActive]="['pico-active']">Register</a></li>
       }
       <li aria-hidden="true" class="nav-separator"></li>

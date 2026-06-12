@@ -1,22 +1,132 @@
-<article>
-  <h2>Log in</h2>
-  <form (ngSubmit)="login()" #loginForm="ngForm">
-    <label for="email">Username</label>
-    <input type="email" id="email" name="email" [(ngModel)]="email"
-      [attr.aria-invalid]="invalid ? true : null"
-      aria-describedby="login-error"
-      autocomplete="username"
-      (ngModelChange)="invalid = false" />
-    <label for="password">Password</label>
-    <input type="password" id="password" name="password" [(ngModel)]="password"
-      [attr.aria-invalid]="invalid ? true : null"
-      aria-describedby="login-error"
-      autocomplete="current-password"
-      (ngModelChange)="invalid = false" />
-    @if (invalid) {
-      <small id="login-error">Invalid email or password.</small>
-    }
-    <button type="submit">Log in</button>
-    <p style="margin-top: 1rem">Don't have an account? <a [routerLink]="['/register']">Register</a></p>
-  </form>
-</article>
+<div class="abl-page">
+
+  <!-- ── Login-page header (white, replaces dark nav) ── -->
+  <header class="abl-header">
+    <div class="abl-header-inner">
+      <a class="abl-header-brand" href="/">
+        <span class="abl-header-shield">
+          <svg viewBox="0 0 32 32" width="30" height="30" xmlns="http://www.w3.org/2000/svg">
+            <rect width="32" height="32" rx="6" fill="#1a0072"/>
+            <circle cx="16" cy="16" r="11" fill="none" stroke="white" stroke-width="1.5"/>
+            <path d="M16 8 L10 11.5 L10 18 C10 21.5 12.7 24.5 16 26 C19.3 24.5 22 21.5 22 18 L22 11.5 Z" fill="white"/>
+          </svg>
+        </span>
+        <span class="abl-brand-text">ALPHA BANK</span>
+      </a>
+      <div class="abl-header-right">
+        <button type="button" class="abl-demo-btn">
+          Δοκιμάζω το demo
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </button>
+        <div class="abl-header-icons">
+          <button type="button" class="abl-icon-btn" title="Help">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </button>
+          <button type="button" class="abl-icon-btn" title="Messages">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </button>
+          <button type="button" class="abl-icon-btn" title="Phone">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6 6l.85-.85a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.49 16z"/></svg>
+          </button>
+        </div>
+        <div class="abl-header-sep"></div>
+        <button type="button" class="abl-lang-btn">ΕΛ <span>∨</span></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Main: background + two-column layout ── -->
+  <div class="abl-main">
+
+    <!-- Left: welcome + security card -->
+    <div class="abl-left">
+      <h1 class="abl-welcome">
+        Καλώς ήρθατε<br>στο web banking
+      </h1>
+      <div class="abl-security-card">
+        <h3 class="abl-security-title">Συμβουλές για την ασφαλεία σας</h3>
+        <p class="abl-security-body">Δημιουργήστε ισχυρούς κωδικούς. Μην τους αποκαλύπτετε σε κανέναν.</p>
+        <a href="#" class="abl-security-link">Προστατεύω τους κωδικούς μου →</a>
+        <div class="abl-security-dots">
+          <span class="abl-dot abl-dot--active"></span>
+          <span class="abl-dot"></span>
+          <span class="abl-dot"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: login form card -->
+    <div class="abl-right">
+      <div class="abl-card">
+        <h2 class="abl-card-title">Σύνδεση</h2>
+
+        <form (ngSubmit)="login()" #loginForm="ngForm">
+
+          <div class="abl-field">
+            <label class="abl-label" for="email">Username</label>
+            <input
+              class="abl-input"
+              type="email"
+              id="email"
+              name="email"
+              [(ngModel)]="email"
+              [class.abl-input--invalid]="invalid"
+              autocomplete="username"
+              placeholder="Το username σας ως ιδιώτης"
+              (ngModelChange)="invalid = false" />
+          </div>
+
+          <div class="abl-field">
+            <label class="abl-label" for="password">Password</label>
+            <input
+              class="abl-input"
+              type="password"
+              id="password"
+              name="password"
+              [(ngModel)]="password"
+              [class.abl-input--invalid]="invalid"
+              autocomplete="current-password"
+              placeholder="Το password σας ως ιδιώτης"
+              (ngModelChange)="invalid = false" />
+          </div>
+
+          <div class="abl-remember">
+            <input type="checkbox" id="remember" class="abl-checkbox" />
+            <label for="remember" class="abl-remember-label">
+              Αποθήκευση username
+              <span class="abl-remember-info" title="Info">ⓘ</span>
+            </label>
+          </div>
+
+          @if (invalid) {
+            <p class="abl-error">Μη έγκυρο username ή password.</p>
+          }
+
+          <button type="submit" class="abl-submit-btn">Σύνδεση</button>
+
+          <a href="#" class="abl-business-link">Σύνδεση ως επιχείρηση</a>
+
+          <div class="abl-divider"></div>
+
+          <div class="abl-links">
+            <a href="#" class="abl-forgot-link">Ξέχασα το username μου</a>
+            <a href="#" class="abl-forgot-link">Ξέχασα το password μου / Κλείδωσα τους κωδικούς μου</a>
+            <a href="#" class="abl-forgot-link">Αποκτώ κωδικούς digital banking</a>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Footer ── -->
+  <footer class="abl-footer">
+    <a href="#" class="abl-footer-link">Όροι χρήσης</a>
+    <span class="abl-footer-sep">|</span>
+    <a href="#" class="abl-footer-link">Ασφάλεια</a>
+    <span class="abl-footer-sep">|</span>
+    <a href="#" class="abl-footer-link">Πολιτική απορρήτου</a>
+  </footer>
+
+</div>

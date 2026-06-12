@@ -11,6 +11,11 @@ html {
   font-size: 95%;
 }
 
+// ── White canvas — override Pico's dark-theme body background ─────────────────
+html, body {
+  background: #f0f2f5;
+}
+
 :root {
   --pico-font-family-sans-serif: "Inter", system-ui, sans-serif;
   --pico-font-family-headings: "Outfit", sans-serif;
@@ -35,9 +40,9 @@ app-nav-menu > header {
   padding: 0;
   margin: 0;
   z-index: 100;
-  background: color-mix(in srgb, var(--pico-background-color) 85%, transparent);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--pico-muted-border-color);
+  background: #1a0072;
+  backdrop-filter: none;
+  border-bottom: none;
 }
 
 app-nav-menu > header nav {
@@ -66,20 +71,39 @@ app-nav-menu > header nav > ul:first-child a {
   font-size: 1.75rem;
   font-weight: 700;
   text-decoration: none;
-  color: var(--pico-contrast);
+  color: #ffffff;
 }
 
-// ── Login / Register centered layout ──────────────────────────────────────────
+// ── Nav links on dark purple header ─────────────────────────────────────────────
+app-nav-menu > header nav a {
+  color: rgba(255,255,255,0.85) !important;
+  &:hover { color: #ffffff !important; }
+}
+
+app-nav-menu > header nav ul li a,
+app-nav-menu > header nav ul li button {
+  color: rgba(255,255,255,0.85) !important;
+  &:hover { color: #ffffff !important; }
+}
+
+app-nav-menu > header .nav-separator {
+  background: rgba(255,255,255,0.25);
+}
+
+app-nav-menu > header .theme-toggle-btn {
+  color: rgba(255,255,255,0.75) !important;
+  &:hover { color: #ffffff !important; background: none !important; }
+}
+
+// ── Login / Register — full-screen overlay layout ─────────────────────────────
 app-root > main:has(> app-login, > app-register) {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: block;
 
   > app-login,
   > app-register {
-    display: contents;
+    display: block;
   }
 
   > app-login > article,
@@ -365,7 +389,13 @@ $bank-border:     rgba(36,59,115,0.1);
 $bank-text:       #243b73;
 $bank-text-muted: rgba(36,59,115,0.55);
 
-app-root > main:has(> app-home),
+app-root > main:has(> app-home) {
+  background: #f0f2f5;
+  min-height: 100vh;
+  padding: 0;
+  padding-top: var(--header-height);
+}
+
 app-root > main:has(> app-insights) {
   background: linear-gradient(135deg, #243b73 0%, #3d5490 35%, #6878a8 70%, #8090be 100%);
   background-attachment: fixed;
@@ -3025,3 +3055,1225 @@ address, blockquote, dl, ol, p, pre, table, ul {
 .k-message-group:not(.k-message-group-sender) .k-bubble strong,
 .k-message-group:not(.k-message-group-sender) .k-bubble em,
 .k-message-group:not(.k-message-group-sender) .k-bubble a { color: inherit; }
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Alpha Bank Layout Redesign
+// ══════════════════════════════════════════════════════════════════════════════
+
+$ab-purple:       #1a0072;
+$ab-purple-mid:   #2d2d9c;
+$ab-purple-light: #3d3d9e;
+$ab-text-dark:    #1a1a6e;
+$ab-text-muted:   #8080b0;
+$ab-link:         #2a2aae;
+$ab-border:       #eeeef6;
+$ab-bg:           #f0f2f5;
+
+// ── Header brand ────────────────────────────────────────────────────────────
+.ab-brand {
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.15rem !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  text-decoration: none;
+  letter-spacing: 0.06em;
+}
+
+.ab-brand-shield {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+// ── Header icon buttons ──────────────────────────────────────────────────────
+.ab-header-icons-list {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.25rem !important;
+}
+
+.ab-header-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12) !important;
+  border: 1px solid rgba(255,255,255,0.2) !important;
+  color: rgba(255,255,255,0.85) !important;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: none !important;
+  transition: background 0.15s, color 0.15s;
+  --pico-form-element-spacing-vertical: 0;
+  --pico-form-element-spacing-horizontal: 0;
+
+  &:hover {
+    background: rgba(255,255,255,0.22) !important;
+    color: #ffffff !important;
+  }
+}
+
+// ── Header user menu ─────────────────────────────────────────────────────────
+.ab-user-menu-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.6rem !important;
+  padding: 0 !important;
+}
+
+.ab-user-initials {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  border: 1.5px solid rgba(255,255,255,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #ffffff !important;
+  flex-shrink: 0;
+  letter-spacing: 0.03em;
+}
+
+.ab-user-name-link {
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  color: rgba(255,255,255,0.9) !important;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+
+  &:hover { color: #ffffff !important; }
+}
+
+.ab-user-chevron {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+// ── 3-Column Layout ──────────────────────────────────────────────────────────
+.ab-layout {
+  display: grid;
+  grid-template-columns: 130px 1fr 295px;
+  min-height: calc(100vh - var(--header-height));
+  align-items: start;
+}
+
+// ── Left Sidebar ─────────────────────────────────────────────────────────────
+.ab-sidebar {
+  background: #ffffff;
+  border-right: 1px solid $ab-border;
+  padding: 1.25rem 0;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: var(--header-height);
+  height: calc(100vh - var(--header-height));
+  overflow-y: auto;
+  gap: 0.1rem;
+}
+
+.ab-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.8rem 0.5rem;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  text-align: center;
+  color: $ab-purple-light;
+  width: 100%;
+  border-radius: 0 !important;
+  transition: background 0.15s;
+  --pico-form-element-spacing-vertical: 0;
+  --pico-form-element-spacing-horizontal: 0;
+
+  &:hover:not(.ab-nav-item--active) {
+    background: rgba(61,61,158,0.05) !important;
+  }
+
+  &--active {
+    background: rgba(45,45,156,0.06) !important;
+
+    .ab-nav-label { color: $ab-purple; font-weight: 700; }
+  }
+}
+
+.ab-nav-orb {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $ab-purple-light;
+  flex-shrink: 0;
+
+  &--active {
+    background: $ab-purple-mid;
+    color: #ffffff;
+  }
+}
+
+.ab-nav-label {
+  font-size: 0.64rem;
+  font-weight: 600;
+  color: $ab-purple-light;
+  line-height: 1.3;
+  text-align: center;
+}
+
+// ── Main Content ─────────────────────────────────────────────────────────────
+.ab-content {
+  padding: 1.5rem 1.5rem 3rem;
+  min-width: 0;
+  overflow: hidden;
+}
+
+// ── Topbar (breadcrumb + want-to button) ─────────────────────────────────────
+.ab-topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.ab-topbar-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.ab-topbar-here {
+  font-size: 0.72rem;
+  color: $ab-link;
+  font-weight: 500;
+}
+
+.ab-topbar-page {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: $ab-text-dark;
+}
+
+.ab-want-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: $ab-link !important;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  --pico-form-element-spacing-vertical: 0;
+  --pico-form-element-spacing-horizontal: 0;
+
+  &:hover { color: $ab-purple !important; }
+}
+
+// ── Promo Banner ─────────────────────────────────────────────────────────────
+.ab-promo {
+  border-radius: 12px;
+  background: linear-gradient(135deg, #0d0060 0%, #1a0a6b 45%, #0e3070 100%);
+  color: #ffffff;
+  padding: 1.5rem 1.5rem 2.25rem;
+  margin-bottom: 1.25rem;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 155px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: rgba(255,255,255,0.12);
+  }
+}
+
+.ab-promo-body {
+  flex: 1;
+  z-index: 1;
+}
+
+.ab-promo-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff !important;
+  margin: 0 0 0.45rem;
+  line-height: 1.35;
+}
+
+.ab-promo-sub {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.78) !important;
+  margin: 0 0 1rem;
+  line-height: 1.5;
+}
+
+.ab-promo-link {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff !important;
+  text-decoration: none;
+  border-bottom: 1.5px solid rgba(255,255,255,0.5);
+  padding-bottom: 1px;
+
+  &:hover { border-bottom-color: #ffffff; }
+}
+
+.ab-promo-image {
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.ab-promo-img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+  opacity: 0.85;
+}
+
+.ab-promo-collapse-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: rgba(255,255,255,0.6) !important;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  --pico-form-element-spacing-vertical: 0;
+  --pico-form-element-spacing-horizontal: 0;
+  &:hover { color: #ffffff !important; }
+}
+
+.ab-promo-dots {
+  position: absolute;
+  bottom: 0.85rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.4rem;
+}
+
+.ab-promo-dot {
+  width: 28px;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.3);
+
+  &--active { background: #ffffff; }
+}
+
+// ── AI Advisor Section (above product sections) ───────────────────────────────
+.ab-advisor-wrap {
+  background: #ffffff;
+  border-radius: 10px;
+  margin-bottom: 0.85rem;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(26,0,114,0.08);
+  transition: box-shadow 0.2s;
+
+  &--expanded { box-shadow: 0 6px 24px rgba(26,0,114,0.13); }
+}
+
+.ab-advisor-toggle {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.9rem 1.25rem !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  gap: 0.75rem;
+  margin: 0 !important;
+  --pico-form-element-spacing-vertical: 0;
+  --pico-form-element-spacing-horizontal: 0;
+
+  &:hover { background: rgba(26,0,114,0.03) !important; }
+}
+
+.ab-advisor-toggle-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.ab-advisor-brain {
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.ab-advisor-label {
+  font-family: "Outfit", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: $ab-text-dark;
+}
+
+.ab-advisor-loading-text {
+  font-size: 0.8rem;
+  color: $ab-text-muted;
+  font-style: italic;
+}
+
+.ab-advisor-badge {
+  font-size: 0.75rem;
+  color: $ab-purple;
+  background: rgba(26,0,114,0.07);
+  border-radius: 2rem;
+  padding: 0.12rem 0.55rem;
+  font-weight: 600;
+}
+
+.ab-advisor-chevron {
+  font-size: 1.3rem;
+  color: $ab-text-muted;
+  transition: transform 0.22s ease;
+  display: inline-block;
+  line-height: 1;
+  flex-shrink: 0;
+
+  &.open { transform: rotate(90deg); }
+}
+
+.ab-advisor-body {
+  background: linear-gradient(160deg, #e8eeff 0%, #dce6ff 100%);
+  padding: 1rem 1.25rem 1.25rem;
+  border-top: 1px solid rgba(26,0,114,0.08);
+}
+
+// ── Redesigned AI Advisor section ────────────────────────────────────────────
+.ab-advisor-section {
+  background: #ffffff;
+  border-radius: 10px;
+  margin-bottom: 0.85rem;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(26,0,114,0.1);
+}
+
+.ab-advisor-hdr {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, $ab-purple 0%, $ab-purple-mid 55%, $ab-purple-light 100%);
+}
+
+.ab-advisor-hdr-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  border: 1.5px solid rgba(255,255,255,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.ab-advisor-hdr-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.ab-advisor-hdr-title {
+  font-family: "Outfit", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff !important;
+  line-height: 1.2;
+}
+
+.ab-advisor-hdr-sub {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.72) !important;
+}
+
+.ab-advisor-hdr-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.ab-advisor-hdr-loading {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.82) !important;
+  font-style: italic;
+}
+
+.ab-advisor-hdr-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.85);
+  animation: live-pulse 1.2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.ab-advisor-hdr-badge {
+  font-size: 0.75rem;
+  color: $ab-purple !important;
+  background: rgba(255,255,255,0.92);
+  border-radius: 2rem;
+  padding: 0.15rem 0.65rem;
+  font-weight: 700;
+}
+
+.ab-advisor-cards-body {
+  padding: 1.25rem 1.25rem 0.75rem;
+}
+
+// ── Section Cards (Accounts, Cards, Loans etc.) ───────────────────────────────
+.ab-section-card {
+  background: #ffffff;
+  border-radius: 10px;
+  margin-bottom: 0.65rem;
+  overflow: hidden;
+  box-shadow: 0 1px 5px rgba(26,0,114,0.06);
+}
+
+.ab-section-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 1.1rem 1.25rem;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  gap: 1rem;
+  --pico-form-element-spacing-vertical: 0;
+  --pico-form-element-spacing-horizontal: 0;
+
+  &:hover { background: rgba(26,0,114,0.02) !important; }
+}
+
+.ab-section-header-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+  min-width: 0;
+}
+
+.ab-section-title {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: $ab-text-dark !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.ab-section-underline {
+  height: 2.5px;
+  background: #2a2aae;
+  width: 100%;
+  margin-top: 4px;
+  border-radius: 2px;
+}
+
+.ab-section-meta {
+  font-size: 0.78rem;
+  color: $ab-text-muted !important;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  strong { color: $ab-text-dark !important; font-weight: 700; }
+}
+
+.ab-section-chevron {
+  font-size: 1.35rem;
+  color: $ab-purple-light;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  line-height: 1;
+
+  &.open { transform: rotate(90deg); }
+}
+
+// ── Section body / product rows ───────────────────────────────────────────────
+.ab-section-body {
+  border-top: 1px solid $ab-border;
+  padding: 0 1.25rem 0.25rem;
+}
+
+.ab-product-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid $ab-border;
+
+  &:last-child { border-bottom: none; }
+}
+
+.ab-product-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  &--account { background: rgba(45,45,156,0.1); color: $ab-purple-mid; }
+  &--card    { background: rgba(26,0,114,0.1);  color: $ab-purple; }
+  &--loan    { background: rgba(229,38,41,0.1); color: #e52629; }
+}
+
+.ab-product-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.ab-product-name {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: $ab-text-dark !important;
+}
+
+.ab-product-sub {
+  font-size: 0.75rem;
+  color: $ab-text-muted !important;
+  font-family: monospace;
+}
+
+.ab-product-balance {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $ab-text-dark !important;
+  flex-shrink: 0;
+
+  &--loan { color: #e52629 !important; }
+}
+
+// ── Credit bar (inside Cards section) ────────────────────────────────────────
+.ab-credit-bar-wrap {
+  padding: 0 1.25rem 0.75rem;
+  border-bottom: 1px solid $ab-border;
+}
+
+.ab-credit-bar {
+  height: 5px;
+  background: rgba(26,0,114,0.08);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 0.3rem;
+}
+
+.ab-credit-bar-fill {
+  height: 100%;
+  background: $ab-purple-mid;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+
+  &--danger { background: #e52629; }
+}
+
+.ab-credit-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  color: $ab-text-muted !important;
+}
+
+// ── Add product button ────────────────────────────────────────────────────────
+.ab-add-product-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: $ab-link !important;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.65rem 1.25rem;
+  --pico-form-element-spacing-vertical: 0;
+  --pico-form-element-spacing-horizontal: 0;
+
+  &:hover { color: $ab-purple !important; }
+}
+
+// ── Tax section ───────────────────────────────────────────────────────────────
+.ab-tax-body {
+  padding: 0 1.25rem 1.1rem;
+  border-top: 1px solid $ab-border;
+}
+
+.ab-tax-empty {
+  font-size: 0.82rem;
+  color: $ab-text-muted !important;
+  margin: 0.75rem 0 0;
+  line-height: 1.55;
+}
+
+// ── Right Panel ───────────────────────────────────────────────────────────────
+.ab-right-panel {
+  background: #eaecf4;
+  border-left: 1px solid $ab-border;
+  padding: 1.5rem 1rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  position: sticky;
+  top: var(--header-height);
+  height: calc(100vh - var(--header-height));
+  overflow-y: auto;
+}
+
+.ab-right-card {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 1rem 1.1rem 0.85rem;
+  box-shadow: 0 1px 4px rgba(26,0,114,0.06);
+}
+
+.ab-right-card-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: $ab-text-dark !important;
+  margin: 0 0 0.75rem;
+}
+
+.ab-right-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid $ab-border;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: $ab-link !important;
+  text-decoration: none;
+
+  &:last-of-type { border-bottom: none; }
+  &:hover { color: $ab-purple !important; }
+}
+
+.ab-right-arrow {
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+.ab-right-tx {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid $ab-border;
+
+  &:last-of-type { border-bottom: none; }
+}
+
+.ab-right-tx-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  &--payment  { background: rgba(229,38,41,0.1);  color: #e52629; }
+  &--incoming { background: rgba(46,204,113,0.1); color: #27ae60; }
+  &--transfer { background: rgba(74,144,217,0.1); color: #4a90d9; }
+  &--loan     { background: rgba(243,156,18,0.1); color: #f39c12; }
+}
+
+.ab-right-tx-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  min-width: 0;
+}
+
+.ab-right-tx-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: $ab-text-dark !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ab-right-tx-amount {
+  font-size: 0.72rem;
+  color: $ab-text-muted !important;
+
+  &--pos { color: #27ae60 !important; }
+  &--neg { color: #e52629 !important; }
+}
+
+.ab-right-more {
+  display: block;
+  text-align: center;
+  margin-top: 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: $ab-link !important;
+  text-decoration: none;
+
+  &:hover { color: $ab-purple !important; }
+}
+
+.ab-right-empty {
+  font-size: 0.78rem;
+  color: $ab-text-muted !important;
+  margin: 0.5rem 0;
+  text-align: center;
+}
+
+// ── Responsive: collapse sidebar and right panel on small screens ─────────────
+@media (max-width: 900px) {
+  .ab-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .ab-sidebar,
+  .ab-right-panel {
+    display: none;
+  }
+
+  .ab-content {
+    padding: 1rem 1rem 2.5rem;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Alpha Bank Login Page
+// ══════════════════════════════════════════════════════════════════════════════
+
+// Full-screen overlay that covers the dark nav-menu
+.abl-page {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  background:
+    linear-gradient(
+      to right,
+      rgba(20, 20, 60, 0.72) 0%,
+      rgba(20, 20, 60, 0.55) 50%,
+      rgba(20, 20, 60, 0.25) 100%
+    ),
+    linear-gradient(135deg, #1a1040 0%, #2d2060 40%, #3a3080 70%, #4a408a 100%);
+}
+
+// ── Login header (white) ──────────────────────────────────────────────────────
+.abl-header {
+  background: #ffffff;
+  height: 58px;
+  flex-shrink: 0;
+  border-bottom: 1px solid #e8e8f0;
+  display: flex;
+  align-items: center;
+}
+
+.abl-header-inner {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.abl-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+}
+
+.abl-header-shield {
+  display: flex;
+  align-items: center;
+}
+
+.abl-brand-text {
+  font-family: "Outfit", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1a0072;
+  letter-spacing: 0.06em;
+}
+
+.abl-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.abl-demo-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #1a0072 !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 2rem;
+  padding: 0.45rem 1.1rem !important;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: none !important;
+  --pico-form-element-spacing-vertical: 0;
+  --pico-form-element-spacing-horizontal: 0;
+
+  &:hover { background: #2d2d9c !important; }
+}
+
+.abl-header-icons {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.abl-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #3d3d9e !important;
+  cursor: pointer;
+  padding: 0;
+  --pico-form-element-spacing-vertical: 0;
+  --pico-form-element-spacing-horizontal: 0;
+
+  &:hover { background: rgba(61,61,158,0.08) !important; }
+}
+
+.abl-header-sep {
+  width: 1px;
+  height: 1.4rem;
+  background: #e0e0ee;
+  flex-shrink: 0;
+}
+
+.abl-lang-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #1a0072 !important;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem !important;
+  --pico-form-element-spacing-vertical: 0;
+  --pico-form-element-spacing-horizontal: 0;
+
+  &:hover { color: #3d3d9e !important; }
+}
+
+// ── Main content (two columns) ────────────────────────────────────────────────
+.abl-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 2.5rem 4rem;
+  gap: 3rem;
+  max-width: 1300px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+// ── Left side: welcome + security card ───────────────────────────────────────
+.abl-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.abl-welcome {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #ffffff !important;
+  line-height: 1.2;
+  margin: 0;
+  font-family: "Outfit", sans-serif;
+}
+
+.abl-security-card {
+  background: rgba(255,255,255,0.96);
+  border-radius: 12px;
+  padding: 1.5rem 1.75rem 1.25rem;
+  max-width: 360px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+.abl-security-title {
+  font-size: 1rem !important;
+  font-weight: 700;
+  color: #1a0072 !important;
+  margin: 0 0 0.5rem !important;
+}
+
+.abl-security-body {
+  font-size: 0.85rem;
+  color: #4a4a6e !important;
+  margin: 0 0 0.75rem !important;
+  line-height: 1.55;
+}
+
+.abl-security-link {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2a2aae !important;
+  text-decoration: none;
+
+  &:hover { color: #1a0072 !important; }
+}
+
+.abl-security-dots {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  justify-content: center;
+}
+
+.abl-dot {
+  width: 24px;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(26,0,114,0.15);
+
+  &--active { background: #1a0072; }
+}
+
+// ── Right side: login form card ───────────────────────────────────────────────
+.abl-right {
+  flex: 0 0 420px;
+  display: flex;
+  justify-content: center;
+}
+
+.abl-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 2rem 2.25rem 1.75rem;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.abl-card-title {
+  font-size: 1.5rem !important;
+  font-weight: 700;
+  color: #1a1a3e !important;
+  margin: 0 0 1.5rem !important;
+}
+
+.abl-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 1rem;
+}
+
+.abl-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #4a4a6e !important;
+}
+
+.abl-input {
+  border: 1.5px solid #d0d0e8 !important;
+  border-radius: 8px !important;
+  padding: 0.75rem 1rem !important;
+  font-size: 0.9rem;
+  color: #1a1a3e !important;
+  background: #ffffff !important;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s;
+  margin: 0 !important;
+  min-height: unset !important;
+  box-shadow: none !important;
+
+  &::placeholder { color: #9090b8; }
+  &:focus { border-color: #1a0072 !important; }
+  &--invalid { border-color: #e52629 !important; }
+}
+
+.abl-remember {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.abl-checkbox {
+  width: 1.1rem;
+  height: 1.1rem;
+  cursor: pointer;
+  accent-color: #1a0072;
+  flex-shrink: 0;
+  margin: 0 !important;
+}
+
+.abl-remember-label {
+  font-size: 0.82rem;
+  color: #3a3a5e !important;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0 !important;
+}
+
+.abl-remember-info {
+  color: #2a2aae;
+  font-size: 0.85rem;
+}
+
+.abl-error {
+  font-size: 0.82rem;
+  color: #e52629 !important;
+  margin: -0.5rem 0 0.75rem !important;
+}
+
+.abl-submit-btn {
+  display: block;
+  width: 100%;
+  padding: 0.85rem 1.25rem !important;
+  background: #1a0072 !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  margin-bottom: 0.85rem;
+  box-shadow: none !important;
+  transition: background 0.15s;
+  --pico-form-element-spacing-vertical: 0;
+  --pico-form-element-spacing-horizontal: 0;
+
+  &:hover { background: #2d2d9c !important; }
+}
+
+.abl-business-link {
+  display: block;
+  text-align: center;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1a0072 !important;
+  text-decoration: none;
+  margin-bottom: 1rem;
+
+  &:hover { color: #2d2d9c !important; }
+}
+
+.abl-divider {
+  height: 1px;
+  background: #e8e8f0;
+  margin-bottom: 1rem;
+}
+
+.abl-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.abl-forgot-link {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #2a2aae !important;
+  text-decoration: none;
+
+  &:hover { color: #1a0072 !important; text-decoration: underline; }
+}
+
+// ── Footer ───────────────────────────────────────────────────────────────────
+.abl-footer {
+  background: #1a0072;
+  padding: 0.85rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.abl-footer-link {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.8) !important;
+  text-decoration: none;
+
+  &:hover { color: #ffffff !important; }
+}
+
+.abl-footer-sep {
+  color: rgba(255,255,255,0.4);
+  font-size: 0.75rem;
+}
+
+// ── Responsive login ──────────────────────────────────────────────────────────
+@media (max-width: 900px) {
+  .abl-main {
+    flex-direction: column;
+    padding: 1.5rem 1.5rem;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+
+  .abl-welcome { font-size: 2rem; }
+
+  .abl-right { flex: none; width: 100%; }
+
+  .abl-header-icons,
+  .abl-demo-btn { display: none; }
+}
