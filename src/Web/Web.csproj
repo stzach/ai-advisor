@@ -6,8 +6,10 @@
     <SpaRoot>ClientApp\</SpaRoot>
     <OpenApiDocumentsDirectory>./wwwroot/openapi/</OpenApiDocumentsDirectory>
     <OpenApiGenerateDocumentsOptions>--file-name v1</OpenApiGenerateDocumentsOptions>
-    <!-- Disable OpenAPI document generation when RuntimeIdentifier is set to avoid cross-platform assembly loading issues during containerization -->
-    <OpenApiGenerateDocuments Condition="'$(RuntimeIdentifier)' != ''">false</OpenApiGenerateDocuments>
+    <!-- Disable OpenAPI document generation:
+         - when RuntimeIdentifier is set (cross-platform containerisation)
+         - in Debug builds (Azure services not available locally; uses cached wwwroot/openapi/v1.json) -->
+    <OpenApiGenerateDocuments Condition="'$(RuntimeIdentifier)' != '' OR '$(Configuration)' == 'Debug'">false</OpenApiGenerateDocuments>
   </PropertyGroup>
 
   <ItemGroup>

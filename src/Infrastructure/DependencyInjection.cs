@@ -83,33 +83,30 @@ public static class DependencyInjection
         builder.Services.AddScoped<IDocumentVectorizationService, DocumentVectorizationService>();
         builder.Services.AddScoped<IFinancialDocumentSearchService, FinancialDocumentSearchService>();
 
-        // Background Services
-        builder.Services.AddHostedService<DocumentVectorizationBackgroundService>();
+        // Azure Search clients — health checks disabled so local/CI builds don't probe the Azure endpoint
+        builder.AddAzureSearchClient(Services.Search, settings => settings.DisableHealthChecks = true);
 
-        // Azure Search clients
-        builder.AddAzureSearchClient(Services.Search);
-
-        
-        builder.Services.AddSingleton(sp =>
+        builder.Services.AddSingleton(_ =>
         {
-            var config = sp.GetRequiredService<IConfiguration>();
-
-            var endpoint = new Uri(builder.Configuration["AzureSearch:Endpoint"]);
-            var apiKey = builder.Configuration["AzureSearch:ApiKey"];
-            var indexName = "documents_index";
-
+            var endpoint  = new Uri(builder.Configuration["AzureSearch:Endpoint"]!);
+            var apiKey    = builder.Configuration["AzureSearch:ApiKey"]!;
+            var indexName = builder.Configuration["AzureSearch:IndexName"] ?? "documents_index";
             return new SearchClient(endpoint, indexName, new AzureKeyCredential(apiKey));
         });
 
-        builder.Services.AddSingleton(sp =>
+        builder.Services.AddSingleton(_ =>
         {
-            var config = sp.GetRequiredService<IConfiguration>();
-
-            var endpoint = new Uri(builder.Configuration["AzureSearch:Endpoint"]);
-            var apiKey = builder.Configuration["AzureSearch:ApiKey"];
-
+            var endpoint = new Uri(builder.Configuration["AzureSearch:Endpoint"]!);
+            var apiKey   = builder.Configuration["AzureSearch:ApiKey"]!;
             return new SearchIndexClient(endpoint, new AzureKeyCredential(apiKey));
         });
+
+        // Background vectorisation — only in Production/Staging; avoids Azure Search calls during
+        // local dev startup and the OpenAPI doc-generation build step.
+        if (!builder.Environment.IsDevelopment())
+        {
+            builder.Services.AddHostedService<DocumentVectorizationBackgroundService>();
+        }
 
         builder.Services.AddScoped<IInsightsOrchestrator, InsightsOrchestrator>();
 
