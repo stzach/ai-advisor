@@ -137,7 +137,7 @@ export class HomeComponent {
       },
       error: () => {
         this.transferSubmitting  = false;
-        this.transferSubmitError = 'Η μεταφορά απέτυχε. Παρακαλώ δοκιμάστε ξανά.';
+        this.transferSubmitError = 'Transfer failed. Please try again.';
       }
     });
   }

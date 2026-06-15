@@ -6,42 +6,42 @@
       <div class="ab-nav-orb ab-nav-orb--active">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
       </div>
-      <span class="ab-nav-label">Επισκόπηση</span>
+      <span class="ab-nav-label">Overview</span>
     </button>
 
     <button type="button" class="ab-nav-item">
       <div class="ab-nav-orb">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
       </div>
-      <span class="ab-nav-label">Μεταφορές &amp;<br>Πληρωμές</span>
+      <span class="ab-nav-label">Transfers &amp;<br>Payments</span>
     </button>
 
     <button type="button" class="ab-nav-item">
       <div class="ab-nav-orb">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       </div>
-      <span class="ab-nav-label">Ιστορικό</span>
+      <span class="ab-nav-label">History</span>
     </button>
 
     <button type="button" class="ab-nav-item">
       <div class="ab-nav-orb">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="15" x2="12" y2="19"/><line x1="10" y1="17" x2="14" y2="17"/></svg>
       </div>
-      <span class="ab-nav-label">Νέο Ιστορικό</span>
+      <span class="ab-nav-label">New History</span>
     </button>
 
     <button type="button" class="ab-nav-item">
       <div class="ab-nav-orb">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
       </div>
-      <span class="ab-nav-label">Νέα προϊόντα</span>
+      <span class="ab-nav-label">New Products</span>
     </button>
 
     <button type="button" class="ab-nav-item">
       <div class="ab-nav-orb">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
       </div>
-      <span class="ab-nav-label">Έγγραφα &amp;<br>Αιτήματα</span>
+      <span class="ab-nav-label">Documents &amp;<br>Requests</span>
     </button>
   </nav>
 
@@ -51,11 +51,11 @@
     <!-- Topbar -->
     <div class="ab-topbar">
       <div class="ab-topbar-left">
-        <span class="ab-topbar-here">Βρίσκεστε εδώ</span>
-        <span class="ab-topbar-page">Επισκόπηση</span>
+        <span class="ab-topbar-here">You are here</span>
+        <span class="ab-topbar-page">Overview</span>
       </div>
       <button type="button" class="ab-want-btn">
-        Θέλω να
+        I want to
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </button>
     </div>
@@ -63,9 +63,9 @@
     <!-- Promo Banner -->
     <div class="ab-promo">
       <div class="ab-promo-body">
-        <h2 class="ab-promo-title">Ξέρετε ότι μπορείτε να αλλάξετε τους κωδικούς σας όποτε θέλετε;</h2>
-        <p class="ab-promo-sub">Αλλάξτε το password σας ακόμα και πριν λήξει, αλλά και το username σας όποτε θέλετε.</p>
-        <a href="#" class="ab-promo-link">Αλλάζω κωδικούς e-Banking →</a>
+        <h2 class="ab-promo-title">Did you know you can change your credentials whenever you want?</h2>
+        <p class="ab-promo-sub">Change your password before it expires, and your username at any time.</p>
+        <a href="#" class="ab-promo-link">Change e-Banking credentials →</a>
       </div>
       <button type="button" class="ab-promo-collapse-btn">∧</button>
       <div class="ab-promo-dots">
@@ -100,10 +100,10 @@
     <div class="ab-section-card">
       <button type="button" class="ab-section-header" (click)="accountsExpanded.set(!accountsExpanded())">
         <div class="ab-section-header-left">
-          <span class="ab-section-title">Λογαριασμοί</span>
+          <span class="ab-section-title">Accounts</span>
           <span class="ab-section-underline"></span>
         </div>
-        <span class="ab-section-meta">Συνολικό διαθέσιμο υπόλοιπο <strong>€{{ accountsTotal() | number:'1.2-2' }}</strong></span>
+        <span class="ab-section-meta">Total available balance <strong>€{{ accountsTotal() | number:'1.2-2' }}</strong></span>
         <span class="ab-section-chevron" [class.open]="accountsExpanded()">›</span>
       </button>
       @if (accountsExpanded()) {
@@ -128,7 +128,7 @@
     <div class="ab-section-card">
       <button type="button" class="ab-section-header" (click)="cardsExpanded.set(!cardsExpanded())">
         <div class="ab-section-header-left">
-          <span class="ab-section-title">Πιστωτικές και προπληρωμένες κάρτες</span>
+          <span class="ab-section-title">Credit &amp; Prepaid Cards</span>
           <span class="ab-section-underline"></span>
         </div>
         <span class="ab-section-chevron" [class.open]="cardsExpanded()">›</span>
@@ -155,8 +155,8 @@
                   </div>
                 </div>
                 <div class="ab-credit-bar-labels">
-                  <span>Χρησιμοποιήθηκε €{{ (card.creditLimit - (card.availableBalance ?? 0)) | number:'1.0-0' }}</span>
-                  <span>Όριο €{{ card.creditLimit | number:'1.0-0' }}</span>
+                  <span>Used €{{ (card.creditLimit - (card.availableBalance ?? 0)) | number:'1.0-0' }}</span>
+                  <span>Limit €{{ card.creditLimit | number:'1.0-0' }}</span>
                 </div>
               </div>
             }
@@ -169,7 +169,7 @@
     <div class="ab-section-card">
       <button type="button" class="ab-section-header">
         <div class="ab-section-header-left">
-          <span class="ab-section-title">Πρόγραμμα επιβράευσης</span>
+          <span class="ab-section-title">Rewards Programme</span>
           <span class="ab-section-underline"></span>
         </div>
         <span class="ab-section-chevron">›</span>
@@ -181,7 +181,7 @@
       <div class="ab-section-card">
         <button type="button" class="ab-section-header" (click)="loansExpanded.set(!loansExpanded())">
           <div class="ab-section-header-left">
-            <span class="ab-section-title">Δάνεια</span>
+            <span class="ab-section-title">Loans</span>
             <span class="ab-section-underline"></span>
           </div>
           <span class="ab-section-chevron" [class.open]="loansExpanded()">›</span>
@@ -206,18 +206,18 @@
     }
 
     <!-- Add product -->
-    <button type="button" class="ab-add-product-btn">+ Προσθέστε άλλο προϊόν</button>
+    <button type="button" class="ab-add-product-btn">+ Add another product</button>
 
     <!-- Tax section (static) -->
     <div class="ab-section-card ab-tax-card">
       <div class="ab-section-header" style="cursor:default">
         <div class="ab-section-header-left">
-          <span class="ab-section-title">Το αφορολόγητό μου</span>
+          <span class="ab-section-title">My Tax-Free Allowance</span>
           <span class="ab-section-underline"></span>
         </div>
       </div>
       <div class="ab-tax-body">
-        <p class="ab-tax-empty">Δεν έχετε κάνει συναλλαγές με κάρτες ή e-Banking της Alpha Bank που χτίζουν το αφορολόγητό σας.</p>
+        <p class="ab-tax-empty">You have not made any transactions with Alpha Bank cards or e-Banking that contribute to your tax-free allowance.</p>
       </div>
     </div>
 
@@ -228,21 +228,21 @@
 
     <!-- Appointments -->
     <div class="ab-right-card">
-      <h4 class="ab-right-card-title">Τα ραντεβού μου</h4>
-      <a href="#" class="ab-right-link">Νέο ραντεβού <span class="ab-right-arrow">›</span></a>
-      <a href="#" class="ab-right-link">Όλα τα ραντεβού <span class="ab-right-arrow">›</span></a>
+      <h4 class="ab-right-card-title">My Appointments</h4>
+      <a href="#" class="ab-right-link">New appointment <span class="ab-right-arrow">›</span></a>
+      <a href="#" class="ab-right-link">All appointments <span class="ab-right-arrow">›</span></a>
     </div>
 
     <!-- Notifications -->
     <div class="ab-right-card">
-      <h4 class="ab-right-card-title">Ειδοποιήσεις</h4>
-      <a href="#" class="ab-right-link">Μηνύματα <span class="ab-right-arrow">›</span></a>
-      <a href="#" class="ab-right-link">Αιτήματα σε εκκρεμότητα <span class="ab-right-arrow">›</span></a>
+      <h4 class="ab-right-card-title">Notifications</h4>
+      <a href="#" class="ab-right-link">Messages <span class="ab-right-arrow">›</span></a>
+      <a href="#" class="ab-right-link">Pending requests <span class="ab-right-arrow">›</span></a>
     </div>
 
     <!-- My Transactions -->
     <div class="ab-right-card">
-      <h4 class="ab-right-card-title">Οι συναλλαγές μου</h4>
+      <h4 class="ab-right-card-title">My Transactions</h4>
       @for (tx of displayedTransactions().slice(0, 7); track tx.transactionId) {
         <div class="ab-right-tx">
           <div class="ab-right-tx-icon"
@@ -271,9 +271,9 @@
         </div>
       }
       @if (!transactions().length) {
-        <p class="ab-right-empty">Δεν υπάρχουν συναλλαγές.</p>
+        <p class="ab-right-empty">No transactions.</p>
       }
-      <a href="#" class="ab-right-more">Περισσότερα</a>
+      <a href="#" class="ab-right-more">More</a>
     </div>
 
   </aside>
@@ -342,13 +342,13 @@
     <div class="transfer-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
 
       <div class="transfer-modal-header">
-        <span class="transfer-modal-title">Μεταφορά ποσών μεταξύ λογαριασμών μου στην Alpha Bank</span>
+        <span class="transfer-modal-title">Transfer funds between my Alpha Bank accounts</span>
         <button type="button" class="transfer-modal-close" (click)="closeTransferModal()" aria-label="Close">✕</button>
       </div>
 
       <div class="transfer-fields-row">
         <div class="transfer-field-group">
-          <span class="transfer-field-label">Από:</span>
+          <span class="transfer-field-label">From:</span>
           <select class="transfer-select" [ngModel]="transferFromId()" (ngModelChange)="transferFromId.set($event)">
             @for (a of accounts(); track a.productId) {
               <option [value]="a.productId">{{ productLabel(a) }}</option>
@@ -357,7 +357,7 @@
         </div>
 
         <div class="transfer-field-group">
-          <span class="transfer-field-label">Προς:</span>
+          <span class="transfer-field-label">To:</span>
           <select class="transfer-select" [ngModel]="transferToId()" (ngModelChange)="transferToId.set($event)">
             @for (a of accounts(); track a.productId) {
               <option [value]="a.productId">{{ productLabel(a) }}</option>
@@ -366,7 +366,7 @@
         </div>
 
         <div class="transfer-field-group transfer-field-group--amount">
-          <span class="transfer-field-label">Ποσό:</span>
+          <span class="transfer-field-label">Amount:</span>
           <input class="transfer-input" type="number" min="0.01" step="0.01"
             [ngModel]="transferAmount()" (ngModelChange)="transferAmount.set(+$event || null)" />
         </div>
@@ -374,11 +374,11 @@
 
       @if (!showTransferNote()) {
         <button type="button" class="transfer-add-note" (click)="showTransferNote.set(true)">
-          + Προσθέστε αιτιολογία μεταφοράς
+          + Add transfer reference
         </button>
       } @else {
         <input class="transfer-input transfer-note-input" type="text"
-          placeholder="Αιτιολογία μεταφοράς"
+          placeholder="Transfer reference"
           [ngModel]="transferNote()" (ngModelChange)="transferNote.set($event)" />
       }
 
@@ -390,7 +390,7 @@
         <button class="transfer-submit-btn"
           [disabled]="transferSubmitting || !transferAmount() || (transferAmount() ?? 0) <= 0"
           (click)="submitTransfer()">
-          {{ transferSubmitting ? 'Επεξεργασία…' : 'Εκτέλεση' }}
+          {{ transferSubmitting ? 'Processing…' : 'Submit' }}
         </button>
       </div>
 
