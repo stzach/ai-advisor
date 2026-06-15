@@ -507,28 +507,41 @@ app-chat {
       button .k-icon { color: $bank-navy !important; fill: $bank-navy !important; }
     }
 
-    .k-message-quick-replies {
-      flex-wrap: wrap;
-      gap: 0.4rem;
+    kendo-chat-suggested-actions,
+    .k-suggestion-group,
+    .k-suggestions-scroll {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      align-items: flex-start !important;
+      gap: 0.45rem !important;
+      overflow: visible !important;
+      overflow-x: visible !important;
+      white-space: normal !important;
+    }
+
+    kendo-chat-suggested-actions {
       padding: 0.75rem 1rem;
       background: #fff;
       border-top: 1px solid rgba(36,59,115,0.08);
       flex-shrink: 0;
     }
 
-    .k-quick-reply {
+    .k-suggestion {
       display: inline-flex !important;
       align-items: center;
-      padding: 0.45rem 1rem;
-      border-radius: 1rem;
-      font-size: 0.82rem;
-      font-weight: 600;
+      padding: 0.4rem 0.9rem !important;
+      border-radius: 1rem !important;
+      font-size: 0.8rem !important;
+      font-weight: 500 !important;
       cursor: pointer;
-      border: 1.5px solid rgba($bank-navy, 0.25) !important;
-      background: #fff !important;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      background: #d6e4f7 !important;
+      background-color: #d6e4f7 !important;
       color: $bank-navy !important;
-      transition: background 0.15s, border-color 0.15s, color 0.15s;
-      &:hover { background: $bank-navy !important; color: #fff !important; border-color: $bank-navy !important; }
+      transition: background 0.15s;
+      &:hover { background: #b8d0f0 !important; background-color: #b8d0f0 !important; color: $bank-navy !important; }
     }
   }
 }
@@ -1640,6 +1653,134 @@ $shimmer-highlight: rgba(36,59,115,0.14);
   }
 }
 
+// ── Transfer Modal (savings insight) ─────────────────────────────────────────
+.transfer-modal {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+  width: min(680px, 96vw);
+  padding: 2rem 2rem 1.75rem;
+  position: relative;
+}
+
+.transfer-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.transfer-modal-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1a1a6e;
+  line-height: 1.35;
+}
+
+.transfer-modal-close {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #888 !important;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0.1rem 0.3rem;
+  flex-shrink: 0;
+  &:hover { color: #1a1a6e !important; }
+}
+
+.transfer-fields-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 1.25rem;
+  align-items: end;
+  margin-bottom: 1rem;
+}
+
+.transfer-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  &--amount { min-width: 120px; }
+}
+
+.transfer-field-label {
+  font-size: 0.82rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.transfer-select,
+.transfer-input {
+  background: #fff !important;
+  border: 1px solid #ccc !important;
+  border-radius: 6px !important;
+  padding: 0.55rem 0.75rem !important;
+  font-size: 0.9rem !important;
+  color: #1a1a6e !important;
+  width: 100%;
+  outline: none !important;
+  box-shadow: none !important;
+  &:focus { border-color: #1a0072 !important; }
+}
+
+.transfer-select {
+  appearance: auto;
+  cursor: pointer;
+  option { color: #1a1a6e; }
+}
+
+.transfer-note-input {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.transfer-add-note {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #1a0072 !important;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0 !important;
+  margin-bottom: 1.25rem;
+  display: block;
+  &:hover { text-decoration: underline; }
+}
+
+.transfer-error {
+  color: #c00;
+  font-size: 0.83rem;
+  margin-bottom: 0.75rem;
+}
+
+.transfer-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.transfer-submit-btn {
+  background: #fff !important;
+  border: 1.5px solid #bbb !important;
+  border-radius: 6px !important;
+  color: #444 !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  padding: 0.6rem 2.5rem !important;
+  cursor: pointer;
+  box-shadow: none !important;
+  transition: border-color 0.15s, color 0.15s;
+  &:not(:disabled):hover {
+    border-color: #1a0072 !important;
+    color: #1a0072 !important;
+  }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
 // ── New Transaction Modal ─────────────────────────────────────────────────────
 .tx-modal-overlay {
   position: fixed;
@@ -1896,45 +2037,46 @@ $shimmer-highlight: rgba(36,59,115,0.14);
 .chat-panel-header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.9rem 1rem 0.9rem 1.1rem;
-  background: linear-gradient(135deg, $bank-navy 0%, #1a2f5e 100%);
+  gap: 0.65rem;
+  padding: 0.75rem 0.85rem 0.75rem 1rem;
+  background: #eef1fb;
+  border-bottom: 1px solid #dde3f5;
   flex-shrink: 0;
 }
 
 .chat-panel-avatar {
-  width: 3rem;
-  height: 3rem;
-  border-radius: 50%;
-  background: linear-gradient(135deg, $bank-red, rgba($bank-red, 0.7));
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 10px;
+  background: #1a0072;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.6rem;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba($bank-red, 0.4);
 }
 
 .chat-panel-info {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.1rem;
+  gap: 0.05rem;
+  min-width: 0;
 }
 
 .chat-panel-name {
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 700;
-  color: #fff;
+  color: #1a1a6e;
   line-height: 1.2;
 }
 
 .chat-panel-status {
-  font-size: 0.75rem;
-  color: rgba(255,255,255,0.7);
+  font-size: 0.72rem;
+  color: #8080b0;
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.3rem;
 }
 
 .chat-status-dot {
@@ -1952,111 +2094,170 @@ $shimmer-highlight: rgba(36,59,115,0.14);
   50%       { box-shadow: 0 0 0 5px rgba(46,204,113,0); }
 }
 
+.chat-panel-expand,
 .chat-panel-close {
-  background: rgba(255,255,255,0.12);
-  border: none;
-  border-radius: 50%;
-  width: 2rem;
-  height: 2rem;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 6px !important;
+  width: 1.75rem;
+  height: 1.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255,255,255,0.8);
+  color: #8080b0;
   font-size: 0.85rem;
   cursor: pointer;
   padding: 0;
   flex-shrink: 0;
   transition: background 0.15s, color 0.15s;
-  &:hover { background: rgba(255,255,255,0.22); color: #fff; }
+  box-shadow: none !important;
+  &:hover { background: rgba(26,0,114,0.07) !important; color: #1a0072; }
 }
 
-
-.chat-panel {
-}
-
-
+// ── Toggle button ─────────────────────────────────────────────────────────────
 .chat-toggle-btn {
-  width: 3.4rem;
-  height: 3.4rem;
+  width: 3rem;
+  height: 3rem;
   border-radius: 50%;
-  font-size: 1.4rem;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   pointer-events: auto;
   border: none;
-  background: linear-gradient(135deg, $bank-red, darken($bank-red, 10%));
+  background: #1a0072;
   color: #fff;
   padding: 0;
-  box-shadow: 0 4px 20px rgba($bank-red, 0.5), 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 16px rgba(26,0,114,0.35), 0 2px 6px rgba(0,0,0,0.12);
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s;
 
-  &:not(.active) {
-    animation: chat-btn-idle 3s ease-in-out infinite;
-  }
-
-  &.active {
-    background: $bank-navy;
-    box-shadow: 0 4px 20px rgba($bank-navy, 0.4);
-  }
+  &.active { background: #2d2d9c; }
 
   &:hover {
     transform: scale(1.08);
-    box-shadow: 0 6px 24px rgba($bank-red, 0.6);
+    box-shadow: 0 6px 20px rgba(26,0,114,0.45);
   }
 }
 
-@keyframes chat-btn-idle {
-  0%, 100% { box-shadow: 0 4px 20px rgba($bank-red, 0.5), 0 0 0 0 rgba($bank-red, 0.3); }
-  50%       { box-shadow: 0 4px 20px rgba($bank-red, 0.5), 0 0 0 10px rgba($bank-red, 0); }
-}
-
-// ── Chat "Try asking" prompt strip ────────────────────────────────────────────
-.chat-prompts-strip {
-  display:        flex;
-  flex-direction: column;
-  align-items:    flex-end;
-  gap:            0.4rem;
+// ── Preview bubble ────────────────────────────────────────────────────────────
+.chat-preview-bubble {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 0.9rem 1rem 0.9rem 1rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.08);
+  max-width: 240px;
+  position: relative;
   pointer-events: auto;
-  animation:      chat-btn-prompt-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: chat-preview-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-@keyframes chat-btn-prompt-in {
+@keyframes chat-preview-in {
   from { opacity: 0; transform: translateY(10px) scale(0.96); }
-  to   { opacity: 1; transform: translateY(0)    scale(1); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.chat-prompts-label {
-  font-size:      0.68rem !important;
-  font-weight:    700 !important;
-  color:          rgba(255,255,255,0.7) !important;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin:         0 0.25rem 0 0;
+.chat-preview-close {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.5rem;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #8080b0;
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0.15rem 0.3rem;
+  line-height: 1;
+  &:hover { color: #1a0072; }
 }
 
-.chat-prompt-chip {
-  background:     rgba(255, 255, 255, 0.95);
-  color:          $bank-navy !important;
-  border:         none;
-  border-radius:  20px;
-  padding:        0.45rem 0.9rem;
-  font-size:      0.78rem;
-  font-weight:    600;
-  cursor:         pointer;
-  box-shadow:     0 2px 12px rgba(0,0,0,0.18);
-  transition:     transform 0.15s ease, box-shadow 0.15s ease, background 0.15s;
-  text-align:     right;
-  max-width:      220px;
-  line-height:    1.3;
+.chat-preview-msg {
+  display: inline-block;
+  background: #d6e0f5;
+  color: #1a1a6e !important;
+  border-radius: 12px;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.4;
+  margin: 0.25rem 0 0;
+}
 
-  &:hover {
-    background:  #ffffff;
-    transform:   translateY(-1px) translateX(-2px);
-    box-shadow:  0 4px 16px rgba(0,0,0,0.22);
-    color:       $bank-navy !important;
-  }
+// ── Consent screen ────────────────────────────────────────────────────────────
+.chat-consent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  padding: 1.25rem 1rem 1rem;
+  gap: 1rem;
+  overflow-y: auto;
+}
+
+.chat-consent-card {
+  background: #ffffff;
+  border: 1px solid #eeeef6;
+  border-radius: 12px;
+  padding: 1.1rem 1rem;
+  box-shadow: 0 1px 4px rgba(26,0,114,0.06);
+  flex: 1;
+}
+
+.chat-consent-title {
+  font-size: 0.88rem !important;
+  font-weight: 700;
+  color: #1a1a6e !important;
+  margin: 0 0 0.85rem !important;
+  line-height: 1.3;
+}
+
+.chat-consent-label {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  font-size: 0.8rem;
+  color: #3a3a5e !important;
+  line-height: 1.55;
+  cursor: pointer;
+  margin: 0 !important;
+}
+
+.chat-consent-check {
+  margin-top: 0.15rem;
+  flex-shrink: 0;
+  accent-color: #1a0072;
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+}
+
+.chat-consent-link {
+  color: #2a2aae !important;
+  font-weight: 600;
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
+
+.chat-consent-btn {
+  display: block;
+  width: 100%;
+  padding: 0.8rem 1rem !important;
+  background: #1a0072 !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  box-shadow: none !important;
+  transition: background 0.15s, opacity 0.15s;
+  flex-shrink: 0;
+  --pico-form-element-spacing-vertical: 0;
+  --pico-form-element-spacing-horizontal: 0;
+
+  &:hover:not(:disabled) { background: #2d2d9c !important; }
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 
 .dash-section-heading{
@@ -3037,6 +3238,50 @@ address, blockquote, dl, ol, p, pre, table, ul {
   color: $bank-navy !important;
 }
 
+// Suggestion chip pills — scoped to kendo-chat only to avoid affecting other Kendo components
+// .k-suggestions-scroll is Kendo's horizontal-scroll wrapper; override to allow wrapping
+kendo-chat .k-suggestion-group,
+kendo-chat kendo-chat-suggested-actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: flex-start !important;
+  gap: 0.45rem !important;
+  overflow: visible !important;
+  padding: 0.75rem 1rem !important;
+}
+
+kendo-chat .k-suggestions-scroll {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: flex-start !important;
+  gap: 0.45rem !important;
+  overflow: visible !important;
+  overflow-x: visible !important;
+  white-space: normal !important;
+}
+
+kendo-chat .k-suggestion,
+kendo-chat .k-suggestion.k-suggestion-primary,
+kendo-chat .k-suggestion[role="button"],
+kendo-chat button.k-suggestion {
+  background: #d6e4f7 !important;
+  background-color: #d6e4f7 !important;
+  color: #1a0072 !important;
+  border: none !important;
+  border-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-radius: 1rem !important;
+  padding: 0.4rem 0.9rem !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+  &:hover, &:focus {
+    background: #b8d0f0 !important;
+    background-color: #b8d0f0 !important;
+    color: #1a0072 !important;
+  }
+}
+
 // Ensure inline elements inside bubbles inherit the bubble text colour
 // (beats the Pico `p, ul { color: black !important }` reset)
 .k-message-group-sender .k-bubble p,
@@ -3179,6 +3424,9 @@ $ab-bg:           #f0f2f5;
   height: calc(100vh - var(--header-height));
   overflow-y: auto;
   gap: 0.1rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar { display: none; }
 }
 
 .ab-nav-item {
@@ -3288,7 +3536,7 @@ $ab-bg:           #f0f2f5;
 // ── Promo Banner ─────────────────────────────────────────────────────────────
 .ab-promo {
   border-radius: 12px;
-  background: linear-gradient(135deg, #0d0060 0%, #1a0a6b 45%, #0e3070 100%);
+  background: #1a0072;
   color: #ffffff;
   padding: 1.5rem 1.5rem 2.25rem;
   margin-bottom: 1.25rem;
@@ -3468,55 +3716,47 @@ $ab-bg:           #f0f2f5;
   border-top: 1px solid rgba(26,0,114,0.08);
 }
 
-// ── Redesigned AI Advisor section ────────────────────────────────────────────
+// ── AI Advisor section ────────────────────────────────────────────────────────
 .ab-advisor-section {
   background: #ffffff;
   border-radius: 10px;
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.65rem;
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(26,0,114,0.1);
+  box-shadow: 0 1px 5px rgba(26,0,114,0.06);
 }
 
 .ab-advisor-hdr {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
-  padding: 1rem 1.25rem;
-  background: linear-gradient(135deg, $ab-purple 0%, $ab-purple-mid 55%, $ab-purple-light 100%);
+  justify-content: space-between;
+  padding: 1.1rem 1.25rem;
+  gap: 1rem;
 }
 
-.ab-advisor-hdr-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.18);
-  border: 1.5px solid rgba(255,255,255,0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ffffff;
-  flex-shrink: 0;
-}
-
-.ab-advisor-hdr-text {
-  flex: 1;
+.ab-advisor-hdr-left {
   display: flex;
   flex-direction: column;
-  gap: 0.1rem;
+  align-items: flex-start;
+  flex: 1;
   min-width: 0;
 }
 
 .ab-advisor-hdr-title {
-  font-family: "Outfit", sans-serif;
-  font-size: 1rem;
+  font-size: 0.98rem;
   font-weight: 700;
-  color: #ffffff !important;
-  line-height: 1.2;
+  color: $ab-text-dark !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
-.ab-advisor-hdr-sub {
-  font-size: 0.75rem;
-  color: rgba(255,255,255,0.72) !important;
+.ab-advisor-hdr-underline {
+  height: 2.5px;
+  background: #2a2aae;
+  width: 100%;
+  margin-top: 4px;
+  border-radius: 2px;
 }
 
 .ab-advisor-hdr-right {
@@ -3528,7 +3768,7 @@ $ab-bg:           #f0f2f5;
 
 .ab-advisor-hdr-loading {
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.82) !important;
+  color: $ab-text-muted !important;
   font-style: italic;
 }
 
@@ -3537,22 +3777,19 @@ $ab-bg:           #f0f2f5;
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.85);
+  background: $ab-purple;
   animation: live-pulse 1.2s ease-in-out infinite;
   flex-shrink: 0;
 }
 
 .ab-advisor-hdr-badge {
-  font-size: 0.75rem;
-  color: $ab-purple !important;
-  background: rgba(255,255,255,0.92);
-  border-radius: 2rem;
-  padding: 0.15rem 0.65rem;
-  font-weight: 700;
+  font-size: 0.78rem;
+  color: $ab-text-muted !important;
+  white-space: nowrap;
 }
 
 .ab-advisor-cards-body {
-  padding: 1.25rem 1.25rem 0.75rem;
+  border-top: 1px solid $ab-border;
 }
 
 // ── Section Cards (Accounts, Cards, Loans etc.) ───────────────────────────────
@@ -3758,6 +3995,9 @@ $ab-bg:           #f0f2f5;
   top: var(--header-height);
   height: calc(100vh - var(--header-height));
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar { display: none; }
 }
 
 .ab-right-card {

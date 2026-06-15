@@ -73,6 +73,75 @@ export class HomeComponent {
     this.selectedInsight.set(null);
   }
 
+  handleInsightCta(): void {
+    const insight = this.selectedInsight();
+    if (!insight) return;
+    const cta = insight.cta.toLowerCase();
+    if (cta.includes('sav') || cta.includes('transfer') || cta.includes('move')) {
+      this.openTransferModal();
+    } else {
+      this.chatHub.openWithPrompt(insight.prompt);
+      this.closeInsightModal();
+    }
+  }
+
+  // ── Transfer Modal ────────────────────────────────────────────────────────
+  showTransferModal  = signal(false);
+  transferFromId     = signal('');
+  transferToId       = signal('');
+  transferAmount     = signal<number | null>(null);
+  transferNote       = signal('');
+  showTransferNote   = signal(false);
+  transferSubmitting = false;
+  transferSubmitError: string | null = null;
+
+  openTransferModal(): void {
+    const accs = this.accounts();
+    this.transferFromId.set(accs.length >= 1 ? (accs[0].productId ?? '') : '');
+    this.transferToId.set(accs.length >= 2 ? (accs[1].productId ?? '') : '');
+    this.transferAmount.set(null);
+    this.transferNote.set('');
+    this.showTransferNote.set(false);
+    this.transferSubmitError = null;
+    this.closeInsightModal();
+    this.showTransferModal.set(true);
+  }
+
+  closeTransferModal(): void {
+    this.showTransferModal.set(false);
+  }
+
+  submitTransfer(): void {
+    const amount = this.transferAmount();
+    const fromId = this.transferFromId();
+    if (!amount || amount <= 0 || !fromId) return;
+    this.transferSubmitting  = true;
+    this.transferSubmitError = null;
+    const fromProduct = this.userProducts().find(p => p.productId === fromId);
+    const toProduct   = this.userProducts().find(p => p.productId === this.transferToId());
+    const command: any = {
+      productId:            fromId,
+      transactionType:      1,
+      transactionCategory:  6,
+      transactionDirection: 2,
+      amount,
+      from: fromProduct ? this.productLabel(fromProduct) : '',
+      to:   toProduct   ? this.productLabel(toProduct)   : this.transferToId(),
+    };
+    this.transactionsClient.createUserTransaction(command).subscribe({
+      next: () => {
+        this.transferSubmitting = false;
+        this.closeTransferModal();
+        this.range$.next(this.range$.value);
+        this.productsRefresh$.next();
+      },
+      error: () => {
+        this.transferSubmitting  = false;
+        this.transferSubmitError = 'Η μεταφορά απέτυχε. Παρακαλώ δοκιμάστε ξανά.';
+      }
+    });
+  }
+
   // ── Toast ──────────────────────────────────────────────────────────────────
   showToast = signal(false);
   private _toastShownForCurrentLoad = false;

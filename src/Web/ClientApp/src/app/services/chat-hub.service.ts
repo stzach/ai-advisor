@@ -10,7 +10,7 @@ export class ChatHubService {
     private connection: signalR.HubConnection;
 
     readonly user: User = { id: 'user', name: 'You' };
-    readonly bot: User  = { id: 'bot',  name: 'AI Assistant' };
+    readonly bot: User  = { id: 'bot',  name: 'Εικονικός βοηθός AI' };
 
     isOpen$ = new BehaviorSubject<boolean>(false);
 
@@ -23,13 +23,16 @@ export class ChatHubService {
     private readonly welcome: Message = {
         id: 0,
         author: this.bot,
-        text: 'Hi! I\'m your AI financial advisor. What can I help you with today?',
+        text: 'Γεια σας! Είμαι ο ψηφιακός βοηθός της Alpha Bank. Πώς μπορώ να σας βοηθήσω; Επιλέξτε κάτι από τα παρακάτω ή απλά γράψτε μου τι ψάχνετε.',
         timestamp: new Date(),
         suggestedActions: [
-            { type: 'reply', value: 'Analyze my spending this month' },
-            { type: 'reply', value: 'Which product better matches my needs?' },
-            { type: 'reply', value: 'What are my biggest expenses?' },
-            { type: 'reply', value: 'Propose limits on my spendings?' },
+            { type: 'reply', value: 'Άμεση Βοήθεια' },
+            { type: 'reply', value: 'Λογαριασμοί' },
+            { type: 'reply', value: 'Κάρτες' },
+            { type: 'reply', value: 'Δάνεια' },
+            { type: 'reply', value: 'Ασφάλειες' },
+            { type: 'reply', value: 'Πρόγραμμα επιβράβευσης Bonus' },
+            { type: 'reply', value: 'Επικοινωνία' },
         ] as Action[]
     };
 
@@ -49,7 +52,7 @@ export class ChatHubService {
                 this.local$.next({
                     id: ++this.msgId,
                     author: this.bot,
-                    text: 'Would you like to speak with someone from our team?',
+                    text: 'Επικοινωνήστε μαζί μας',
                     timestamp: new Date(),
                     isEscalation: true
                 } as any);

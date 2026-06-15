@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { ChatHubService } from './services/chat-hub.service';
@@ -12,6 +12,10 @@ import { AuthService } from 'src/api-authorization/auth.service';
 export class AppComponent implements OnInit {
   isChatPage = false;
   isAuthenticated = false;
+
+  showPreview   = signal(true);
+  consentChecked = signal(false);
+  hasConsent    = signal(typeof localStorage !== 'undefined' && localStorage.getItem('ab-chat-consent') === 'true');
 
   constructor(
     public chatHub: ChatHubService,
@@ -35,5 +39,10 @@ export class AppComponent implements OnInit {
         this.chatHub.clear();
       }
     });
+  }
+
+  giveConsent(): void {
+    localStorage.setItem('ab-chat-consent', 'true');
+    this.hasConsent.set(true);
   }
 }

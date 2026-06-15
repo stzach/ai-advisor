@@ -67,9 +67,6 @@
         <p class="ab-promo-sub">Αλλάξτε το password σας ακόμα και πριν λήξει, αλλά και το username σας όποτε θέλετε.</p>
         <a href="#" class="ab-promo-link">Αλλάζω κωδικούς e-Banking →</a>
       </div>
-      <div class="ab-promo-image">
-        <img src="assets/ai-advisor.png" alt="" class="ab-promo-img" />
-      </div>
       <button type="button" class="ab-promo-collapse-btn">∧</button>
       <div class="ab-promo-dots">
         <span class="ab-promo-dot ab-promo-dot--active"></span>
@@ -78,17 +75,12 @@
       </div>
     </div>
 
-    <!-- ── AI Financial Advisor (redesigned) ────────────────────────────── -->
+    <!-- ── AI Financial Advisor ──────────────────────────────────────────── -->
     <div class="ab-advisor-section">
       <div class="ab-advisor-hdr">
-        <div class="ab-advisor-hdr-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-          </svg>
-        </div>
-        <div class="ab-advisor-hdr-text">
+        <div class="ab-advisor-hdr-left">
           <span class="ab-advisor-hdr-title">Financial Advisor</span>
-          <span class="ab-advisor-hdr-sub">Εξατομικευμένες προτάσεις για εσάς</span>
+          <div class="ab-advisor-hdr-underline"></div>
         </div>
         <div class="ab-advisor-hdr-right">
           @if (insightsService.insightsLoading()) {
@@ -335,8 +327,70 @@
           <p class="insight-modal-prompt">"{{ selectedInsight()!.prompt }}"</p>
         </div>
 
-        <button type="button" class="insight-modal-cta" (click)="chatHub.openWithPrompt(selectedInsight()!.prompt); closeInsightModal()">
+        <button type="button" class="insight-modal-cta" (click)="handleInsightCta()">
           {{ selectedInsight()!.cta }} →
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+<!-- ── Transfer Modal (opened from savings insight) ───────────────────────────── -->
+@if (showTransferModal()) {
+  <div class="tx-modal-overlay" (click)="closeTransferModal()">
+    <div class="transfer-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+
+      <div class="transfer-modal-header">
+        <span class="transfer-modal-title">Μεταφορά ποσών μεταξύ λογαριασμών μου στην Alpha Bank</span>
+        <button type="button" class="transfer-modal-close" (click)="closeTransferModal()" aria-label="Close">✕</button>
+      </div>
+
+      <div class="transfer-fields-row">
+        <div class="transfer-field-group">
+          <span class="transfer-field-label">Από:</span>
+          <select class="transfer-select" [ngModel]="transferFromId()" (ngModelChange)="transferFromId.set($event)">
+            @for (a of accounts(); track a.productId) {
+              <option [value]="a.productId">{{ productLabel(a) }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="transfer-field-group">
+          <span class="transfer-field-label">Προς:</span>
+          <select class="transfer-select" [ngModel]="transferToId()" (ngModelChange)="transferToId.set($event)">
+            @for (a of accounts(); track a.productId) {
+              <option [value]="a.productId">{{ productLabel(a) }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="transfer-field-group transfer-field-group--amount">
+          <span class="transfer-field-label">Ποσό:</span>
+          <input class="transfer-input" type="number" min="0.01" step="0.01"
+            [ngModel]="transferAmount()" (ngModelChange)="transferAmount.set(+$event || null)" />
+        </div>
+      </div>
+
+      @if (!showTransferNote()) {
+        <button type="button" class="transfer-add-note" (click)="showTransferNote.set(true)">
+          + Προσθέστε αιτιολογία μεταφοράς
+        </button>
+      } @else {
+        <input class="transfer-input transfer-note-input" type="text"
+          placeholder="Αιτιολογία μεταφοράς"
+          [ngModel]="transferNote()" (ngModelChange)="transferNote.set($event)" />
+      }
+
+      @if (transferSubmitError) {
+        <p class="transfer-error">{{ transferSubmitError }}</p>
+      }
+
+      <div class="transfer-actions">
+        <button class="transfer-submit-btn"
+          [disabled]="transferSubmitting || !transferAmount() || (transferAmount() ?? 0) <= 0"
+          (click)="submitTransfer()">
+          {{ transferSubmitting ? 'Επεξεργασία…' : 'Εκτέλεση' }}
         </button>
       </div>
 

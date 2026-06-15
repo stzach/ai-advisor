@@ -1,36 +1,23 @@
 :host {
-  --ir-gap: 14px;
-  display:  flex;
-  flex:     1;
+  display:   block;
+  flex:      1;
   min-width: 0;
 }
 
-// ── Card row ─────────────────────────────────────────────────────────────────
 .ir-card-row {
-  display:   flex;
-  flex:      1;
-  gap:       var(--ir-gap);
-  // room for the hover lift without clipping
-  padding-top:    16px;
-  margin-top:     -16px;
-  padding-bottom: 16px;
-  // no overflow-x: auto — cards grow to fill width
-  overflow-x: visible;
-}
-
-// ── Skeleton cards ────────────────────────────────────────────────────────────
-.ir-skeleton {
-  flex:           1 1 0;        // same growth as real cards
-  min-width:      140px;
-  scroll-snap-align: start;
   display:        flex;
   flex-direction: column;
-  align-items:    center;
-  gap:            10px;
-  border-radius:  16px;
-  background:     rgba(255, 255, 255, 0.65);
-  border:         1.5px solid rgba(36, 59, 115, 0.08);
-  padding:        20px 16px 16px;
+}
+
+// ── Skeleton rows ─────────────────────────────────────────────────────────────
+.ir-skeleton {
+  display:       flex;
+  align-items:   center;
+  gap:           0.85rem;
+  padding:       0.85rem 1.25rem;
+  border-bottom: 1px solid #eeeef6;
+
+  &:last-child { border-bottom: none; }
 }
 
 @keyframes ir-shimmer {
@@ -39,8 +26,7 @@
 }
 
 .ir-skel-orb,
-.ir-skel-line,
-.ir-skel-btn {
+.ir-skel-line {
   background: linear-gradient(
     90deg,
     rgba(36, 59, 115, 0.07) 25%,
@@ -52,11 +38,8 @@
   border-radius: 6px;
 }
 
-.ir-skel-orb  { width: 80px; height: 80px; border-radius: 50%; margin-bottom: 6px; }
-.ir-skel-line { height: 10px; &--wide { width: 80%; } &--narrow { width: 55%; } }
-.ir-skel-btn  { width: 100%; height: 32px; margin-top: 6px; border-radius: 8px; }
-
-@media (max-width: 640px) {
-  :host { --ir-gap: 10px; }
-  .ir-card-row { overflow-x: auto; scroll-snap-type: x mandatory; }
-}
+.ir-skel-orb   { width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; }
+.ir-skel-lines { flex: 1; display: flex; flex-direction: column; gap: 0.4rem; }
+.ir-skel-line  { height: 10px; }
+.ir-skel-line--wide    { width: 80%; }
+.ir-skel-line--narrow  { width: 50%; }

@@ -1,9 +1,15 @@
-<div class="card-wrapper" [style.--card-delay.ms]="animDelay()" [style.--orb-delay.ms]="animDelay()">
-  <div class="card" [attr.data-category]="insight().category" (click)="ctaClick.emit()" role="button" tabindex="0" (keyup.enter)="ctaClick.emit()">
-    <div class="card-orb-wrap">
-      <app-insight-orb [category]="insight().category" [icon]="insight().icon" />
-    </div>
-    <span class="card-tag">{{ insight().tag }}</span>
-    <span class="card-cta">{{ insight().cta }} →</span>
+<div class="ic-row"
+     [attr.data-category]="insight().category"
+     (click)="ctaClick.emit()"
+     role="button"
+     tabindex="0"
+     (keyup.enter)="ctaClick.emit()">
+  <div class="ic-icon">
+    <span>{{ insight().icon }}</span>
   </div>
+  <div class="ic-info">
+    <span class="ic-tag">{{ insight().tag }}</span>
+    <span class="ic-cta">{{ insight().cta }}</span>
+  </div>
+  <span class="ic-arrow">›</span>
 </div>

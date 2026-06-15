@@ -89,16 +89,20 @@ public static class DependencyInjection
         builder.Services.AddSingleton(_ =>
         {
             var endpoint  = new Uri(builder.Configuration["AzureSearch:Endpoint"]!);
-            var apiKey    = builder.Configuration["AzureSearch:ApiKey"]!;
+            var apiKey    = builder.Configuration["AzureSearch:ApiKey"];
             var indexName = builder.Configuration["AzureSearch:IndexName"] ?? "documents_index";
-            return new SearchClient(endpoint, indexName, new AzureKeyCredential(apiKey));
+            return string.IsNullOrWhiteSpace(apiKey)
+                ? new SearchClient(endpoint, indexName, new DefaultAzureCredential())
+                : new SearchClient(endpoint, indexName, new AzureKeyCredential(apiKey));
         });
 
         builder.Services.AddSingleton(_ =>
         {
             var endpoint = new Uri(builder.Configuration["AzureSearch:Endpoint"]!);
-            var apiKey   = builder.Configuration["AzureSearch:ApiKey"]!;
-            return new SearchIndexClient(endpoint, new AzureKeyCredential(apiKey));
+            var apiKey   = builder.Configuration["AzureSearch:ApiKey"];
+            return string.IsNullOrWhiteSpace(apiKey)
+                ? new SearchIndexClient(endpoint, new DefaultAzureCredential())
+                : new SearchIndexClient(endpoint, new AzureKeyCredential(apiKey));
         });
 
         // Background vectorisation — only in Production/Staging; avoids Azure Search calls during
