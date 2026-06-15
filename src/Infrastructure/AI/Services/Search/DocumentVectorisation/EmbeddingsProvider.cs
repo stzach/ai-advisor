@@ -1,10 +1,8 @@
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using AiAdvisor.Infrastructure.AI.Services.Options;
 using Azure;
+using Azure.AI.OpenAI;
+using Azure.Identity;
 using OpenAI;
 using OpenAI.Embeddings;
 using System.ClientModel;
@@ -19,13 +17,13 @@ public class EmbeddingsProvider : IEmbeddingsProvider
     public EmbeddingsProvider(IOptions<AzureOpenAiOptions> options)
     {
         var openAiOptions = options.Value;
+        var endpoint = new Uri(openAiOptions.Endpoint);
 
-        _client = new OpenAIClient(
-            new AzureKeyCredential(openAiOptions.ApiKey),
-            new OpenAIClientOptions
-            {
-                Endpoint = new Uri(openAiOptions.Endpoint)
-            });
+        // Use DefaultAzureCredential (managed identity in Azure, developer credentials locally)
+        // when no real API key is configured
+        _client = string.IsNullOrWhiteSpace(openAiOptions.ApiKey) || openAiOptions.ApiKey == "managed-identity"
+            ? new AzureOpenAIClient(endpoint, new DefaultAzureCredential())
+            : new AzureOpenAIClient(endpoint, new AzureKeyCredential(openAiOptions.ApiKey));
 
         _deployment = openAiOptions.EmbeddingDeployment;
     }

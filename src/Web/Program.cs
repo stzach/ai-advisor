@@ -56,7 +56,25 @@ app.UseFileServer();
 app.MapOpenApi();
 app.MapScalarApiReference();
 
-app.UseExceptionHandler(options => { });
+app.UseExceptionHandler(exceptionHandlerApp =>
+{
+    exceptionHandlerApp.Run(async context =>
+    {
+        var exFeature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
+        var ex = exFeature?.Error;
+
+        context.Response.ContentType = "application/problem+json";
+        context.Response.StatusCode = ex is Azure.RequestFailedException azureEx
+            ? azureEx.Status
+            : StatusCodes.Status500InternalServerError;
+
+        await context.Response.WriteAsJsonAsync(new
+        {
+            status = context.Response.StatusCode,
+            title = ex?.Message ?? "An unexpected error occurred."
+        });
+    });
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -70,8 +88,15 @@ var azureSearchEndpoint = builder.Configuration["AzureSearch:Endpoint"];
 var azureSearchApiKey   = builder.Configuration["AzureSearch:ApiKey"];
 if (!string.IsNullOrEmpty(azureSearchEndpoint) && !string.IsNullOrEmpty(azureSearchApiKey))
 {
-    var creator = new AzureSearchIndexCreator(endpoint: azureSearchEndpoint, apiKey: azureSearchApiKey);
-    await creator.CreateIndexAsync("documents_index");
+    try
+    {
+        var creator = new AzureSearchIndexCreator(endpoint: azureSearchEndpoint, apiKey: azureSearchApiKey);
+        await creator.CreateIndexAsync("documents_index");
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, "Azure Search index creation failed at startup — will be retried by background service");
+    }
 }
 
 app.MapHub<ChatHub>("/ai-chat").ExcludeFromApiReference().ExcludeFromDescription();
