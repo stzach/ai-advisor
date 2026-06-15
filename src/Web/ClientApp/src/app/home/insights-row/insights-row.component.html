@@ -1,4 +1,4 @@
-<div class="ir-card-row" role="list" aria-label="Financial insights">
+<div class="ir-card-grid" role="list" aria-label="Financial insights">
 
   @for (card of cards(); track card.id; let i = $index) {
     <app-insight-card
@@ -9,7 +9,7 @@
 
   @for (s of skeletons(); track s) {
     <div class="ir-skeleton" aria-hidden="true">
-      <div class="ir-skel-orb"></div>
+      <div class="ir-skel-icon"></div>
       <div class="ir-skel-lines">
         <div class="ir-skel-line ir-skel-line--wide"></div>
         <div class="ir-skel-line ir-skel-line--narrow"></div>

@@ -16,9 +16,9 @@
           </svg>
         </div>
         <div class="chat-panel-info">
-          <span class="chat-panel-name">Πώς να βοηθήσω;</span>
+          <span class="chat-panel-name">How can I help?</span>
           <span class="chat-panel-status">
-            <span class="chat-status-dot"></span> Σε σύνδεση
+            <span class="chat-status-dot"></span> Online
           </span>
         </div>
         <button class="chat-panel-expand" aria-label="Expand">
@@ -36,21 +36,21 @@
         <!-- ── Consent screen ──────────────────────────────────────────────── -->
         <div class="chat-consent">
           <div class="chat-consent-card">
-            <p class="chat-consent-title">Αποποίηση ευθύνης &amp; πολιτική δεδομένων</p>
+            <p class="chat-consent-title">Disclaimer &amp; Data Policy</p>
             <label class="chat-consent-label">
               <input type="checkbox"
                      class="chat-consent-check"
                      [checked]="consentChecked()"
                      (change)="consentChecked.set($any($event.target).checked)" />
-              <span>Έχω διαβάσει, κατανοήσει και αποδέχομαι τους
-                <a href="#" class="chat-consent-link">όρους χρήσης</a>
-                της υπηρεσίας ψηφιακού βοηθού-digital assistant (chatbot) και έχω λάβει γνώση
-                της ενημέρωσης για την επεξεργασία των προσωπικών μου δεδομένων που
-                περιλαμβάνεται σε διακριτή ενότητα στο ίδιο αρχείο με τους όρους χρήσης.</span>
+              <span>I have read, understood and accept the
+                <a href="#" class="chat-consent-link">terms of use</a>
+                of the digital assistant (chatbot) service and I have been informed about the
+                processing of my personal data as included in a separate section of the same
+                file as the terms of use.</span>
             </label>
           </div>
           <button class="chat-consent-btn" [disabled]="!consentChecked()" (click)="giveConsent()">
-            Συνέχεια
+            Continue
           </button>
         </div>
       } @else {
@@ -62,7 +62,7 @@
     @if (!(chatHub.isOpen$ | async) && showPreview()) {
       <div class="chat-preview-bubble">
         <button class="chat-preview-close" (click)="showPreview.set(false)" aria-label="Dismiss">✕</button>
-        <div class="chat-preview-msg">Γεια σας! Πώς μπορώ να βοηθήσω;</div>
+        <div class="chat-preview-msg">Hello! How can I help?</div>
       </div>
     }
 

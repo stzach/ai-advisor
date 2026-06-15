@@ -1,4 +1,4 @@
-<div class="ic-row"
+<div class="ic-card"
      [attr.data-category]="insight().category"
      (click)="ctaClick.emit()"
      role="button"
@@ -7,7 +7,7 @@
   <div class="ic-icon">
     <span>{{ insight().icon }}</span>
   </div>
-  <div class="ic-info">
+  <div class="ic-body">
     <span class="ic-tag">{{ insight().tag }}</span>
     <span class="ic-cta">{{ insight().cta }}</span>
   </div>

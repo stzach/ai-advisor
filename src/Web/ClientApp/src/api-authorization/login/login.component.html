@@ -15,7 +15,7 @@
       </a>
       <div class="abl-header-right">
         <button type="button" class="abl-demo-btn">
-          Δοκιμάζω το demo
+          Try the demo
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         </button>
         <div class="abl-header-icons">
@@ -30,7 +30,7 @@
           </button>
         </div>
         <div class="abl-header-sep"></div>
-        <button type="button" class="abl-lang-btn">ΕΛ <span>∨</span></button>
+        <button type="button" class="abl-lang-btn">EN <span>∨</span></button>
       </div>
     </div>
   </header>
@@ -41,12 +41,12 @@
     <!-- Left: welcome + security card -->
     <div class="abl-left">
       <h1 class="abl-welcome">
-        Καλώς ήρθατε<br>στο web banking
+        Welcome to<br>web banking
       </h1>
       <div class="abl-security-card">
-        <h3 class="abl-security-title">Συμβουλές για την ασφαλεία σας</h3>
-        <p class="abl-security-body">Δημιουργήστε ισχυρούς κωδικούς. Μην τους αποκαλύπτετε σε κανέναν.</p>
-        <a href="#" class="abl-security-link">Προστατεύω τους κωδικούς μου →</a>
+        <h3 class="abl-security-title">Security tips</h3>
+        <p class="abl-security-body">Create strong passwords. Never share them with anyone.</p>
+        <a href="#" class="abl-security-link">Protect my passwords →</a>
         <div class="abl-security-dots">
           <span class="abl-dot abl-dot--active"></span>
           <span class="abl-dot"></span>
@@ -58,7 +58,7 @@
     <!-- Right: login form card -->
     <div class="abl-right">
       <div class="abl-card">
-        <h2 class="abl-card-title">Σύνδεση</h2>
+        <h2 class="abl-card-title">Sign in</h2>
 
         <form (ngSubmit)="login()" #loginForm="ngForm">
 
@@ -72,7 +72,7 @@
               [(ngModel)]="email"
               [class.abl-input--invalid]="invalid"
               autocomplete="username"
-              placeholder="Το username σας ως ιδιώτης"
+              placeholder="Your personal username"
               (ngModelChange)="invalid = false" />
           </div>
 
@@ -86,32 +86,32 @@
               [(ngModel)]="password"
               [class.abl-input--invalid]="invalid"
               autocomplete="current-password"
-              placeholder="Το password σας ως ιδιώτης"
+              placeholder="Your personal password"
               (ngModelChange)="invalid = false" />
           </div>
 
           <div class="abl-remember">
             <input type="checkbox" id="remember" class="abl-checkbox" />
             <label for="remember" class="abl-remember-label">
-              Αποθήκευση username
+              Remember username
               <span class="abl-remember-info" title="Info">ⓘ</span>
             </label>
           </div>
 
           @if (invalid) {
-            <p class="abl-error">Μη έγκυρο username ή password.</p>
+            <p class="abl-error">Invalid username or password.</p>
           }
 
-          <button type="submit" class="abl-submit-btn">Σύνδεση</button>
+          <button type="submit" class="abl-submit-btn">Sign in</button>
 
-          <a href="#" class="abl-business-link">Σύνδεση ως επιχείρηση</a>
+          <a href="#" class="abl-business-link">Sign in as a business</a>
 
           <div class="abl-divider"></div>
 
           <div class="abl-links">
-            <a href="#" class="abl-forgot-link">Ξέχασα το username μου</a>
-            <a href="#" class="abl-forgot-link">Ξέχασα το password μου / Κλείδωσα τους κωδικούς μου</a>
-            <a href="#" class="abl-forgot-link">Αποκτώ κωδικούς digital banking</a>
+            <a href="#" class="abl-forgot-link">I forgot my username</a>
+            <a href="#" class="abl-forgot-link">I forgot my password / My account is locked</a>
+            <a href="#" class="abl-forgot-link">Get digital banking credentials</a>
           </div>
 
         </form>
@@ -122,11 +122,11 @@
 
   <!-- ── Footer ── -->
   <footer class="abl-footer">
-    <a href="#" class="abl-footer-link">Όροι χρήσης</a>
+    <a href="#" class="abl-footer-link">Terms of use</a>
     <span class="abl-footer-sep">|</span>
-    <a href="#" class="abl-footer-link">Ασφάλεια</a>
+    <a href="#" class="abl-footer-link">Security</a>
     <span class="abl-footer-sep">|</span>
-    <a href="#" class="abl-footer-link">Πολιτική απορρήτου</a>
+    <a href="#" class="abl-footer-link">Privacy policy</a>
   </footer>
 
 </div>
